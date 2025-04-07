@@ -1,6 +1,6 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-import validator from "../validators/user.validator.js";
+import validateUserBody from "../validators/user.validator.js";
 
 
 //Generate jwt token
@@ -12,7 +12,7 @@ const generateToken = (id) => {
 const registeringUser = async (req, res, next) => {
   try {
     const { body } = req;
-    await validator.validateUserBody(...body);
+    await validateUserBody(body);
     
     // Check if user already exists
     const existingUser = await User.findOne({ email: body.email });
