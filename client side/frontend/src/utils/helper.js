@@ -1,7 +1,12 @@
 //validate email
-const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+ const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 
 };
-export default validateEmail;
+    const validatePhone = (phone) => {
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
+    return phoneRegex.test(phone);
+  };
+
+export { validateEmail, validatePhone };

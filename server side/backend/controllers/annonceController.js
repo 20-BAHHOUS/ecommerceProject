@@ -1,4 +1,3 @@
-import User from "../models/user.js";
 import Annonce from "../models/annonce.js";
 import validator from "../validators/annonce.validator.js";
 
@@ -8,10 +7,10 @@ import validator from "../validators/annonce.validator.js";
     const { body } = req;
     const userId = req.user.id;
 
-    await validator.validateAnnonceBody(...body, userId);
+    await validator.validateAnnonceBody({ ...body, createdBy: userId });
     const newAnnonce = new Annonce({
       ...body,
-      userId,
+      createdBy: userId,
     });
 
     const data = await newAnnonce.save();

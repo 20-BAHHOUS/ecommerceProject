@@ -33,8 +33,8 @@ axiosInstance.interceptors.response.use(
     // Handle common errors globelly
     if (error.response) {
       if (error.response.status === 401) {
-        // Redirect to login page
-        window.location.href = "/login";
+        // Redirect to home page
+        window.location.href = "/home";
       } else if (error.response.status === 500) {
         console.error("Server error. Please try later.");
       }

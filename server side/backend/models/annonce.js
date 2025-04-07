@@ -23,16 +23,16 @@ const annonceSchema = new mongoose.Schema(
     image: { type: [String] },
     category: {
       type: String,
-      enum: ["electronics", "fashion", "sports", "books", "others"],
+      enum: ["electronic", "Clothing", "", "Toys & Games", "Sports & Outdoors","Arts & Crafts","Phones & Accessories"],
       required: true,
     },
-    ProductType: {
+    AnnonceType: {
       type: String,
-      enum: ["trade", "exchange", "rent"],
+      enum: ["sale", "trade", "free","wanted","rent"],
       required: true,
     },
     location: { type: String, required: true },
-    conditon: { type: [String], enum: ["new", "used"], required: true },
+    conditon: { type: [String], enum: ["new", "like new","good condition","Acceptable","not working"], required: true },
   },
   { timeStamps: true }
 );

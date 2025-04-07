@@ -7,9 +7,8 @@ const validateAnnonceBody = async(body) => {
         price: joi.number().required(),
         category: joi.string().required(),
         conditon: joi.string().required(),
-        ProductType: joi.string().required(),
-        location: joi.string().required(),
-        image : joi.array(),
+        annonceType: joi.string().required(),
+        images : joi.array(),
         userId: joi.string().required(),
     }).validate(body);
     if (error) {

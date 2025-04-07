@@ -6,10 +6,11 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Login from "./pages/Auth/Login";
+
+import Home from "./pages/dashboard/Home";
 import SignUp from "./pages/Auth/SignUp";
-import Home from "./pages/dashboard/Home"
-import LoopShop from "./pages/dashboard/LoopShop";
+import PostAd from "./pages/dashboard/postAnnonce";
+import Login from "./pages/Auth/Login";
 
 const App = () => {
   return (
@@ -18,10 +19,10 @@ const App = () => {
         <Router>
           <Routes>
             <Route path="/" element={<Root />} />
-            <Route path="/login" exact element={<Login />} />
-            <Route path="/signup" exact element={<SignUp />} />
             <Route path="/home" exact element={<Home />} />
-            <Route path="/loopshop" exact element={<LoopShop />} />
+            <Route path="/signup" exact element={<SignUp />} />
+            <Route path="/postad" exact element={<PostAd />} />
+            <Route path="/login" exact element={<Login />} />
           </Routes>
         </Router>
       </div>

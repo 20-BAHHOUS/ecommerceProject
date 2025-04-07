@@ -9,16 +9,16 @@ export const API_PATHS = {
   HOME: {
     GET_DATA: "/api/v1/home",
   },
-  PRODUCT: {
-    ADD_PRODUCT: "/api/v1/annonce/addannonce",
-    GET_ALL_PRODUCT: "/api/v1/annonce/getallannonces",
-    DELET_PRODUCT: (annonceId) => `/api/v1/annonce/deleteannonce/${annonceId}`,
-    UPDATE_PRODUCT: `/api/v1/annonce/updateannonce/:id`,
-    GET_PRODUCT: `/api/v1/annonce/getannonce/:id`,
-    SEARCH_PRODUCT: `/api/v1/annonce/searchannonces/:query`,
-    GET_PRODUCT_BY_CATEGORY: `api/v1/annonce/getannoncesbycategory`,
-    GET_PRODUCT_BY_TYPE: `api/v1/annonce/getannoncesbytype`,
-    GET_PRODUCT_BY_LOCATION: "api/annonce/getannoncesbylocation",
+  ANNONCE: {
+    ADD_ANNONCE: "/api/v1/annonce/addannonce",
+    GET_ALL_ANNONCES: "/api/v1/annonce/getallannonces",
+    DELET_ANNONCE: (annonceId) => `/api/v1/annonce/deleteannonce/${annonceId}`,
+    UPDATE_ANNONCE: `/api/v1/annonce/updateannonce/:id`,
+    GET_ANNONCE: `/api/v1/annonce/getannonce/:id`,
+    SEARCH_ANNONCE: `/api/v1/annonce/searchannonces/:query`,
+    GET_ANNONCE_BY_CATEGORY: `api/v1/annonce/getannoncesbycategory`,
+    GET_ANNONCE_BY_TYPE: `api/v1/annonce/getannoncesbytype`,
+    
   },
   IMAGE: {
     UPLOAD_IMAGE: "/api/v1/image/upload",

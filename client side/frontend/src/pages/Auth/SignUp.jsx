@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import Input from "../../components/layouts/inputs/input";
-import  validateEmail  from "../../utils/helper";
+import  {validateEmail, validatePhone}  from "../../utils/helper";
 import ProfilePhotoSelector from "../../components/layouts/inputs/ProfilePhotoSelector";
 import axiosInstance from "../../utils/axiosInstance";
 import  API_PATHS  from "../../utils/apiPaths";
 import  uploadImage  from "../../utils/uploadimage";
-import  {UserContext}  from "../../context/UserContext";
+import UserContext  from "../../context/UserContext";
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null);
@@ -38,10 +38,16 @@ const SignUp = () => {
       return;
     }
 
-    if (!password) {
+    if (!password || password.length < 8) {
       setError("Please enter the password");
       return;
     }
+
+    if (!validatePhone(phone)) {
+     setError("Please enter a valid phone number.");
+      return;
+    }
+
 
     setError("");
 
