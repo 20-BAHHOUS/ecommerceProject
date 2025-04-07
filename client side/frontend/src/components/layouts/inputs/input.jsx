@@ -1,16 +1,36 @@
 import React from "react";
 import { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-const Input = ({ value, onChange, placeholder, label, type }) => {
+const Input = ({
+  value,
+  onChange,
+  placeholder,
+  label,
+  type,
+  error,
+  ...props
+}) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
   return (
-    <div className="input-box">
-      <label className="text-[13px] text-slate-800">{label}</label>
-      <div className="w-full flex items-center justify-between  border rounded-md px-2 py-1 text-sm">
+    <div>
+      <label
+        className={`text-sm font-medium" ${
+          error ? "text-red-500" : "text-slate-800"
+        }`}
+      >
+        {label}
+      </label>
+
+      <div
+        className={`w-full flex items-center justify-between  border rounded-md px-2 py-3 text-sm ${
+          error ? "border-red-500 text-red-500" : "border-slate-300"
+        }
+      focus-within:border-blue-500`}
+      >
         <input
           type={
             type == "password" ? (showPassword ? "text" : "password") : type
@@ -19,6 +39,7 @@ const Input = ({ value, onChange, placeholder, label, type }) => {
           className="w-full bg-transparent outline-none"
           value={value}
           onChange={(e) => onChange(e)}
+          {...props}
         />
 
         {type == "password" && (
@@ -39,6 +60,8 @@ const Input = ({ value, onChange, placeholder, label, type }) => {
           </>
         )}
       </div>
+      {error &&( <p className="text-red-500 text-sm italic">{error}</p>
+    )}
     </div>
   );
 };

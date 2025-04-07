@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",
     "emoji-picker-react": "^4.12.0",
@@ -17,11 +18,13 @@
     "moment": "^2.30.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.55.0",
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.2.0",
     "recharts": "^2.15.1",
     "tailwindcss": "^4.0.9",
+    "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
