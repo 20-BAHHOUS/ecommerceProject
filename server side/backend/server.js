@@ -25,9 +25,9 @@ app.use(express.json());
 //connecter a mongoose
 connectDB();
 
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/home",homeRoutes);
-app.use("/api/v1/annonce", annonceRoutes);
+app.use("/auth", authRoutes);
+app.use("/home",homeRoutes);
+app.use("/annonce", annonceRoutes);
 
 //serve uploads folder
 //app.use("/uploads", express.static(path.join(__dirname, "uploads")));
