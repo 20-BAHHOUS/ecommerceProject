@@ -1,29 +1,22 @@
-export const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+export const BASE_URL = "http://localhost:4000";
+
 // utils/apiPaths.js
-const API_PATHS = {
+export const API_PATHS = {
   AUTH: {
-    LOGIN: `/api/v1/auth/login`,
-    REGISTER: `/api/v1/auth/register`,
-    GET_USER_INFO: `/api/v1/auth/getuser`,
+    LOGIN: "/auth/login",
+    REGISTER: "/auth/register",
+    GET_USER_INFO: "/auth/getuser",
   },
   HOME: {
-    GET_DATA: `/api/v1/home`,
+    GET_DATA: "/home",
   },
   ANNONCE: {
-    ADD_ANNONCE: `/api/v1/annonce/addannonce`,
-    GET_ALL_ANNONCES: `/api/v1/annonce/getallannonces`,
-    DELET_ANNONCE: (annonceId) => `/api/v1/annonce/deleteannonce/${annonceId}`,
-    UPDATE_ANNONCE: `/api/v1/annonce/updateannonce/:id`,
-    GET_ANNONCE: `/api/v1/annonce/getannonce/:id`,
-    SEARCH_ANNONCE: `/api/v1/annonce/searchannonces/:query`,
-    GET_ANNONCE_BY_CATEGORY: `api/v1/annonce/getannoncesbycategory`,
-    GET_ANNONCE_BY_TYPE: `api/v1/annonce/getannoncesbytype`,
-    
+    ADD_GET_ANNONCE: "/annonce",
+    ANNONCE_BY_ID: (annonceId) => `/annonce/${annonceId}`,
   },
   IMAGE: {
-    UPLOAD_IMAGE: `/api/v1/image/upload`,
+    UPLOAD_IMAGE: "/image/upload",
   },
-
 };
 
 export default API_PATHS;

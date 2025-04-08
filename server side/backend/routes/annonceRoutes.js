@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post("/", protect, addAnnonce);
 router.get("/", protect, getAllAnnonces);
-router.get("/:id", protect,getAnnonceById);
+router.get("/:id", protect, getAnnonceById);
 router.put("/:id", protect, updateAnnonceById);
 router.delete("/:id", protect, deleteAnnonceById);
 

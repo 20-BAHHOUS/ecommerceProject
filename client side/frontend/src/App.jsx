@@ -1,5 +1,4 @@
 import React from "react";
-import UserProvider from "./context/UserContext";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,11 +9,10 @@ import {
 import Home from "./pages/dashboard/Home";
 import SignUp from "./pages/Auth/SignUp";
 import PostAd from "./pages/dashboard/postAnnonce";
-import Login from "./pages/Auth/Login";
+import Login from "./pages/Auth/login";
 
 const App = () => {
   return (
-    <UserProvider>
       <div>
         <Router>
           <Routes>
@@ -26,7 +24,6 @@ const App = () => {
           </Routes>
         </Router>
       </div>
-    </UserProvider>
   );
 };
 export default App;
