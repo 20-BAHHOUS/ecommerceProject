@@ -77,13 +77,14 @@ const Login = () => {
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className={`w-full bg-blue-600 py-3 font-medium text-white rounded-lg
+              className={`w-full font-medium  inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
                 ${
                   !isValid || isSubmitting
                     ? "opacity-50"
                     : "cursor-pointer hover:bg-blue-700"
                 }`}
             >
+              
               LOGIN
             </button>
             <p className="text-sm text-slate-800 mt-2">

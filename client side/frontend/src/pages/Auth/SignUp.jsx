@@ -84,11 +84,11 @@ const SignUp = () => {
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className={`w-full bg-green-600 py-3 font-medium text-white rounded-lg
+              className={`w-full py-3 font-medium text-white rounded-lg inline-block  bg-teal-600 px-8  text-sm transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
                 ${
                   !isValid || isSubmitting
                     ? "opacity-50"
-                    : "cursor-pointer hover:bg-green-700"
+                    : "cursor-pointer hover:bg-teal-600"
                 }`}
             >
               SIGN UP
@@ -96,7 +96,7 @@ const SignUp = () => {
             <p className="text-sm text-slate-800 mt-2">
               Alredy have an account?{" "}
               <Link
-                className="font-semibold text-green-500 underline hover:text-green-600"
+                className="font-semibold text-teal-500 underline hover:text-teal-600"
                 to="/login"
               >
                 Log in

@@ -14,7 +14,7 @@ const TextArea = ({ label, error, ...props }) => {
             error ? "border-red-500 text-red-500" : "border-slate-300"
           } focus-within:border-blue-500
           `}
-          placeholder="ex : porté quelques fois, taille correctement"
+          placeholder="ex : worn a few times , fits well"
           {...props}
         ></textarea>
         {error && <span className="text-red-500 text-xs italic">{error}</span>}

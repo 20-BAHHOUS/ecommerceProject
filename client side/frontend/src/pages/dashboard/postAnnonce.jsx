@@ -92,7 +92,6 @@ const PostAd = () => {
           options={[
             { value: "sale", label: "Sale" },
             { value: "trade", label: "Trade" },
-            { value: "free", label: "Free" },
             { value: "rent", label: "Rent" },
             { value: "wanted", label: "Wanted" },
           ]}
@@ -136,7 +135,7 @@ const PostAd = () => {
                   : "cursor-pointer hover:bg-green-700 "
               }`}
         >
-          Publier l'annonce
+          Post Ad
         </button>
       </form>
     </div>

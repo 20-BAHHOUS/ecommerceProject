@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import path from "path";
 import connectDB from "./config/db.js";
 //import { fileURLToPath } from "url";
 
@@ -9,6 +8,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
 import annonceRoutes from "./routes/annonceRoutes.js";
+import banerRoutes from "./routes/banerRoutes.js";
 const app = express();
 
 // Middleware to handle CORS
@@ -28,6 +28,7 @@ connectDB();
 app.use("/auth", authRoutes);
 app.use("/home",homeRoutes);
 app.use("/annonce", annonceRoutes);
+app.use("/baner", banerRoutes);
 
 //serve uploads folder
 //app.use("/uploads", express.static(path.join(__dirname, "uploads")));

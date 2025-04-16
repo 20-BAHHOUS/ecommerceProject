@@ -7,8 +7,7 @@ const annonceSchema = new mongoose.Schema(
     description: { type: String, required: true },
     price: {
       type: Number,
-     
-        },
+    },
     images: { type: [String] },
     category: {
       type: String,
@@ -29,7 +28,7 @@ const annonceSchema = new mongoose.Schema(
     },
     location: { type: String, required: true },
     conditon: {
-      type: String ,
+      type: String,
       enum: ["new", "like new", "good condition", "Acceptable", "not working"],
     },
   },
