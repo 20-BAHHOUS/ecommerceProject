@@ -1,24 +1,50 @@
-import React from 'react';
-
+import React from "react";
 const StyleSearch = () => {
   return (
-    <form className="flex  border-1 border-gray-700 rounded-md shadow text-gray-700 text-sm ">
-      <div aria-disabled="true" className="text-gray-700 w-10 grid place-content-center ">
-        <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <circle cx={11} cy={11} r={8} />
-          <path d="m21 21-4.3-4.3" />
+    <form className="flex items-center rounded-lg shadow-md border border-gray-200 overflow-hidden w-full max-w-md">
+      <div className="pl-3">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
       </div>
-      <input type="text" spellCheck="false" name="text" className="bg-transparent py-1.5 outline-none placeholder:text-zinc-400 w-20 focus:w-48 transition-all" placeholder="Search..." />
-      <button className="text-gray-700 w-10 grid place-content-center " aria-label="Clear input button" type="reset">
-        <svg strokeLinejoin="round" strokeLinecap="round" strokeWidth={2} stroke="currentColor" fill="none" viewBox="0 0 24 24" height={16} width={16} xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
+      <input
+        type="text"
+        placeholder="Search for items..."
+        className="py-2 px-4 w-full text-gray-700 placeholder-gray-400 focus:outline-none focus:shadow-outline"
+      />
+      <button
+        type="reset"
+        className="text-gray-400 hover:text-gray-600 focus:outline-none pr-3"
+        aria-label="Clear search"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </form>
   );
-  
-}
+};
 
 export default StyleSearch;

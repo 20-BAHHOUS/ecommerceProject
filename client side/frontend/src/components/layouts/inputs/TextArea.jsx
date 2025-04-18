@@ -1,27 +1,29 @@
+import React from "react";
+
 const TextArea = ({ label, error, ...props }) => {
-    return (
-      <div>
-        <label
-          className={`text-sm font-semibold
-          ${error ? "text-red-500" : "text-slate-800"}
-          `}
-        >
-          {label}
-        </label>
+  return (
+    <div className="mb-4">
+      <label
+        htmlFor={props.name}
+        className={`block text-sm font-medium ${
+          error ? "text-red-500" : "text-gray-700"
+        } mb-2`}
+      >
+        {label}
+      </label>
+      <div className="mt-1 rounded-md shadow-sm transition-shadow duration-200 focus-within:shadow-md">
         <textarea
-          className={`w-full border rounded-md px-2 py-3 text-sm outline-none
-          ${
-            error ? "border-red-500 text-red-500" : "border-slate-300"
-          } focus-within:border-blue-500
-          `}
-          placeholder="ex : worn a few times , fits well"
+          id={props.name}
+          rows={4}
+          className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3 ${
+            error ? "border-red-500 text-red-500" : ""
+          }`}
           {...props}
-        ></textarea>
-        {error && <span className="text-red-500 text-xs italic">{error}</span>}
+        />
       </div>
-    );
-  };
-  
-  
-  export default TextArea;
-  
+      {error && <p className="mt-1 text-red-500 text-xs italic">{error}</p>}
+    </div>
+  );
+};
+
+export default TextArea;

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-import MultipleImageSelector from "../../components/layouts/inputs/MultipleImageSelector";
+//import MultipleImageSelector from "../../components/layouts/inputs/MultipleImageSelector";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
@@ -52,16 +52,7 @@ const PostAd = () => {
         method="POST"
         onSubmit={handleSubmit(onSubmit)}
       >
-        {/* <div className="mb-4">
-          <label className="text-gray-600 mb-2">Add up to 5 photos.</label>
-          <div className="border-dashed border-2 border-gray-400 p-4 rounded-lg flex flex-row relative cursor-pointer justify-center items-center transition hover:border-blue-500">
-            <MultipleImageSelector
-              images={images}
-              setImages={setImages}
-              maxImages={5}
-            />
-          </div>
-        </div> */}
+        
         <Input
           label="Title"
           placeholder=""

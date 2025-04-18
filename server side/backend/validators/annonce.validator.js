@@ -11,7 +11,6 @@ const validateAnnonceBody = async(body) => {
         type: joi.string().required(),
         location: joi.string().required(),
         images : joi.array(),
-        userId: joi.string().required(),
     }).validate(body);
     if (error) {
         throw new Error(error.details[0].message,400);
