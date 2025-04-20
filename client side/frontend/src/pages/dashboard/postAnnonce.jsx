@@ -52,7 +52,6 @@ const PostAd = () => {
         method="POST"
         onSubmit={handleSubmit(onSubmit)}
       >
-        
         <Input
           label="Title"
           placeholder=""

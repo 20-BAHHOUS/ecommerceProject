@@ -42,7 +42,7 @@ const SignUp = () => {
     <AuthLayout>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <form
-          className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-200 rounded-lg"
+          className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-300 rounded-lg"
           action=""
           method="POST"
           onSubmit={handleSubmit(onSubmit)}
