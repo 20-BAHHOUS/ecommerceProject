@@ -1,108 +1,107 @@
-import React, { useContext } from "react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import Input from "../../components/layouts/inputs/input";
-import  {validateEmail} from "../../utils/helper"
 import axiosInstance from "../../utils/axiosInstance";
-import  API_PATHS  from "../../utils/apiPaths";
-import  {UserContext}  from "../../context/UserContext";
+import API_PATHS from "../../utils/apiPaths";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginValidator } from "../../lib/validators/auth.validator";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting, isValid },
+    setError,
+  } = useForm({
+    resolver: zodResolver(LoginValidator),
+  });
 
-  const updateUser  = useContext(UserContext);
   const Navigate = useNavigate();
 
   // Handle Login form Submit
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    if (!password || password.length < 8) {
-      setError("Please enter a valid password");
-      return;
-    }
-
-    setError("");
-
-    //Login API call
-
-
+  async function onSubmit(data) {
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN,{
-        email,
-        password,
+      await axiosInstance.post(API_PATHS.AUTH.LOGIN, data).then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          const { token } = res.data;
+          if (token) {
+            localStorage.setItem("token", token);
+            Navigate("/home");
+          }
+        }
       });
-      const { token, user} = response.data;
-
-      if (token) {
-        localStorage.setItem("token", token);
-        updateUser(user)
-        Navigate("/home");
+    } catch (err) {
+      if (err.response.status === 400) {
+        setError("email", { message: err.response.data.error });
       }
-    } catch (error) {
-      if (error.response && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("Somthing went wrong. Please try again.");
-      }
+      console.log("Error in login");
     }
   }
 
+  // Formulaire SignUp
+
   return (
+
+    
     <AuthLayout>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="relative flex p-4 bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="w-full flex flex-col justify-center items-center p-6 space-y-4">
-            <h2 className="text-2xl font-semibold">Login</h2>
-            <form onSubmit={handleLogin}>
-              <Input
-                type="email"
-                placeholder="name@example.com"
-                className="w-full p-2 border rounded-md"
-                value={email}
-                onChange={({ target }) => setEmail(target.value)}
-                label="Email Address"
-              />
+        <form
+          className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-300 rounded-lg"
+          action=""
+          method="POST"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {/* title */}
+          <h2 className="text-2xl font-semibold">Login</h2>
+          {/* inputs */}
+          <div className="flex flex-col gap-4 h-full w-full">
+            <Input
+              label="Email Address"
+              placeholder="name@example.com"
+              type="email"
+              error={errors.email?.message}
+              {...register("email", { required: true })}
+            />
 
-              <Input
-                type="password"
-                placeholder="Min 8 Caracters"
-                autocomplete = "current-password"
-                className="w-full p-2 border rounded-md"
-                value={password}
-                onChange={({ target }) => setPassword(target.value)}
-                label="Password"
-              />
-            </form>
-            {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
-
+            <Input
+              label="Password"
+              placeholder="Min 8 Caracters"
+              type="password"
+              autocomplete="current-password"
+              {...register("password", { required: true })}
+            />
+          </div>
+          {/* submit button */}
+          <div className="w-full">
             <button
               type="submit"
-              className="w-full bg-blue-500 text-sm py-2 font-medium mt-0.5 text-white shadow-lg shadow-blue-500/5 p-[10px] rounded-md my-1 hover:bg-blue-500/15 hover:text-blue-500"
+              disabled={!isValid || isSubmitting}
+              className={`w-full font-medium  inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
+                ${
+                  !isValid || isSubmitting
+                    ? "opacity-50"
+                    : "cursor-pointer hover:bg-blue-700"
+                }`}
             >
+              
               LOGIN
             </button>
-            <p className="text-[13px] text-slate-800 mt-3">
-              Don't have an account?{" "}
+            <p className="text-sm text-slate-800 mt-2">
+              Alredy have an account?{" "}
               <Link
-                className="font-medium text-blue-500 underline "
+                className="font-semibold text-blue-500 underline hover:text-blue-600"
                 to="/signup"
               >
-                Sign Up
+                sign up
               </Link>
             </p>
           </div>
-        </div>
+        </form>
       </div>
     </AuthLayout>
   );
 };
-
 export default Login;

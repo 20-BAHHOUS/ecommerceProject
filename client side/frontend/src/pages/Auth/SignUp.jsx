@@ -1,155 +1,109 @@
-import React, { useState, useContext} from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import Input from "../../components/layouts/inputs/input";
-import  {validateEmail, validatePhone}  from "../../utils/helper";
-import ProfilePhotoSelector from "../../components/layouts/inputs/ProfilePhotoSelector";
 import axiosInstance from "../../utils/axiosInstance";
-import  API_PATHS  from "../../utils/apiPaths";
-import  uploadImage  from "../../utils/uploadimage";
-import UserContext  from "../../context/UserContext";
+import API_PATHS from "../../utils/apiPaths";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignupValidator } from "../../lib/validators/auth.validator";
 
 const SignUp = () => {
-  const [profilePic, setProfilePic] = useState(null);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting, isValid },
+    setError,
+  } = useForm({
+    resolver: zodResolver(SignupValidator),
+  });
 
-  const [error, setError] = useState(null);
-
-  const updateUser  = useContext(UserContext);
   const Navigate = useNavigate();
 
   // Handle SignUp form Submit
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-
-    let profileImageUrl = "";
-
-    if (!fullName) {
-      setError("Please enter your name");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    if (!password || password.length < 8) {
-      setError("Please enter the password");
-      return;
-    }
-
-    if (!validatePhone(phone)) {
-     setError("Please enter a valid phone number.");
-      return;
-    }
-
-
-    setError("");
-
-    // SignUp API Call
+  async function onSubmit(data) {
     try {
-      //Upload image if present
-      if (profilePic) {
-        const imgUploadResponse = await uploadImage(profilePic);
-        profileImageUrl = imgUploadResponse.imageUrl || "";
-      }
-      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
-        fullName,
-        email,
-        password,
-        phone,
-        profileImageUrl
+      await axiosInstance.post(API_PATHS.AUTH.REGISTER, data).then((res) => {
+        if (res.status === 200) {
+          Navigate("/login");
+        }
       });
-      const { token, user } = response.data;
-
-      if (token) {
-        localStorage.setItem("token", token);
-        updateUser(user);
-        Navigate("/home");
+    } catch (err) {
+      if (err.response.status === 400) {
+        setError("email", { message: err.response.data.error });
       }
-    } catch (error) {
-      if (error.response && error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+      console.log("Error in signup");
     }
-  };
-
+  }
   // Formulaire SignUp
+
   return (
     <AuthLayout>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="relative flex p-4 bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="w-full flex flex-col justify-center items-center p-6 space-y-4">
-            <h2 className="text-2xl font-semibold">SignUp</h2>
+        <form
+          className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-300 rounded-lg"
+          action=""
+          method="POST"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {/* title */}
+          <h2 className="text-2xl font-semibold">SignUp</h2>
+          {/* inputs */}
+          <div className="flex flex-col gap-4 h-full w-full">
+            <Input
+              label="Full Name"
+              placeholder="your name"
+              {...register("fullName", { required: true })}
+            />
+            <Input
+              label="Email Address"
+              placeholder="name@example.com"
+              type="email"
+              error={errors.email?.message}
+              {...register("email", { required: true })}
+            />
 
-            <form onSubmit={handleSignUp}>
-              <ProfilePhotoSelector
-                image={profilePic}
-                setImage={setProfilePic}
-              />
+            <Input
+              label="Password"
+              placeholder="Min 8 Caracters"
+              type="password"
+              autocomplete="current-password"
+              {...register("password", { required: true })}
+            />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-              {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
-              <Input
-                value={fullName}
-                onChange={({ target }) => setFullName(target.value)}
-                label="Full Name"
-                placeholder="your name"
-                type="Text"
-              />
-              <Input
-                type="email"
-                placeholder="name@example.com"
-                className="w-full p-2 border rounded-md"
-                value={email}
-                onChange={({ target }) => setEmail(target.value)}
-                label="Email Address"
-              />
-
-              <Input
-                type="password"
-                placeholder="Min 8 Caracters"
-                className="w-full p-2 border rounded-md"
-                autocomplete = "current-password"
-                value={password}
-                onChange={({ target }) => setPassword(target.value)}
-                label="Password"
-              />
-
-              <Input
-                type="Phone"
-                placeholder="your phone number"
-                className="w-full p-2 border rounded-md"
-                value={phone}
-                onChange={({ target }) => setPhone(target.value)}
-                label="Phone"
-              />
-
-              <button
-                type="submit"
-                className="w-full bg-green-500 text-sm py-2 mt-3 font-medium text-white shadow-lg shadow-green-500/5 p-[10px] rounded-md my-1 hover:bg-green-500/15 hover:text-green-500"
-              >
-                SIGN UP
-              </button>
-              <p className="text-[13px] text-slate-800 mt-3">
-                Alredy have an account?{" "}
-                <Link
-                  className="font-medium text-green-500 underline "
-                  to="/login"
-                >
-                  Log in
-                </Link>
-              </p>
-            </form>
+            <Input
+              type="Phone"
+              placeholder="your phone number"
+              label="Phone"
+              {...register("phone", { required: true })}
+            />
           </div>
-        </div>
+          {/* submit button */}
+          <div className="w-full">
+            <button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+              className={`w-full py-3 font-medium text-white rounded-lg inline-block  bg-teal-600 px-8  text-sm transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
+                ${
+                  !isValid || isSubmitting
+                    ? "opacity-50"
+                    : "cursor-pointer hover:bg-teal-600"
+                }`}
+            >
+              SIGN UP
+            </button>
+            <p className="text-sm text-slate-800 mt-2">
+              Alredy have an account?{" "}
+              <Link
+                className="font-semibold text-teal-500 underline hover:text-teal-600"
+                to="/login"
+              >
+                Log in
+              </Link>
+            </p>
+          </div>
+        </form>
       </div>
     </AuthLayout>
   );

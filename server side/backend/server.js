@@ -1,12 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import path from "path";
 import connectDB from "./config/db.js";
 //import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 import authRoutes from "./routes/authRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
@@ -27,9 +24,9 @@ app.use(express.json());
 //connecter a mongoose
 connectDB();
 
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/home",homeRoutes);
-app.use("/api/v1/annonce", annonceRoutes);
+app.use("/auth", authRoutes);
+app.use("/home",homeRoutes);
+app.use("/annonce", annonceRoutes);
 
 //serve uploads folder
 //app.use("/uploads", express.static(path.join(__dirname, "uploads")));
