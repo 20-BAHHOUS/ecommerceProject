@@ -7,7 +7,7 @@ const validateAnnonceBody = async(body) => {
         description: joi.string(),
         price: joi.number().required(),
         category: joi.string().required(),
-        conditon: joi.string(),
+        conditon: joi.string().required(),
         type: joi.string().required(),
         location: joi.string().required(),
         images : joi.array(),

@@ -23,7 +23,7 @@ const annonceSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["sale", "trade", "free", "wanted", "rent"],
+      enum: ["sale", "trade", "wanted", "rent"],
       required: true,
     },
     location: { type: String, required: true },
