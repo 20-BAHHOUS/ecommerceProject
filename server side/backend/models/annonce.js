@@ -8,16 +8,19 @@ const annonceSchema = new mongoose.Schema(
     price: {
       type: Number,
     },
-    images: { type: [String] },
+    images: [{
+      data: Buffer,         // Store the image data
+      contentType: String   // Store the MIME type (e.g., 'image/jpeg')
+  }],
     category: {
       type: String,
       enum: [
         "electronic",
-        "Clothing",
-        "Toys & Games",
-        "Sports & Outdoors",
-        "Arts & Crafts",
-        "Phones & Accessories",
+        "clothing",
+        "toys & games",
+        "sports & outdoors",
+        "arts & crafts",
+        "phones & accessories",
       ],
       required: true,
     },
@@ -29,7 +32,7 @@ const annonceSchema = new mongoose.Schema(
     location: { type: String, required: true },
     conditon: {
       type: String,
-      enum: ["new", "like new", "good condition", "Acceptable", "not working"],
+      enum: ["new", "like new", "good condition", "acceptable", "not working"],
     },
   },
   { timeStamps: true }

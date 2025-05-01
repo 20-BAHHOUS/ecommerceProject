@@ -10,6 +10,7 @@ import Home from "./pages/dashboard/Home";
 import SignUp from "./pages/Auth/SignUp";
 import PostAd from "./pages/dashboard/postAnnonce";
 import Login from "./pages/Auth/login";
+import AnnonceDetail from "./pages/dashboard/annonceDetails";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
             <Route path="/signup" exact element={<SignUp />} />
             <Route path="/postad" exact element={<PostAd />} />
             <Route path="/login" exact element={<Login />} />
+            <Route path="/annonces/:id" exact element={<AnnonceDetail />} />
           </Routes>
         </Router>
       </div>

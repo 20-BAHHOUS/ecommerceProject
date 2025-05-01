@@ -12,6 +12,6 @@ export const SignupValidator = z.object({
 }); 
 
 export const LoginValidator = z.object({
-  email: z.string().email({message: "Invalid email format"}).min(1, {message: "Email is required"}),
+  email: z.string().email( { message: "Invalid email format"}).min(1, {message: "Email is required"}),
   password: z.string().min(8,{message: "Password must be at least 8 characters"}),
 });

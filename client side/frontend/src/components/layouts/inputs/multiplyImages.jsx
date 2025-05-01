@@ -52,7 +52,7 @@ const MultipleImageSelector = ({ label = 'Upload Photos', name = 'images', maxIm
             );
             const newImages = [...currentFiles, ...uniqueFilesToAdd];
             setValue(name, newImages);
-            event.target.value = ''; // Clear the input after handling
+            event.target.value = ''; 
         }
     };
 
