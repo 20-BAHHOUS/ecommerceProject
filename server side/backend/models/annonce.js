@@ -8,10 +8,7 @@ const annonceSchema = new mongoose.Schema(
     price: {
       type: Number,
     },
-    images: [{
-      data: Buffer,         // Store the image data
-      contentType: String   // Store the MIME type (e.g., 'image/jpeg')
-  }],
+    images: { type: [String] },
     category: {
       type: String,
       enum: [
