@@ -1,9 +1,10 @@
 import React from "react";
+
 const AuthLayout = ({ children }) => {
   return (
-    <div className="flex ">
-      <div className="w-screen h-screen md:[60vw] px-12 pt-8 pb-12 ">
-        <h2 className="text-xl font-bold text-black-600">LoopShop</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex flex-col flex-grow md:w-[px] p-8 bg-white border border-gray-300 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Loopify</h2>{" "}
         {children}
       </div>
     </div>

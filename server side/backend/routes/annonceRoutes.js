@@ -11,8 +11,8 @@ import protect from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/", protect, addAnnonce);
-router.get("/", protect, getAllAnnonces);
-router.get("/:id", protect, getAnnonceById);
+router.get("/", getAllAnnonces);
+router.get("/:id", getAnnonceById);
 router.put("/:id", protect, updateAnnonceById);
 router.delete("/:id", protect, deleteAnnonceById);
 

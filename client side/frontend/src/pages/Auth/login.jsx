@@ -12,7 +12,7 @@ const Login = () => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors },
     setError,
   } = useForm({
     resolver: zodResolver(LoginValidator),
@@ -34,18 +34,18 @@ const Login = () => {
         }
       });
     } catch (err) {
-      if (err.response.status === 400) {
+      if (err?.response?.status === 400) {
         setError("email", { message: err.response.data.error });
+      } else if (err?.response?.status === 401) {
+        setError("password", { message: "Invalid credentials" });
       }
-      console.log("Error in login");
+      console.log("Error in login", err);
     }
   }
 
   // Formulaire SignUp
 
   return (
-
-    
     <AuthLayout>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <form
@@ -63,39 +63,33 @@ const Login = () => {
               placeholder="name@example.com"
               type="email"
               error={errors.email?.message}
-              {...register("email", { required: true })}
+              {...register("email")}
             />
 
             <Input
               label="Password"
-              placeholder="Min 8 Caracters"
+              placeholder="Your password"
               type="password"
               autocomplete="current-password"
-              {...register("password", { required: true })}
+              error={errors.password?.message}
+              {...register("password")}
             />
           </div>
           {/* submit button */}
           <div className="w-full">
             <button
               type="submit"
-              disabled={!isValid || isSubmitting}
-              className={`w-full font-medium  inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
-                ${
-                  !isValid || isSubmitting
-                    ? "opacity-50"
-                    : "cursor-pointer hover:bg-blue-700"
-                }`}
+              className="w-full font-medium inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden"
             >
-              
               LOGIN
             </button>
             <p className="text-sm text-slate-800 mt-2">
-              Alredy have an account?{" "}
+              Don't have an account?{" "}
               <Link
                 className="font-semibold text-blue-500 underline hover:text-blue-600"
                 to="/signup"
               >
-                sign up
+                Sign up
               </Link>
             </p>
           </div>

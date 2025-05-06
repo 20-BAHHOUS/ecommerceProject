@@ -9,11 +9,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupValidator } from "../../lib/validators/auth.validator";
 
+
 const SignUp = () => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors },
     setError,
   } = useForm({
     resolver: zodResolver(SignupValidator),
@@ -30,10 +31,10 @@ const SignUp = () => {
         }
       });
     } catch (err) {
-      if (err.response.status === 400) {
+      if (err?.response?.status === 400) {
         setError("email", { message: err.response.data.error });
       }
-      console.log("Error in signup");
+      console.log("Error in signup", err);
     }
   }
   // Formulaire SignUp
@@ -54,14 +55,15 @@ const SignUp = () => {
             <Input
               label="Full Name"
               placeholder="your name"
-              {...register("fullName", { required: true })}
+              error={errors.fullName?.message}
+              {...register("fullName")}
             />
             <Input
               label="Email Address"
               placeholder="name@example.com"
               type="email"
               error={errors.email?.message}
-              {...register("email", { required: true })}
+              {...register("email")}
             />
 
             <Input
@@ -69,27 +71,25 @@ const SignUp = () => {
               placeholder="Min 8 Caracters"
               type="password"
               autocomplete="current-password"
-              {...register("password", { required: true })}
+              error={errors.password?.message}
+              {...register("password")}
             />
 
             <Input
               type="Phone"
               placeholder="your phone number"
               label="Phone"
-              {...register("phone", { required: true })}
+              error={errors.phone?.message}
+              {...register("phone")}
             />
           </div>
           {/* submit button */}
           <div className="w-full">
             <button
               type="submit"
-              disabled={!isValid || isSubmitting}
-              className={`w-full py-3 font-medium text-white rounded-lg inline-block  bg-teal-600 px-8  text-sm transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
-                ${
-                  !isValid || isSubmitting
-                    ? "opacity-50"
-                    : "cursor-pointer hover:bg-teal-600"
-                }`}
+
+              className="w-full py-3 font-medium text-white rounded-lg inline-block  bg-teal-600 px-8  text-sm transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
+              "
             >
               SIGN UP
             </button>

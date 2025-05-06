@@ -5,7 +5,7 @@ const validateUserBody = async(body) => {
         fullName: joi.string().required(),
         email: joi.string().required(),
         password: joi.string().required(),
-        phone: joi.string().required(),
+        phone: joi.string(),
         profileImageUrl: joi.string(),
     }).validate(body);
     if (error) {

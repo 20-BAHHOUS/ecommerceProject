@@ -22,9 +22,11 @@ const addAnnonce = async (req, res, next) => {
 
 //Get all annonces
 const getAllAnnonces = async (req, res) => {
-  const userId = req.user.id;
+ 
   try {
-    const annonces = await Annonce.find({ userId }).sort({ date: -1 });
+  
+
+    const annonces = await Annonce.find().sort({ date: -1 });
     res.json(annonces);
   } catch (error) {
     res.status(500).json({

@@ -16,5 +16,4 @@ const validateAnnonceBody = async(body) => {
         throw new Error(error.details[0].message,400);
     }
 };
-
 export default validateAnnonceBody;

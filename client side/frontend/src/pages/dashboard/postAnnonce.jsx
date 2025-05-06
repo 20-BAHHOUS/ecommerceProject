@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-//import MultipleImageSelector from "../../components/layouts/inputs/MultipleImageSelector";
+import MultipleImageSelector from "../../components/layouts/inputs/multiplyImages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
@@ -36,6 +36,7 @@ const PostAd = () => {
         .then((res) => {
           if (res?.status === 200) {
             console.log("Annonce created successfully", res.data);
+            Navigate("/home");
           }
         });
     } catch {
@@ -51,7 +52,10 @@ const PostAd = () => {
         action=""
         method="POST"
         onSubmit={handleSubmit(onSubmit)}
+        
       >
+        
+      
         <Input
           label="Title"
           placeholder=""

@@ -6,7 +6,6 @@ import connectDB from "./config/db.js";
 
 
 import authRoutes from "./routes/authRoutes.js";
-import homeRoutes from "./routes/homeRoutes.js";
 import annonceRoutes from "./routes/annonceRoutes.js";
 const app = express();
 
@@ -25,7 +24,6 @@ app.use(express.json());
 connectDB();
 
 app.use("/auth", authRoutes);
-app.use("/home",homeRoutes);
 app.use("/annonce", annonceRoutes);
 
 //serve uploads folder

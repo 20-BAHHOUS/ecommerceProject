@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
-import { Menu, Search} from "lucide-react";
+import { Search} from "lucide-react";
 
 const Navbar = () => {
   return (
@@ -8,7 +9,7 @@ const Navbar = () => {
       <div className="container mx-auto px-6 py-4 flex items-center justify-between h-15">
         {/* Logo */}
         <div className="text-2xl font-bold text-teal-500">
-          LoopShop
+          Loopify
         </div>
 
         {/* Search Bar (for larger screens) */}

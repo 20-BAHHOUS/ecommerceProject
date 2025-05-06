@@ -1,26 +1,38 @@
-import React from "react";
+import React , {useEffect} from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import {  MoveRight } from "lucide-react";
+import AOS from "aos";
+import 'aos/dist/aos.css';
+
 const Banner = () => {
+
+  useEffect(() => {
+    AOS.init({
+      offset: 100,
+      duration: 500,
+      easing: "ease-in-sine",
+    });
+  }, []);
+
   const products = [
     {
-      title: "Shop Smart, Live Well",
-      subTitle: "Discover amazing deals and unique finds.",
-      image: "/images/coverBaner.jpg",
+      id: 1,
+      title: "Resourceful choices.",
+      subTitle: "Resourceful choices.",
+      image: "/images/cover1.png",
     },
     {
       id: 2,
-      title: "Turn Your Clutter into Cash",
-      subTitle: "Sell your unused items easily and securely.",
-      image: "",
+      title: "Resourceful choices.",
+      subTitle: "Resourceful choices.",
+      image: "/images/cover2.png",
     },
     {
       id: 3,
-      title: "Find Your Next Treasure",
-      subTitle: "Discover amazing deals and unique finds.",
+      title:  "Resourceful choices.",
+      subTitle: "Resourceful choices.",
       image: "",
     },
   ];
@@ -33,30 +45,27 @@ const Banner = () => {
     slidesToScroll: 1,
   };
   return (
-    <div className="lg:container">
-      <div className="slider-container">
-        <Slider {...settings}>
+    <div className="w-full flex justify-center items-center h-[600x]">
+    
+        <Slider {...settings} className="w-full">
           {products?.map((product) => (
-            <div key={product?.id} className="banner_slide_item">
+            <div key={product?.id} className="w-full">
+            
               {/*baner text */}
-              <div className="banner_text">
-                <p className="text-sm font-inter text-[#272343] uppercase font-normal">{product?.subTitle}</p>
-                <h3 className="text-6xl text-[#272343] font-inter capitalize leading-16 max-w-[631px] w-full font-bold mb-5">{product?.title}</h3>
-                <Link to={"/postad"}
-                  className=" max-w-[171px] w-full flex items-center justify-center gap-2 h-[52px] bg-[#029fae] rounded-lg capitalize text-white cursor-pointer"
-                >
-                  Sell now<Link to="/postad"></Link> <MoveRight />
-                  </Link>
+              <div className="w-full lg:px-20 px-5 lg:h-[700] h-[600px] flex flex-col justify-center items-start gap-10 bg-cover bg-center " >
+                <h1  data-aos="zoom-in" data-aos-delay="50" className="text-black border rounded-lg border-black px-6 py-2 text-xl">{product?.subTitle}</h1>
+                <h1 data-aos="zoom-in" data-aos-delay="50" className="text-6xl text-[#272343] font-inter capitalize leading-16 max-w-[631px] w-full font-bold mb-5">Turn Your Clutter <br/>into Cash</h1>
+                <h1  data-aos="zoom-in" data-aos-delay="50" className="text-black font-semibold">description</h1>
+                <button data-aos="zoom-in" data-aos-delay="200" className="bg-teal-500 px-6 py-3 rounded-lg text-black font-semibold"><Link to="/postad">Sell Now</Link></button>
               </div>
-              {/*baner image */}
-              <div className="banner_image w-full h-full flex items-center justify-center">
-                <img src={product?.image} alt={product?.title} />
-              </div>
+            
             </div>
           ))}
         </Slider>
-      </div>
+    
     </div>
   );
 };
 export default Banner;
+
+//style={{ backgroundImage: `url(${product?.image})` }}

@@ -18,7 +18,7 @@ const Input = ({
   return (
     <div>
       <label
-        className={`text-sm font-medium" ${
+        className={`text-sm font-medium ${
           error ? "text-red-500" : "text-slate-800"
         }`}
       >
@@ -26,14 +26,14 @@ const Input = ({
       </label>
 
       <div
-        className={`w-full flex items-center justify-between  border rounded-md px-2 py-3 text-sm ${
+        className={`w-full flex items-center justify-between border rounded-md px-2 py-3 text-sm ${
           error ? "border-red-500 text-red-500" : "border-slate-300"
         }
       focus-within:border-blue-500`}
       >
         <input
           type={
-            type == "password" ? (showPassword ? "text" : "password") : type
+            type === "password" ? (showPassword ? "text" : "password") : type
           }
           placeholder={placeholder}
           className="w-full bg-transparent outline-none"
@@ -42,26 +42,25 @@ const Input = ({
           {...props}
         />
 
-        {type == "password" && (
+        {type === "password" && (
           <>
             {showPassword ? (
               <FaRegEye
                 onClick={() => toggleShowPassword()}
                 size={22}
-                className="text-blue-500 curser-pointer"
+                className="text-green-700 cursor-pointer"
               />
             ) : (
               <FaRegEyeSlash
                 onClick={() => toggleShowPassword()}
                 size={22}
-                className="text-state-400 curser-pointer"
+                className="text-slate-400 cursor-pointer"
               />
             )}
           </>
         )}
       </div>
-      {error &&( <p className="text-red-500 text-sm italic">{error}</p>
-    )}
+      {error && <p className="text-red-500 text-sm italic">{error}</p>}
     </div>
   );
 };
