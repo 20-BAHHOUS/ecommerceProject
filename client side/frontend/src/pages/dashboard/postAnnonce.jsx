@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-import MultipleImageSelector from "../../components/layouts/inputs/multiplyImages";
+import AnnonceImages from "./annonceImages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
@@ -16,6 +16,8 @@ const PostAd = () => {
     handleSubmit,
     register,
     formState: { errors, isSubmitting, isValid },
+    setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(CreateAnnonceValidator),
     defaultValues: {
@@ -31,16 +33,33 @@ const PostAd = () => {
   });
   async function onSubmit(data) {
     try {
-      await axiosInstance
-        .post(API_PATHS.ANNONCE.ADD_GET_ANNONCE, data)
-        .then((res) => {
-          if (res?.status === 200) {
-            console.log("Annonce created successfully", res.data);
-            Navigate("/home");
-          }
-        });
-    } catch {
-      console.error("Error creating annonce");
+      const formaData = new FormData();
+
+      data.images.forEach((image) => {
+        formaData.append("images", image);
+      });
+      Object.keys(data).forEach((key) => {
+        if (key != "image") {
+          formaData.append(key, data[key]);
+        }
+      });
+
+      const response = await axiosInstance.post(
+        API_PATHS.ANNONCE.ADD_GET_ANNONCE,
+        formaData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.data.success) {
+        Navigate("/home");
+      } else {
+        console.error("Error creating annonce", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error creating annonce:", error.response?.data?.message || error.message);
     }
   }
 
@@ -52,10 +71,7 @@ const PostAd = () => {
         action=""
         method="POST"
         onSubmit={handleSubmit(onSubmit)}
-        
       >
-        
-      
         <Input
           label="Title"
           placeholder=""
@@ -119,6 +135,7 @@ const PostAd = () => {
           error={errors?.conditon?.message}
           {...register("conditon", { required: true })}
         />
+        <AnnonceImages setValue={setValue} watch={watch} />
         <button
           type="submit"
           disabled={!isValid || isSubmitting}

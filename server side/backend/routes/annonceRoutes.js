@@ -7,9 +7,12 @@ import {
   updateAnnonceById,
 } from "../controllers/annonceController.js";
 import protect from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
+
 
 const router = express.Router();
 
+router.post("/", upload.array('images'),addAnnonce);
 router.post("/", protect, addAnnonce);
 router.get("/", getAllAnnonces);
 router.get("/:id", getAnnonceById);

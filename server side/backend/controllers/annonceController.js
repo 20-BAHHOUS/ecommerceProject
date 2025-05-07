@@ -4,28 +4,34 @@ import validateAnnonceBody from "../validators/annonce.validator.js";
 //add product source *
 const addAnnonce = async (req, res, next) => {
   try {
+    // Get other form data from req.body
     const { body } = req;
-    const userId = req.user.id;
 
-    await validateAnnonceBody({ ...body, createdBy: userId });
-    const newAnnonce = new Annonce({
-      ...body,
-      createdBy: userId,
+    //Get the file paths
+
+    body.images = req.files.map(file => file.path);
+
+    //create a new annonce in database 
+    const newAnnonce = new Annonce(body);
+
+    await newAnnonce.save();
+
+    res.status(201).json({
+      success: true,
+      data: newAnnonce
     });
-
-    const data = await newAnnonce.save();
-    return res.status(200).json({ data });
   } catch (error) {
-    next(error);
+    console.error("Error creating annonce:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error creating annonce",
+    });
   }
 };
 
 //Get all annonces
 const getAllAnnonces = async (req, res) => {
- 
   try {
-  
-
     const annonces = await Annonce.find().sort({ date: -1 });
     res.json(annonces);
   } catch (error) {
