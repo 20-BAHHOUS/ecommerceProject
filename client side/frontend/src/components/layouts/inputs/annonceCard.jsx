@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt } from 'react-icons/fa'; 
+import { parseImages } from '../../../utils/parseImages';
 
 const formatPrice = (price) => {
     const numericPrice = Number(price);
@@ -36,7 +37,7 @@ const AnnonceCard = ({ annonce }) => {
             <Link to={detailLink} className="block relative h-48 w-full overflow-hidden group">
                 <img
                     className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                    src={displayImage}
+                    src={parseImages(displayImage)}
                     alt={annonce.title || 'Announcement image'}
                     onError={(e) => {
                         e.target.onerror = null; 
