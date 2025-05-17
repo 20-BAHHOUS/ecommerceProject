@@ -13,6 +13,7 @@ import Login from "./pages/Auth/login";
 import AnnonceDetail from "./pages/dashboard/annonceDetails";
 import UserAnnonces from "./pages/dashboard/userAnnonces";
 import UpdateProfileForm from "./pages/dashboard/updateProfileForm";
+import ProfilePage from "./pages/dashboard/ProfilePage";
 const App = () => {
   return (
       <div>
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/annonces/:id" exact element={<AnnonceDetail />} />
             <Route path="/userannonces" exact element={<UserAnnonces />} />
             <Route path="/updateProfile" exact element={<UpdateProfileForm />} />
+            <Route path="/profile" exact element={<ProfilePage />} />
           </Routes>
         </Router>
       </div>

@@ -12,7 +12,7 @@ import {
   FaPencilAlt,
 } from "react-icons/fa";
 
-const ProfilePage = () => {
+const UpdateProfileForm = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -333,4 +333,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default UpdateProfileForm;
