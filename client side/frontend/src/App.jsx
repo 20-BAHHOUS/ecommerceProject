@@ -16,21 +16,21 @@ import UpdateProfileForm from "./pages/dashboard/updateProfileForm";
 import ProfilePage from "./pages/dashboard/ProfilePage";
 const App = () => {
   return (
-      <div>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Root />} />
-            <Route path="/home" exact element={<Home />} />
-            <Route path="/signup" exact element={<SignUp />} />
-            <Route path="/postad" exact element={<PostAd />} />
-            <Route path="/login" exact element={<Login />} />
-            <Route path="/annonces/:id" exact element={<AnnonceDetail />} />
-            <Route path="/userannonces" exact element={<UserAnnonces />} />
-            <Route path="/updateProfile" exact element={<UpdateProfileForm />} />
-            <Route path="/profile" exact element={<ProfilePage />} />
-          </Routes>
-        </Router>
-      </div>
+    <div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Root />} />
+          <Route path="/home" exact element={<Home />} />
+          <Route path="/signup" exact element={<SignUp />} />
+          <Route path="/postad" exact element={<PostAd />} />
+          <Route path="/login" exact element={<Login />} />
+          <Route path="/annonces/:id" exact element={<AnnonceDetail />} />
+          <Route path="/userannonces" exact element={<UserAnnonces />} />
+          <Route path="/updateProfile" exact element={<UpdateProfileForm />} />
+          <Route path="/profile" exact element={<ProfilePage />} />
+        </Routes>
+      </Router>
+    </div>
   );
 };
 export default App;
@@ -40,9 +40,5 @@ const Root = () => {
   const isAuthenticated = !!localStorage.getItem("token");
 
   // Redirect to dashboard if authenticated, otherwise to login
-  return isAuthenticated ? (
-    <Navigate to="/home" />
-  ) : (
-    <Navigate to="/login" />
-  );
+  return isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />;
 };

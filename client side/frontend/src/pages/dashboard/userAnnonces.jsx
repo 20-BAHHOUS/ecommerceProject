@@ -63,7 +63,7 @@ const UserAnnonces = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            My Announcements
+            Your Announcements
           </h1>
           <Link
             to="/postad"
