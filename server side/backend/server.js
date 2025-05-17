@@ -7,6 +7,9 @@ import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
 import annonceRoutes from "./routes/annonceRoutes.js";
+import orderRoutes from './routes/orderRoutes.js';
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = pathObject.dirname(__filename);
 const annonceImagesDirectory = pathObject.join(__dirname, "./uploads/annonces");
@@ -29,6 +32,8 @@ connectDB();
 app.use("/auth", authRoutes);
 app.use("/annonce", annonceRoutes);
 app.use("/annonce-images", express.static(annonceImagesDirectory));
+app.use("/orders", orderRoutes);
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

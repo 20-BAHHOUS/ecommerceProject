@@ -9,16 +9,15 @@ const addAnnonce = async (req, res, next) => {
 
     //Get the file paths
 
-    body.images = req.files.map(file => file.path);
+    body.images = req.files.map((file) => file.path);
 
-    //create a new annonce in database 
+    //create a new annonce in database
     const newAnnonce = new Annonce(body);
 
     await newAnnonce.save();
-
     res.status(201).json({
       success: true,
-      data: newAnnonce
+      data: newAnnonce,
     });
   } catch (error) {
     console.error("Error creating annonce:", error);
@@ -48,7 +47,7 @@ const getAnnonceById = async (req, res) => {
     if (!annonce) {
       return res.status(404).json({ error: "Annonce not found" });
     }
-    res.status(200).json(product);
+    res.status(200).json(annonce);
   } catch (error) {
     res.status(500).json({
       message: "Error getting annonce",
@@ -91,10 +90,30 @@ const updateAnnonceById = async (req, res) => {
   }
 };
 
+const getUserAnnonces = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const annonces = await Annonce.find({ createdBy: id })
+      .sort({
+        date: -1,
+      })
+      .lean();
+    if (!annonces) {
+      return res.status(404).json({ message: "No annonces found ." });
+    }
+    res.status(201).json({ success: true, data: annonces });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error getting annonces",
+    });
+  }
+};
+
 export {
   addAnnonce,
   getAllAnnonces,
   getAnnonceById,
   deleteAnnonceById,
   updateAnnonceById,
+  getUserAnnonces,
 };

@@ -11,7 +11,8 @@ import SignUp from "./pages/Auth/SignUp";
 import PostAd from "./pages/dashboard/postAnnonce";
 import Login from "./pages/Auth/login";
 import AnnonceDetail from "./pages/dashboard/annonceDetails";
-
+import UserAnnonces from "./pages/dashboard/userAnnonces";
+import UpdateProfileForm from "./pages/dashboard/updateProfileForm";
 const App = () => {
   return (
       <div>
@@ -23,6 +24,8 @@ const App = () => {
             <Route path="/postad" exact element={<PostAd />} />
             <Route path="/login" exact element={<Login />} />
             <Route path="/annonces/:id" exact element={<AnnonceDetail />} />
+            <Route path="/userannonces" exact element={<UserAnnonces />} />
+            <Route path="/updateProfile" exact element={<UpdateProfileForm />} />
           </Routes>
         </Router>
       </div>

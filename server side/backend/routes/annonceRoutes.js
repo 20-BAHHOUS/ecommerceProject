@@ -5,6 +5,7 @@ import {
   getAnnonceById,
   deleteAnnonceById,
   updateAnnonceById,
+  getUserAnnonces,
 } from "../controllers/annonceController.js";
 import protect from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
@@ -13,6 +14,7 @@ import upload from "../middleware/uploadMiddleware.js";
 const router = express.Router();
 
 router.post("/", upload.array('images'),addAnnonce);
+router.get("/getByUser/:id",getUserAnnonces);
 router.post("/", protect, addAnnonce);
 router.get("/", getAllAnnonces);
 router.get("/:id", getAnnonceById);
