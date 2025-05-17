@@ -2,20 +2,20 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Search, User, Heart, Bell, MessageSquare } from "lucide-react"; // Import icons
 import { useState, useEffect } from "react";
+import ProfilePage from "../../../pages/dashboard/ProfilePage";
 
 const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track authentication
 
   useEffect(() => {
-    // Check for a token in local storage or your preferred authentication method
+   
     const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token); // Set isAuthenticated based on token existence
+    setIsAuthenticated(!!token); 
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear token
-    setIsAuthenticated(false); // Update state
-    // Optionally, redirect to the login page
+    localStorage.removeItem("token"); 
+    setIsAuthenticated(false); 
     window.location.href = "/login";
   };
 
@@ -42,22 +42,22 @@ const Navbar = () => {
           {isAuthenticated ? (
             // Display user icons when logged in
             <div className="flex items-center space-x-4">
-              <Link to="/wishlist" className="relative">
+              <Link to="/favourites" className="relative">
                 <Heart className="h-6 w-6 text-gray-700 hover:text-teal-500" />
-                {/* Optional: Add a badge for wishlist count */}
               </Link>
               <Link to="/notifications" className="relative">
                 <Bell className="h-6 w-6 text-gray-700 hover:text-teal-500" />
-                {/* Optional: Add a badge for notifications */}
               </Link>
               <Link to="/messages" className="relative">
                 <MessageSquare className="h-6 w-6 text-gray-700 hover:text-teal-500" />
-                {/* Optional: Add a badge for messages */}
               </Link>
               <Link to="/profile">
                 <User className="h-6 w-6 text-gray-700 hover:text-teal-500" />
               </Link>
-              <button onClick={handleLogout} className="text-gray-700 hover:text-teal-500 focus:outline-none">
+              <button
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-teal-500 focus:outline-none"
+              >
                 Logout
               </button>
             </div>
@@ -65,7 +65,8 @@ const Navbar = () => {
             // Display login/signup buttons when not logged in
             <div className="flex items-center gap-4">
               <button className="bg-white text-teal-600 font-medium py-2 px-4 rounded-md focus:outline-none border border-teal-600 ">
-                <Link to="/signup">Sign up</Link> | <Link to="/login">Log in</Link>
+                <Link to="/signup">Sign up</Link> |{" "}
+                <Link to="/login">Log in</Link>
               </button>
               <Link
                 to="/postad"
