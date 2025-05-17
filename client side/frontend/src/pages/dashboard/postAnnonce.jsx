@@ -28,7 +28,7 @@ const PostAd = () => {
       category: "",
       type: "",
       location: "",
-      conditon: "",
+      condition: "",
     },
   });
   async function onSubmit(data) {

@@ -3,7 +3,7 @@
 
 @plugin "daisyui";
 
-
+@import "react-toastify/dist/ReactToastify.css";
 
 @theme {
   --font-display: "poppins", "sans-serif";
