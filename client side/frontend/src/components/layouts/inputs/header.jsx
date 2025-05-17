@@ -1,8 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, User, Heart, Bell, MessageSquare } from "lucide-react"; // Import icons
+import { useState, useEffect } from "react";
 
 const Navbar = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track authentication
+
+  useEffect(() => {
+    // Check for a token in local storage or your preferred authentication method
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token); // Set isAuthenticated based on token existence
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Clear token
+    setIsAuthenticated(false); // Update state
+    // Optionally, redirect to the login page
+    window.location.href = "/login";
+  };
+
   return (
     <nav className="bg-white sticky top-0 z-50 border-b border-gray-300">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between h-15">
@@ -21,31 +37,44 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Navigation Links*/}
-
+        {/* Navigation Links */}
         <div className="flex items-center space-x-4">
-          <div className="flex items-center gap-4">
-            <button className="bg-white text-teal-600 font-medium py-2 px-4 rounded-md focus:outline-none border border-teal-600 ">
-              <Link to="/signup">Sign up</Link> |{" "}
-              <Link to="/login">Log in</Link>
-            </button>
-          </div>
-          <Link
-            to="/postad"
-            className="hidden md:block text-gray-700 hover:text-teal-500"
-          >
-            Sell now
-          </Link>
-
-          {/* <Link to="/wishlist" className="relative"> */}
-          {/*</div><Heart className="h-6 w-6 text-gray-700 hover:text-teal-500" /> */}
-          {/* Optional: Add a badge for wishlist count */}
-          {/* <span className="absolute top-[-6px] right-[-6px] bg-teal-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span> */}
-          {/*</Link>*/}
-
-          {/*<Link to="/profile">
-            <User className="h-6 w-6 text-gray-700 hover:text-teal-500" />
-          </Link>*/}
+          {isAuthenticated ? (
+            // Display user icons when logged in
+            <div className="flex items-center space-x-4">
+              <Link to="/wishlist" className="relative">
+                <Heart className="h-6 w-6 text-gray-700 hover:text-teal-500" />
+                {/* Optional: Add a badge for wishlist count */}
+              </Link>
+              <Link to="/notifications" className="relative">
+                <Bell className="h-6 w-6 text-gray-700 hover:text-teal-500" />
+                {/* Optional: Add a badge for notifications */}
+              </Link>
+              <Link to="/messages" className="relative">
+                <MessageSquare className="h-6 w-6 text-gray-700 hover:text-teal-500" />
+                {/* Optional: Add a badge for messages */}
+              </Link>
+              <Link to="/profile">
+                <User className="h-6 w-6 text-gray-700 hover:text-teal-500" />
+              </Link>
+              <button onClick={handleLogout} className="text-gray-700 hover:text-teal-500 focus:outline-none">
+                Logout
+              </button>
+            </div>
+          ) : (
+            // Display login/signup buttons when not logged in
+            <div className="flex items-center gap-4">
+              <button className="bg-white text-teal-600 font-medium py-2 px-4 rounded-md focus:outline-none border border-teal-600 ">
+                <Link to="/signup">Sign up</Link> | <Link to="/login">Log in</Link>
+              </button>
+              <Link
+                to="/postad"
+                className="hidden md:block text-gray-700 hover:text-teal-500"
+              >
+                Sell now
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 

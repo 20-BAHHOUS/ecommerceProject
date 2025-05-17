@@ -4,8 +4,8 @@ import { placeOrder, getSellerOrders, updateOrderStatus } from '../controllers/o
 
 const router = express.Router();
 
-router.post('/', protect, placeOrder);
-router.get('/seller',protect, getSellerOrders);
-router.put('/:orderId',protect,updateOrderStatus);
+router.post("/", protect, placeOrder);
+router.get("/seller",protect, getSellerOrders);
+router.put("/:orderId/status",protect,updateOrderStatus);
 
 export default router;
