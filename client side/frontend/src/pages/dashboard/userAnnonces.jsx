@@ -1,8 +1,9 @@
+// components/screens/UserAnnonces.js
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
 import API_PATHS from "../../utils/apiPaths";
-import Header from "../../components/layouts/inputs/header"; 
+import Header from "../../components/layouts/inputs/header";
 import axiosInstance from "../../utils/axiosInstance";
 import { FaPlusCircle, FaExclamationTriangle, FaSpinner } from "react-icons/fa";
 
@@ -39,8 +40,8 @@ const UserAnnonces = () => {
             }`
           );
           if (err.response.status === 401) {
-            localStorage.removeItem("token"); 
-            navigate("/login"); 
+            localStorage.removeItem("token");
+            navigate("/login");
           }
         } else if (err.request) {
           setError("Network Error: Could not connect to the server.");

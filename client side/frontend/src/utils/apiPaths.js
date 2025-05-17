@@ -21,9 +21,8 @@ export const API_PATHS = {
     UPLOAD_IMAGE: "/image/upload",
   },
   ORDER: {
-    ADD_GET_ORDER: "/orders",
-    GET_ORDERS_BY_SELLER: "/orders/seller",
-    GET_ORDERS_BY_BUYER: "/order/buyer",
+    ADD_GET_ORDER: "/order",
+    GET_ORDERS_BY_SELLER: "/order/seller",
   },
 };
 

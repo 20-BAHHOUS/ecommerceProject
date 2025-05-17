@@ -6,7 +6,6 @@ import {
   FaTag,
   FaInfoCircle,
   FaBoxOpen,
-  FaUser,
   FaSpinner,
   FaExclamationTriangle,
 } from "react-icons/fa";
@@ -185,15 +184,6 @@ const AnnonceDetail = () => {
               </span>
             </div>
 
-            <DetailItem
-                  icon={<FaUser className="text-indigo-500" />}
-                  label="Seller ID"
-                  value={
-                    typeof annonce.createdBy === "object"
-                      ? annonce.createdBy._id
-                      : annonce.createdBy
-                  }
-                />
 
             <div className="space-y-3 text-sm text-gray-700">
               <DetailItem
