@@ -7,8 +7,10 @@ const addAnnonce = async (req, res, next) => {
     // Get other form data from req.body
     const { body } = req;
 
-    //Get the file paths
+    // Add the user ID from the authentication middleware
+    body.createdBy = req.user._id;
 
+    //Get the file paths
     body.images = req.files.map((file) => file.path);
 
     //create a new annonce in database
@@ -21,9 +23,27 @@ const addAnnonce = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating annonce:", error);
+    
+    // Provide more detailed validation errors if available
+    if (error.name === 'ValidationError') {
+      const validationErrors = {};
+      
+      // Extract validation error messages for each field
+      for (const field in error.errors) {
+        validationErrors[field] = error.errors[field].message;
+      }
+      
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: validationErrors
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: "Error creating annonce",
+      error: error.message
     });
   }
 };
@@ -43,12 +63,16 @@ const getAllAnnonces = async (req, res) => {
 //Get annonce by id
 const getAnnonceById = async (req, res) => {
   try {
-    const annonce = await Annonce.findById(req.params.id);
+    // Find the annonce and populate createdBy field
+    const annonce = await Annonce.findById(req.params.id).populate("createdBy", "_id fullName");
+    
     if (!annonce) {
       return res.status(404).json({ error: "Annonce not found" });
     }
+    
     res.status(200).json(annonce);
   } catch (error) {
+    console.error("Error getting annonce by ID:", error);
     res.status(500).json({
       message: "Error getting annonce",
     });

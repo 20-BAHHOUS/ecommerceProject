@@ -70,6 +70,15 @@ const AnnonceDetail = () => {
   }, [annonceId]);
 
   const handlePlaceOrder = async () => {
+    // Check if user is logged in first
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to place an order");
+      // Redirect to login page
+      window.location.href = "/login";
+      return;
+    }
+    
     try {
       const response = await axiosInstance.post(
         API_PATHS.ORDER.ADD_GET_ORDER,
@@ -78,9 +87,25 @@ const AnnonceDetail = () => {
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error placing order:", error);
-      toast.error(error.response?.data?.message || "Could not place order.");
+      
+      // Show error message to the user
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Could not place order. Please try again later.");
+      }
     }
   };
+
+  // Check if the current user is the owner of the annonce
+  const userId = localStorage.getItem("userId");
+  const hasCreatedBy = !!annonce?.createdBy;
+  const hasUserId = !!userId;
+  
+  // Only consider the user the owner if both values exist and are equal
+  const isOwner = hasCreatedBy && hasUserId && annonce.createdBy.toString() === userId.toString();
 
   if (loading) {
     return (
@@ -214,12 +239,14 @@ const AnnonceDetail = () => {
             <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
               Contact Seller
             </button>
-            <button
-              onClick={handlePlaceOrder}
-              className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              Place an order
-            </button>
+            {!isOwner && (
+              <button
+                onClick={handlePlaceOrder}
+                className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Place an order
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -132,8 +132,8 @@ const PostAd = () => {
             { value: "acceptable", label: "Acceptable" },
             { value: "not working", label: "Not working" },
           ]}
-          error={errors?.conditon?.message}
-          {...register("conditon", { required: true })}
+          error={errors?.condition?.message}
+          {...register("condition", { required: true })}
         />
         <AnnonceImages setValue={setValue} watch={watch} />
         <button

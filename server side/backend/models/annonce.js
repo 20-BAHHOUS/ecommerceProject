@@ -27,12 +27,22 @@ const annonceSchema = new mongoose.Schema(
       required: true,
     },
     location: { type: String, required: true },
-    conditon: {
+    condition: {
       type: String,
-      enum: ["new", "like new", "good condition", "acceptable", "not working"],
+      enum: {
+        values: ["new", "like new", "good condition", "acceptable", "not working"],
+        message: "'{VALUE}' is not a valid condition"
+      },
+      validate: {
+        validator: function(v) {
+          // Allow empty strings (they will be set to undefined)
+          return v === '' || ["new", "like new", "good condition", "acceptable", "not working"].includes(v);
+        },
+        message: props => `${props.value} is not a valid condition`
+      }
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 const Annonce = mongoose.model("Annonce", annonceSchema);

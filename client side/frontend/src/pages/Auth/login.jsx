@@ -25,10 +25,10 @@ const Login = () => {
     try {
       await axiosInstance.post(API_PATHS.AUTH.LOGIN, data).then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
-          const { token } = res.data;
+          const { token, _id, user } = res.data;
           if (token) {
             localStorage.setItem("token", token);
+            localStorage.setItem("userId", _id || (user && user._id));
             Navigate("/home");
           }
         }
