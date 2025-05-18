@@ -18,10 +18,22 @@ const UserAnnonces = () => {
       setLoading(true);
       setError(null);
       try {
+        // Get the current user ID from localStorage
+        const userId = localStorage.getItem("userId");
+        
+        if (!userId) {
+          setError("User not authenticated. Please log in.");
+          navigate("/login");
+          return;
+        }
+        
         const response = await axiosInstance.get(
-          API_PATHS.ANNONCE.GET_ANNONCES_BY_USER
+          API_PATHS.ANNONCE.GET_ANNONCES_BY_USER(userId)
         );
-        if (Array.isArray(response.data)) {
+        
+        if (response.data && response.data.data && Array.isArray(response.data.data)) {
+          setAnnoncesUser(response.data.data);
+        } else if (Array.isArray(response.data)) {
           setAnnoncesUser(response.data);
         } else {
           console.warn(
