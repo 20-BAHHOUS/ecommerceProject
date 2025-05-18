@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
@@ -47,7 +47,6 @@ const AnnonceDetail = () => {
         );
         setAnnonce(response.data);
       } catch (err) {
-        console.error("Error fetching announcement details:", err);
         if (err.response) {
           setError(
             `Error ${err.response.status}: ${
@@ -86,8 +85,6 @@ const AnnonceDetail = () => {
       );
       toast.success(response.data.message);
     } catch (error) {
-      console.error("Error placing order:", error);
-      
       // Show error message to the user
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
@@ -99,13 +96,38 @@ const AnnonceDetail = () => {
     }
   };
 
-  // Check if the current user is the owner of the annonce
-  const userId = localStorage.getItem("userId");
-  const hasCreatedBy = !!annonce?.createdBy;
-  const hasUserId = !!userId;
-  
-  // Only consider the user the owner if both values exist and are equal
-  const isOwner = hasCreatedBy && hasUserId && annonce.createdBy.toString() === userId.toString();
+  // Using useMemo to avoid recalculating these values on every render
+  const { isOwner, displayImage, hasImages, imagesArray } = useMemo(() => {
+    // Check if the current user is the owner of the annonce
+    const userId = localStorage.getItem("userId");
+    const hasCreatedBy = !!annonce?.createdBy;
+    const hasUserId = !!userId;
+    
+    // Only consider the user the owner if both values exist and are equal
+    const isOwnerValue = hasCreatedBy && hasUserId && annonce?.createdBy.toString() === userId.toString();
+    
+    // Validate images array
+    const validImages = annonce?.images && 
+                       Array.isArray(annonce.images) && 
+                       annonce.images.length > 0;
+    
+    // Create safe image display path
+    let currentImage = "/placeholder-image.png";
+    if (validImages && typeof annonce.images[currentImageIndex] === 'string') {
+      try {
+        currentImage = parseImages(annonce.images[currentImageIndex]);
+      } catch (err) {
+        currentImage = "/placeholder-image.png";
+      }
+    }
+      
+    return { 
+      isOwner: isOwnerValue, 
+      displayImage: currentImage,
+      hasImages: validImages,
+      imagesArray: validImages ? annonce.images : []
+    };
+  }, [annonce, currentImageIndex]);
 
   if (loading) {
     return (
@@ -143,20 +165,17 @@ const AnnonceDetail = () => {
     );
   }
 
-  const hasImages = annonce.images && annonce.images.length > 0;
-  const displayImage = hasImages
-    ? parseImages(annonce.images[currentImageIndex])
-    : "/placeholder-image.png";
-
-  const handleNextImage = () =>
-    setCurrentImageIndex(
-      (prevIndex) => (prevIndex + 1) % annonce.images.length
-    );
-  const handlePrevImage = () =>
-    setCurrentImageIndex(
-      (prevIndex) =>
-        (prevIndex - 1 + annonce.images.length) % annonce.images.length
-    );
+  const handleNextImage = () => {
+    if (imagesArray.length > 1) {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imagesArray.length);
+    }
+  };
+  
+  const handlePrevImage = () => {
+    if (imagesArray.length > 1) {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imagesArray.length) % imagesArray.length);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto bg-gray-50 shadow-xl rounded-lg overflow-hidden my-10 ">
@@ -168,11 +187,14 @@ const AnnonceDetail = () => {
             src={displayImage}
             alt={annonce.title || "Announcement image"}
             onError={(e) => {
+              // Prevent infinite error loop
               e.target.onerror = null;
+              // Use absolute path to placeholder
               e.target.src = "/placeholder-image.png";
             }}
+            loading="lazy"
           />
-          {hasImages && annonce.images.length > 1 && (
+          {hasImages && imagesArray.length > 1 && (
             <>
               <button
                 onClick={handlePrevImage}
@@ -187,7 +209,7 @@ const AnnonceDetail = () => {
                 &#10095;
               </button>
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                {currentImageIndex + 1} / {annonce.images.length}
+                {currentImageIndex + 1} / {imagesArray.length}
               </div>
             </>
           )}
