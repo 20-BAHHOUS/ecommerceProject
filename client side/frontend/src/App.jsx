@@ -14,6 +14,8 @@ import AnnonceDetail from "./pages/dashboard/annonceDetails";
 import UserAnnonces from "./pages/dashboard/userAnnonces";
 import UpdateProfileForm from "./pages/dashboard/updateProfileForm";
 import ProfilePage from "./pages/dashboard/ProfilePage";
+import EditAnnonce from "./pages/dashboard/editAnnonce";
+import ChangePassword from "./components/layouts/inputs/changePassowd";
 const App = () => {
   return (
     <div>
@@ -28,6 +30,8 @@ const App = () => {
           <Route path="/userannonces" exact element={<UserAnnonces />} />
           <Route path="/updateProfile" exact element={<UpdateProfileForm />} />
           <Route path="/profile" exact element={<ProfilePage />} />
+          <Route path="/edit-annonce/:id" exact element={<EditAnnonce />} />
+          <Route path="/change-pass" exact element={<ChangePassword/>} />
         </Routes>
       </Router>
     </div>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-import { ToastContainer } from "react-toastify"; 
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../../components/layouts/inputs/header";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
@@ -34,7 +34,7 @@ const ProfilePage = () => {
 
         // Fetch user's announcements
         const annoncesResponse = await axiosInstance.get(
-          API_PATHS.ANNONCE.GET_ANNONCES_BY_USER(userResponse.data._id) 
+          API_PATHS.ANNONCE.GET_ANNONCES_BY_USER(userResponse.data._id)
         );
         setAnnonces(annoncesResponse.data.data || []);
       } catch (err) {
@@ -65,24 +65,24 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <Navbar/>
-      <ToastContainer /> 
+      <Navbar />
+      <ToastContainer />
       <div className="container mx-auto py-8">
         <h2 className="text-2xl font-semibold mb-4">My Profile</h2>
         <div className="bg-white shadow rounded-md p-6 mb-4 relative">
           {/* Edit Profile Button */}
           <Link
             to="/updateProfile"
-            className="absolute top-4 right-4 bg-white text-blue-500 border border-blue-500 hover:bg-blue-500 hover:text-white font-semibold py-2 px-4 rounded text-sm focus:outline-none transition duration-150 ease-in-out"
+            className="absolute top-4 right-4 bg-white text-gray-500 border border-gray-500 hover:bg-teal-500 hover:text-white font-semibold py-2 px-4 rounded text-sm focus:outline-none transition duration-150 ease-in-out"
           >
-            <FaPencilAlt className="inline-block mr-2" /> Edit Profile
+            <FaPencilAlt className="inline-block mr-2 " /> Edit Profile
           </Link>
 
           <h3 className="text-lg font-semibold mb-2">Personal Information</h3>
           <div className="mb-2 flex items-center">
             <FaUser className="inline-block mr-2 text-gray-500" />
             <strong>Full Name:</strong>{" "}
-            <span className="ml-2">{user?.fullName }</span>
+            <span className="ml-2">{user?.fullName}</span>
           </div>
           <div className="mb-2 flex items-center">
             <FaPhone className="inline-block mr-2 text-gray-500" />

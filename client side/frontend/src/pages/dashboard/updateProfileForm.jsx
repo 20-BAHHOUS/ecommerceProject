@@ -10,7 +10,11 @@ import {
   FaPhone,
   FaSpinner,
   FaPencilAlt,
+  FaCheck,
+  FaTimes,
 } from "react-icons/fa";
+import ProfilePhotoSelector from "../../components/layouts/inputs/ProfilePhotoSelector";
+import { Link } from "react-router-dom";
 
 const UpdateProfileForm = () => {
   const [user, setUser] = useState(null);
@@ -20,18 +24,12 @@ const UpdateProfileForm = () => {
     fullName: false,
     email: false,
     phone: false,
-    // profileImageUrl: false, // You might handle image upload separately
   });
   const [updatedInfo, setUpdatedInfo] = useState({
     fullName: "",
     email: "",
     phone: "",
-    profileImageUrl: "", // You might handle image upload separately
-  });
-  const [passwordForm, setPasswordForm] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmNewPassword: "",
+    profileImageUrl: "",
   });
 
   useEffect(() => {
@@ -71,7 +69,6 @@ const UpdateProfileForm = () => {
 
   const handleCancelEdit = (fieldName) => {
     setEditFields({ ...editFields, [fieldName]: false });
-    // Optionally, reset the updatedInfo for this field
     setUpdatedInfo((prevInfo) => ({
       ...prevInfo,
       [fieldName]: user?.[fieldName] || "",
@@ -97,236 +94,180 @@ const UpdateProfileForm = () => {
     }
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordForm({ ...passwordForm, [name]: value });
-  };
-
-  const handleUpdatePassword = async () => {
-    const { oldPassword, newPassword, confirmNewPassword } = passwordForm;
-    if (newPassword !== confirmNewPassword) {
-      toast.error("New passwords do not match.");
-      return;
-    }
-    try {
-      const response = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PASSWORD, {
-        oldPassword,
-        newPassword,
-      });
-      toast.success(response.data.message);
-      setPasswordForm({
-        oldPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      }); // Clear form
-    } catch (error) {
-      console.error("Error updating password:", error);
-      toast.error(error.response?.data?.error || "Failed to update password.");
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <FaSpinner className="animate-spin text-4xl" />
+        <FaSpinner className="animate-spin text-4xl text-primary-500" />
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <div className="text-red-500 p-4">{error}</div>;
   }
 
   return (
-    <div>
+    <div className="bg-gray-100 min-h-screen">
       <Navbar />
-      <div className="container mx-auto py-8">
-        <h2 className="text-2xl font-semibold mb-4">Profile</h2>
+      <div className="container mx-auto py-10 px-4 md:px-0">
+        <div className="bg-white shadow rounded-lg p-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Your Profile
+          </h2>
 
-        {/* Display and Edit User Information */}
-        <div className="bg-white shadow rounded-md p-6 mb-4">
-          <h3 className="text-lg font-semibold mb-2">Personal Information</h3>
-
-          <div className="mb-2 flex items-center justify-between">
-            <div>
-              <FaUser className="inline-block mr-2 text-gray-500" />
-              <strong>Full Name:</strong>
-            </div>
-            {editFields.fullName ? (
+          {/* Full Name Section */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <input
-                  type="text"
-                  name="fullName"
-                  value={updatedInfo.fullName}
-                  onChange={handleInputChange}
-                  className="border rounded px-2 py-1 ml-2 w-48"
-                />
-                <button
-                  onClick={() => handleSaveEdit("fullName")}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded ml-2 text-sm"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => handleCancelEdit("fullName")}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded ml-2 text-sm"
-                >
-                  Cancel
-                </button>
+                <FaUser className="text-gray-500 mr-3" />
+                <label className="block text-gray-700 text-sm font-bold">
+                  Full Name
+                </label>
               </div>
-            ) : (
-              <div className="flex items-center">
-                <span>{user?.fullName || "N/A"}</span>
+              {!editFields.fullName ? (
                 <button
                   onClick={() => handleEditClick("fullName")}
-                  className="text-blue-500 hover:text-blue-700 ml-2 focus:outline-none"
+                  className="text-teal-500 hover:text-indigo-700 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  <FaPencilAlt className="inline-block" /> Change
+                  <FaPencilAlt className="inline-block mr-1" /> Edit
                 </button>
-              </div>
-            )}
+              ) : (
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={updatedInfo.fullName}
+                    onChange={handleInputChange}
+                    className="shadow appearance-none border rounded w-48 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ml-2"
+                  />
+                  <button
+                    onClick={() => handleSaveEdit("fullName")}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-3 rounded ml-2 focus:outline-none focus:shadow-outline text-sm"
+                  >
+                    <FaCheck /> Save
+                  </button>
+                  <button
+                    onClick={() => handleCancelEdit("fullName")}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded ml-2 focus:outline-none focus:shadow-outline text-sm"
+                  >
+                    <FaTimes /> Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+            <p className="text-gray-600 mt-1">{user?.fullName}</p>
           </div>
 
-          <div className="mb-2 flex items-center justify-between">
-            <div>
-              <FaEnvelope className="inline-block mr-2 text-gray-500" />
-              <strong>Email:</strong>
-            </div>
-            {editFields.email ? (
+          {/* Email Section */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <input
-                  type="email"
-                  name="email"
-                  value={updatedInfo.email}
-                  onChange={handleInputChange}
-                  className="border rounded px-2 py-1 ml-2 w-48"
-                />
-                <button
-                  onClick={() => handleSaveEdit("email")}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded ml-2 text-sm"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => handleCancelEdit("email")}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded ml-2 text-sm"
-                >
-                  Cancel
-                </button>
+                <FaEnvelope className="text-gray-500 mr-3" />
+                <label className="block text-gray-700 text-sm font-bold">
+                  Email
+                </label>
               </div>
-            ) : (
-              <div className="flex items-center">
-                <span>{user?.email || "N/A"}</span>
+              {!editFields.email ? (
                 <button
                   onClick={() => handleEditClick("email")}
-                  className="text-blue-500 hover:text-blue-700 ml-2 focus:outline-none"
+                  className="text-teal-500 hover:text-indigo-700 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  <FaPencilAlt className="inline-block" /> Change
+                  <FaPencilAlt className="inline-block mr-1" /> Edit
                 </button>
-              </div>
-            )}
+              ) : (
+                <div className="flex items-center">
+                  <input
+                    type="email"
+                    name="email"
+                    value={updatedInfo.email}
+                    onChange={handleInputChange}
+                    className="shadow appearance-none border rounded w-48 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ml-2"
+                  />
+                  <button
+                    onClick={() => handleSaveEdit("email")}
+                    className="bg-green-500  text-white font-bold py-1.5 px-2 rounded ml-2 focus:outline-none focus:shadow-outline text-sm"
+                  >
+                    <FaCheck /> Save
+                  </button>
+                  <button
+                    onClick={() => handleCancelEdit("email")}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded ml-2 focus:outline-none focus:shadow-outline text-sm"
+                  >
+                    <FaTimes /> Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+            <p className="text-gray-600 mt-1">{user?.email}</p>
           </div>
 
-          <div className="mb-2 flex items-center justify-between">
-            <div>
-              <FaPhone className="inline-block mr-2 text-gray-500" />
-              <strong>Phone:</strong>
-            </div>
-            {editFields.phone ? (
+          {/* Phone Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <input
-                  type="text"
-                  name="phone"
-                  value={updatedInfo.phone}
-                  onChange={handleInputChange}
-                  className="border rounded px-2 py-1 ml-2 w-48"
-                />
-                <button
-                  onClick={() => handleSaveEdit("phone")}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded ml-2 text-sm"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => handleCancelEdit("phone")}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded ml-2 text-sm"
-                >
-                  Cancel
-                </button>
+                <FaPhone className="text-gray-500 mr-3" />
+                <label className="block text-gray-700 text-sm font-bold">
+                  Phone Number
+                </label>
               </div>
-            ) : (
-              <div className="flex items-center">
-                <span>{user?.phone || "N/A"}</span>
+              {!editFields.phone ? (
                 <button
                   onClick={() => handleEditClick("phone")}
-                  className="text-blue-500 hover:text-blue-700 ml-2 focus:outline-none"
+                  className="text-teal-500 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  <FaPencilAlt className="inline-block" /> Change
+                  <FaPencilAlt className="inline-block mr-1" /> Edit
                 </button>
+              ) : (
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    name="phone"
+                    value={updatedInfo.phone}
+                    onChange={handleInputChange}
+                    className="shadow appearance-none border rounded w-48 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ml-2"
+                  />
+                  <button
+                    onClick={() => handleSaveEdit("phone")}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-3 rounded ml-2 focus:outline-none focus:shadow-outline text-sm"
+                  >
+                    <FaCheck /> Save
+                  </button>
+                  <button
+                    onClick={() => handleCancelEdit("phone")}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded ml-2 focus:outline-none focus:shadow-outline text-sm"
+                  >
+                    <FaTimes /> Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+            <p className="text-gray-600 mt-1">{user?.phone}</p>
+          </div>
+
+          {/* Password Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <label className="block text-gray-700 text-sm font-bold">
+                  Password
+                </label>
               </div>
-            )}
+              <Link
+                to="/change-pass"
+                className="inline-flex items-center bg-teal-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm transition duration-150 ease-in-out"
+              >
+                <FaPencilAlt className="mr-2" /> Change Password
+              </Link>
+            </div>
           </div>
 
-          {/* You can add similar logic for profileImageUrl if you implement direct editing here */}
-        </div>
-
-        {/* Change Password Form */}
-        <div className="bg-white shadow rounded-md p-6">
-          <h3 className="text-lg font-semibold mb-2">Change Password</h3>
-          <div className="mb-2">
-            <label
-              htmlFor="oldPassword"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Old Password:
+          {/* Profile Photo Selector (assuming you have this component) */}
+          {/* <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Profile Photo
             </label>
-            <input
-              type="password"
-              id="oldPassword"
-              name="oldPassword"
-              value={passwordForm.oldPassword}
-              onChange={handlePasswordChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-2">
-            <label
-              htmlFor="newPassword"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              New Password:
-            </label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              value={passwordForm.newPassword}
-              onChange={handlePasswordChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="confirmNewPassword"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Confirm New Password:
-            </label>
-            <input
-              type="password"
-              id="confirmNewPassword"
-              name="confirmNewPassword"
-              value={passwordForm.confirmNewPassword}
-              onChange={handlePasswordChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <button
-            onClick={handleUpdatePassword}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Change Password
-          </button>
+            <ProfilePhotoSelector />
+          </div> */}
         </div>
       </div>
     </div>

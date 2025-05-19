@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
 import Input from "../../components/layouts/inputs/input";
-import TextArea from "../../components/layouts/inputs/TextArea";
-import Select from "../../components/layouts/inputs/Select";
+import TextArea from "../../components/layouts/inputs/textArea";
+import Select from "../../components/layouts/inputs/select";
 
 const PostAd = () => {
   const Navigate = useNavigate();
