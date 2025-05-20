@@ -6,7 +6,6 @@ import axiosInstance from "../../utils/axiosInstance";
 import Header from "../../components/layouts/inputs/header";
 import { toast } from "react-toastify";
 import {
-  FaSave,
   FaTimesCircle,
   FaSpinner,
   FaPlusCircle,
