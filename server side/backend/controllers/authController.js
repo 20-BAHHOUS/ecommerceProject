@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import validateUserBody from "../validators/user.validator.js";
+import bcrypt from "bcryptjs";
 
 
 //Generate jwt token
@@ -35,17 +36,30 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ error: "All fields are required" });
   }
   try {
+    // Find user by email
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    
+    // If user doesn't exist, return error
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+    
+    // Compare password
+    const isPasswordValid = await user.comparePassword(password);
+    
+    // If password doesn't match, return error
+    if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
+    // If everything is valid, generate token and return user data
     res.status(200).json({
       _id: user._id,
       user,
       token: generateToken(user._id),
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
       message: error.message || "Error logging in user",
       error: error.message,
@@ -98,23 +112,34 @@ const updateUserPassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user.id;
 
+    // Validate input
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: "Old password and new password are required" });
+    }
+
+    // Check if new password meets minimum requirements
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: "New password must be at least 8 characters long" });
+    }
+
     const user = await User.findById(userId).select("+password"); // Select password to compare
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // Verify old password
     const isMatch = await user.comparePassword(oldPassword);
     if (!isMatch) {
       return res.status(400).json({ error: "Incorrect old password" });
     }
 
-    // Hash and update the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+    // Set the new password and save (this will trigger the pre-save middleware that hashes the password)
+    user.password = newPassword;
     await user.save();
-
+    
     res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
+    console.error("Password update error:", error);
     res.status(500).json({ message: "Error updating password", error: error.message });
   }
 };

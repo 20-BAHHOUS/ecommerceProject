@@ -33,8 +33,15 @@ axiosInstance.interceptors.response.use(
     // Handle common errors globelly
     if (error.response) {
       if (error.response.status === 401) {
-        // Redirect to home page
-        window.location.href = "/home";
+        // Don't redirect if we're on the login page
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/login" && currentPath !== "/signup") {
+          // Clear token if unauthorized
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          // Redirect to login page instead of home
+          window.location.href = "/login";
+        }
       } else if (error.response.status === 500) {
         console.error("Server error. Please try later.");
       }
