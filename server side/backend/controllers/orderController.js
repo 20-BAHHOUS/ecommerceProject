@@ -4,14 +4,51 @@ import Annonce from "../models/annonce.js";
 const placeOrder = async (req, res) => {
   try {
     const { annonceId } = req.body;
+
+    if (!annonceId) {
+      return res.status(400).json({ message: "Announcement ID is required." });
+    }
+
     const buyerId = req.user._id;
 
-    const annonce = await Annonce.findById(annonceId).populate("createdBy");
+    // Find the annonce to confirm it exists
+    const annonce = await Annonce.findById(annonceId);
     if (!annonce) {
       return res.status(404).json({ message: "Annonce not found." });
-    } 
+    }
 
-    const sellerId = annonce.createdBy._id;
+    // Check if createdBy field exists
+    if (!annonce.createdBy) {
+      return res.status(400).json({
+        message:
+          "Announcement has no seller information. This is likely because it was created before seller tracking was implemented.",
+        errorCode: "MISSING_SELLER",
+      });
+    }
+
+    // Use the createdBy field directly without population
+    const sellerId = annonce.createdBy;
+
+    // Prevent ordering your own announcement
+    if (sellerId.toString() === buyerId.toString()) {
+      return res.status(400).json({
+        message: "You cannot place an order on your own announcement.",
+        errorCode: "SELF_ORDER",
+      });
+    }
+
+    // Check if an order already exists for this annonce and buyer
+    const existingOrder = await Order.findOne({
+      annonce: annonceId,
+      buyer: buyerId,
+    });
+
+    if (existingOrder) {
+      return res.status(400).json({
+        message: "You have already placed an order for this announcement.",
+        errorCode: "DUPLICATE_ORDER",
+      });
+    }
 
     const newOrder = new Order({
       annonce: annonceId,
@@ -31,6 +68,22 @@ const placeOrder = async (req, res) => {
     res
       .status(500)
       .json({ message: "Could not place order.", error: error.message });
+  }
+};
+
+const getByUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const orders = await Order.find({ buyer: userId })
+      .populate("annonce", "title images")
+      .populate("seller", "fullName email");
+    res.status(200).json({ success: true, data: orders });
+  } catch (error) {
+    console.error("Error getting user orders:", error);
+    res.status(500).json({
+      message: "Could not retrieve order requests.",
+      error: error.message,
+    });
   }
 };
 
@@ -61,7 +114,6 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order request not found." });
     }
 
-   
     if (order.seller.toString() !== sellerId.toString()) {
       return res
         .status(403)
@@ -89,4 +141,4 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-export { placeOrder, getSellerOrders, updateOrderStatus };
+export { placeOrder, getSellerOrders, updateOrderStatus, getByUser };

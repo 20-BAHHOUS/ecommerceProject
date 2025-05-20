@@ -23,10 +23,16 @@ const AnnonceCard = ({ annonce }) => {
     return null;
   }
 
-  const displayImage =
-    annonce.images && annonce.images.length > 0
-      ? annonce.images[0]
-      : "/images/placeholder-image.jpg";
+  // Check if we have valid images array
+  const hasValidImages = annonce.images && 
+                          Array.isArray(annonce.images) && 
+                          annonce.images.length > 0 && 
+                          typeof annonce.images[0] === 'string';
+  
+  // Use a direct path to the placeholder image instead of applying parseImages to it
+  const imageSrc = hasValidImages 
+    ? parseImages(annonce.images[0]) 
+    : "/placeholder-image.png";
 
   const detailLink = annonce._id ? `/annonces/${annonce._id}` : "#";
 
@@ -38,10 +44,12 @@ const AnnonceCard = ({ annonce }) => {
       >
         <img
           className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-          src={parseImages(displayImage)}
+          src={imageSrc}
           alt={annonce.title || "Announcement image"}
           onError={(e) => {
+            // Prevent infinite error loop
             e.target.onerror = null;
+            // Use absolute path to placeholder
             e.target.src = "/placeholder-image.png";
           }}
           loading="lazy"

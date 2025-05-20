@@ -2,13 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-import AnnonceImages from "./annonceImages";
+import AnnonceImages from "../../components/layouts/inputs/annonceImages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
 import Input from "../../components/layouts/inputs/input";
 import TextArea from "../../components/layouts/inputs/TextArea";
-import Select from "../../components/layouts/inputs/Select";
+import Select from "../../components/layouts/inputs/select";
 
 const PostAd = () => {
   const Navigate = useNavigate();
@@ -132,8 +132,8 @@ const PostAd = () => {
             { value: "acceptable", label: "Acceptable" },
             { value: "not working", label: "Not working" },
           ]}
-          error={errors?.conditon?.message}
-          {...register("conditon", { required: true })}
+          error={errors?.condition?.message}
+          {...register("condition", { required: true })}
         />
         <AnnonceImages setValue={setValue} watch={watch} />
         <button

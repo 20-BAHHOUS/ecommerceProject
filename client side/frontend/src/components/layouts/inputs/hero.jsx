@@ -12,10 +12,14 @@ const Hero = () => {
   }, []);
 
   return (
-    <div data-aos="zoom-in" data-aos-delay="100" className="w-full lg:px-20 px-5 py-[80px]  justify-center  gap-10">
+    <div
+      data-aos="zoom-in"
+      data-aos-delay="100"
+      className="w-full lg:px-20 px-5 py-[80px]  justify-center  gap-10"
+    >
       <div
         className="relative flex items-center gap-6 bg-cover bg-center p-25 rounded-lg"
-        style={{ backgroundImage:  `url(${"/images/coverBaner.jpg"})` }}
+        style={{ backgroundImage: `url(${"/images/coverBaner.jpg"})` }}
       >
         <div className="p-9">
           <div className="absolute top-2 left-2 bg-white text-teal-700 text-xs font-semibold  px-2 py-2">

@@ -7,8 +7,13 @@ import API_PATHS from "../../utils/apiPaths";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginValidator } from "../../lib/validators/auth.validator";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  
   const {
     handleSubmit,
     register,
@@ -22,24 +27,36 @@ const Login = () => {
 
   // Handle Login form Submit
   async function onSubmit(data) {
+    setIsLoading(true);
+    setLoginError("");
+    
     try {
-      await axiosInstance.post(API_PATHS.AUTH.LOGIN, data).then((res) => {
-        if (res.status === 200) {
-          console.log(res.data);
-          const { token } = res.data;
-          if (token) {
-            localStorage.setItem("token", token);
-            Navigate("/home");
-          }
+      const res = await axiosInstance.post(API_PATHS.AUTH.LOGIN, data);
+      
+      if (res.status === 200) {
+        const { token, _id, user } = res.data;
+        if (token) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("userId", _id || (user && user._id));
+          toast.success("Login successful!");
+          Navigate("/home");
         }
-      });
+      }
     } catch (err) {
+      console.error("Error in login", err);
+      
       if (err?.response?.status === 400) {
         setError("email", { message: err.response.data.error });
       } else if (err?.response?.status === 401) {
-        setError("password", { message: "Invalid credentials" });
+        setError("password", { message: "Invalid email or password" });
+        setLoginError("Invalid email or password. Please try again.");
+      } else {
+        setLoginError("Login failed. Please try again later.");
       }
-      console.log("Error in login", err);
+      
+      toast.error(err.response?.data?.error || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -50,12 +67,18 @@ const Login = () => {
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <form
           className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-300 rounded-lg"
-          action=""
-          method="POST"
           onSubmit={handleSubmit(onSubmit)}
         >
           {/* title */}
           <h2 className="text-2xl font-semibold">Login</h2>
+          
+          {/* Error message */}
+          {loginError && (
+            <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {loginError}
+            </div>
+          )}
+          
           {/* inputs */}
           <div className="flex flex-col gap-4 h-full w-full">
             <Input
@@ -79,9 +102,12 @@ const Login = () => {
           <div className="w-full">
             <button
               type="submit"
-              className="w-full font-medium inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden"
+              disabled={isLoading}
+              className={`w-full font-medium inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              LOGIN
+              {isLoading ? "LOGGING IN..." : "LOGIN"}
             </button>
             <p className="text-sm text-slate-800 mt-2">
               Don't have an account?{" "}

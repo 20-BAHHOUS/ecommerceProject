@@ -21,7 +21,6 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
     setPreviewUrl(null);
   };
 
-
   return (
     <div className="flex justify-center mb-6 ">
       <input
