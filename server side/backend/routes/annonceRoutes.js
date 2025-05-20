@@ -18,8 +18,7 @@ router.post("/", protect, upload.array('images'), addAnnonce);
 router.get("/getByUser/:id", getUserAnnonces);
 router.get("/", getAllAnnonces);
 router.get("/:id", getAnnonceById);
-router.put("/:id", protect, updateAnnonceById);
-router.delete("/:id", protect, deleteAnnonceById);
 router.put("/:id", protect, upload.array('images'), updateAnnonceById);
+router.delete("/:id", protect, deleteAnnonceById);
 
 export default router;

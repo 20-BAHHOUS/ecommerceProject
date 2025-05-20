@@ -97,19 +97,67 @@ const deleteAnnonceById = async (req, res) => {
 //Update Annonce by id
 const updateAnnonceById = async (req, res) => {
   try {
+    // Check if the annonce exists and belongs to the user
     const annonce = await Annonce.findById(req.params.id);
     if (!annonce) {
-      return res.status(404).json({ error: "Annonce not found" });
+      return res.status(404).json({ 
+        success: false,
+        message: "Annonce not found" 
+      });
     }
+
+    // Check if user has permission to update this annonce
+    if (annonce.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ 
+        success: false,
+        message: "You are not authorized to update this annonce" 
+      });
+    }
+
+    // Prepare the update data
+    const updateData = { ...req.body };
+    
+    // Handle image updates
+    if (req.files && req.files.length > 0) {
+      // If there are new uploaded files
+      const newImagePaths = req.files.map(file => file.path);
+      
+      // Handle existing images if provided
+      if (req.body.existingImages) {
+        // Parse the JSON string of existing images to keep
+        const existingImages = JSON.parse(req.body.existingImages);
+        // Combine existing and new images
+        updateData.images = [...existingImages, ...newImagePaths];
+      } else {
+        // If no existing images specified, use only new uploads
+        updateData.images = newImagePaths;
+      }
+    } else if (req.body.existingImages) {
+      // If no new uploads but existing images are specified
+      updateData.images = JSON.parse(req.body.existingImages);
+    }
+    
+    // Remove unnecessary fields from updateData that were only needed for processing
+    delete updateData.existingImages;
+    delete updateData.removedImages;
+
+    // Update the annonce with the new data
     const updatedAnnonce = await Annonce.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true }
     );
-    res.status(200).json(updatedAnnonce);
+
+    res.status(200).json({
+      success: true,
+      data: updatedAnnonce
+    });
   } catch (error) {
+    console.error("Error updating annonce:", error);
     res.status(500).json({
+      success: false,
       message: "Error updating annonce",
+      error: error.message
     });
   }
 };

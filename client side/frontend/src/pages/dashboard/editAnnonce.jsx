@@ -31,6 +31,7 @@ const EditAnnonce = () => {
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [removedImages, setRemovedImages] = useState([]);
+  const [originalImagePaths, setOriginalImagePaths] = useState([]);
 
   useEffect(() => {
     const fetchAnnonce = async () => {
@@ -50,6 +51,7 @@ const EditAnnonce = () => {
           type: fetchedAnnonce.type || "",
         });
 
+        setOriginalImagePaths(fetchedAnnonce.images);
         setExistingImages(fetchedAnnonce.images.map((img) => parseImages(img)));
       } catch (err) {
         console.error("Error fetching annonce for editing:", err);
@@ -93,7 +95,14 @@ const EditAnnonce = () => {
 
   const handleRemoveExistingImage = (imageToRemoveUrl) => {
     const filename = imageToRemoveUrl.split("/").pop();
-    setRemovedImages((prev) => [...prev, filename]);
+    const originalPath = originalImagePaths.find((path) =>
+      path.includes(filename)
+    );
+
+    if (originalPath) {
+      setRemovedImages((prev) => [...prev, originalPath]);
+    }
+
     setExistingImages((prev) => prev.filter((img) => img !== imageToRemoveUrl));
   };
 
@@ -115,11 +124,33 @@ const EditAnnonce = () => {
       dataToSend.append("images", file);
     });
 
+    const keptImagePaths = originalImagePaths.filter(
+      (path) => !removedImages.includes(path)
+    );
+    dataToSend.append("existingImages", JSON.stringify(keptImagePaths));
+
     if (removedImages.length > 0) {
       dataToSend.append("removedImages", JSON.stringify(removedImages));
     }
 
     try {
+      const response = await axiosInstance.put(
+        API_PATHS.ANNONCE.ANNONCE_BY_ID(id),
+        dataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data && response.data.success) {
+        toast.success("Announcement updated successfully!");
+        navigate(`/userannonces`);
+      } else {
+        toast.error("Something went wrong while updating the announcement.");
+        console.log("Response:", response.data);
+      }
       await axiosInstance.put(API_PATHS.ANNONCE.ANNONCE_BY_ID(id), dataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -173,7 +204,7 @@ const EditAnnonce = () => {
           </h2>
           <p className="text-lg text-gray-700 mb-6">{error}</p>
           <button
-            onClick={() => navigate("/my-annonces")}
+            onClick={() => navigate("/userannonces")}
             className="px-8 py-3 bg-red-600 text-white font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200"
           >
             Go Back
@@ -454,7 +485,7 @@ const EditAnnonce = () => {
                 onClick={() => navigate(-1)}
                 className="flex items-center px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200"
               >
-               Cancel
+                Cancel
               </button>
               <button
                 type="submit"
