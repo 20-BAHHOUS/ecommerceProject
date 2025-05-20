@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-import AnnonceImages from "./annonceImages";
+import AnnonceImages from "../../components/layouts/inputs/annonceImages";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";

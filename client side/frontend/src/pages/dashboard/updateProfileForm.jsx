@@ -127,7 +127,7 @@ const UpdateProfileForm = () => {
               {!editFields.fullName ? (
                 <button
                   onClick={() => handleEditClick("fullName")}
-                  className="text-teal-500 hover:text-indigo-700 focus:outline-none transition duration-150 ease-in-out"
+                  className="text-teal-500 focus:outline-none transition duration-150 ease-in-out"
                 >
                   <FaPencilAlt className="inline-block mr-1" /> Edit
                 </button>

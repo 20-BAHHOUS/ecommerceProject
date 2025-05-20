@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupValidator } from "../../lib/validators/auth.validator";
 
-
 const SignUp = () => {
   const {
     handleSubmit,
@@ -87,7 +86,6 @@ const SignUp = () => {
           <div className="w-full">
             <button
               type="submit"
-
               className="w-full py-3 font-medium text-white rounded-lg inline-block  bg-teal-600 px-8  text-sm transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden
               "
             >

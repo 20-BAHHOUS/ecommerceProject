@@ -42,7 +42,7 @@ export const parseImages = (filename) => {
     imagePathCache.set(filename, imageUrl);
     
     return imageUrl;
-  } catch (error) {
+  } catch {
     // In case of any errors, return placeholder
     return '/placeholder-image.png';
   }

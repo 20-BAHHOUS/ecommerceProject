@@ -20,5 +20,6 @@ router.get("/", getAllAnnonces);
 router.get("/:id", getAnnonceById);
 router.put("/:id", protect, updateAnnonceById);
 router.delete("/:id", protect, deleteAnnonceById);
+router.put("/:id", protect, upload.array('images'), updateAnnonceById);
 
 export default router;
