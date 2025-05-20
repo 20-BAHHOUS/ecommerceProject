@@ -127,7 +127,7 @@ const EditAnnonce = () => {
         },
       });
       toast.success("Announcement updated successfully!");
-      navigate(`/my-annonces`);
+      navigate(`/userannonces`);
     } catch (err) {
       console.error("Error updating annonce:", err);
       if (err.response) {
