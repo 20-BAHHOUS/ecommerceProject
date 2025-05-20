@@ -12,7 +12,7 @@ import {
   FaTrash,
   FaEdit,
 } from "react-icons/fa";
-import { parseImages } from "../../utils/parseImages"; // Import the utility to convert paths to URLs
+import { parseImages } from "../../utils/parseImages"; 
 
 const EditAnnonce = () => {
   const { id } = useParams();
