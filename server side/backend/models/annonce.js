@@ -24,7 +24,6 @@ const annonceSchema = new mongoose.Schema(
       enum: ["sale", "trade", "wanted", "rent"],
       required: true,
     },
-    location: { type: String, required: true },
     condition: {
       type: String,
       enum: {

@@ -11,6 +11,5 @@ export const CreateAnnonceValidator = z.object({
   category: z.string().min(1, { message: "Category is required" }),
   subcategory: z.string().min(1, { message: "Subcategory is required" }),
   type: z.string().min(1, { message: "Type is required" }),
-  location: z.string(),
   condition: z.string(),
 });

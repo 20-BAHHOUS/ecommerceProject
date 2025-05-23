@@ -9,11 +9,11 @@ const validateAnnonceBody = async(body) => {
         category: joi.string().required(),
         conditon: joi.string(),
         type: joi.string().required(),
-        location: joi.string().required(),
         images : joi.array(),
     }).validate(body);
     if (error) {
         throw new Error(error.details[0].message,400);
     }
 };
+
 export default validateAnnonceBody;

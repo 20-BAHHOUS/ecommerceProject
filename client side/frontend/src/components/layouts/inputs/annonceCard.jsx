@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { FaMapMarkerAlt, FaImage } from "react-icons/fa";
+import { FaMapMarkerAlt, FaImage, FaTag } from "react-icons/fa";
 import { parseImages, markImageAsFailed } from "../../../utils/parseImages";
 
 const formatPrice = (price) => {
@@ -61,15 +61,22 @@ const AnnonceCard = ({ annonce }) => {
       </Link>
 
       <div className="p-4 flex flex-col flex-grow">
-        {annonce.category && (
-          <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full mb-2 self-start capitalize">
-            {annonce.category}
-          </span>
-        )}
+        <div className="flex justify-between items-start mb-2">
+          {annonce.category && (
+            <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full capitalize">
+              {annonce.category}
+            </span>
+          )}
+          {annonce.type && (
+            <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full capitalize">
+              {annonce.type}
+            </span>
+          )}
+        </div>
 
         <Link to={detailLink} className="block mb-2">
           <h3
-            className="text-md font-semibold text-gray-800 hover:text-indigo-600 line-clamp-2"
+            className="text-lg font-semibold text-gray-800 hover:text-indigo-600 line-clamp-2"
             title={annonce.title}
           >
             {annonce.title || "Untitled Announcement"}
@@ -77,20 +84,22 @@ const AnnonceCard = ({ annonce }) => {
         </Link>
 
         <div className="mt-auto pt-2">
-          <p className="text-lg font-bold text-indigo-600 mb-2">
-            {formatPrice(annonce.price)}
-          </p>
-          {annonce.location && (
-            <div className="flex items-center text-sm text-gray-500">
-              <FaMapMarkerAlt
-                className="mr-1.5 text-gray-400 flex-shrink-0"
-                size="0.85em"
-              />
-              <span className="truncate" title={annonce.location}>
-                {annonce.location}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xl font-bold text-indigo-600">
+              {formatPrice(annonce.price)}
+            </p>
+            {annonce.location && (
+              <div className="flex items-center text-sm text-gray-500">
+                <FaMapMarkerAlt
+                  className="mr-1.5 text-gray-400 flex-shrink-0"
+                  size="0.85em"
+                />
+                <span className="truncate" title={annonce.location}>
+                  {annonce.location}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -103,6 +112,7 @@ AnnonceCard.propTypes = {
     title: PropTypes.string.isRequired,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     category: PropTypes.string,
+    type: PropTypes.string,
     location: PropTypes.string,
     images: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,

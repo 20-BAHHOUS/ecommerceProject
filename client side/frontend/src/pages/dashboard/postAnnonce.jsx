@@ -33,7 +33,6 @@ const PostAd = () => {
       category: "",
       subcategory: "",
       type: "",
-      location: "",
       condition: "",
     },
   });
@@ -146,12 +145,6 @@ const PostAd = () => {
           placeholder="ex : 1000"
           error={errors?.price?.message}
           {...register("price", { required: true, valueAsNumber: true })}
-        />
-        <Input
-          label="Location"
-          placeholder="ex : Oran, Algeria"
-          error={errors?.location?.message}
-          {...register("location", { required: true })}
         />
         <Select
           label="Category"
