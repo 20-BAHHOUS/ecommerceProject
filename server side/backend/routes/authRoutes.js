@@ -17,13 +17,11 @@ router.post("/getuser", protect, getUserInfo);
 router.put("/profile", protect, updateUserProfile);
 router.put("/password", protect, updateUserPassword);
 
-router.post("upload-image", upload.single("image"), (req, res) => {
+router.post("/upload-image", protect, upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
-  const imageUrl =
-    '${req.protocol}://${req.get("host")}/uploads/${req.file.filename}';
-
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/profile/${req.file.filename}`;
   res.status(200).json({ imageUrl });
 });
 

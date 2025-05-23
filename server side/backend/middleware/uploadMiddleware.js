@@ -1,16 +1,30 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+
+// Create upload directories if they don't exist
+const createUploadDirs = () => {
+  const dirs = ['./uploads', './uploads/annonces', './uploads/profile'];
+  dirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+};
+
+createUploadDirs();
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads/annonces/"); // Destination folder for uploaded files
+    // Choose destination based on route
+    const isProfileUpload = req.path.includes('upload-image');
+    const uploadPath = isProfileUpload ? "./uploads/profile/" : "./uploads/annonces/";
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9); // Generate a unique suffix
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)); // Append the original file extension 
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
   },
 });
 
@@ -26,7 +40,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 1024 * 1024 * 5 },  // Limit file size to 5MB
+  limits: { fileSize: 1024 * 1024 * 5 }, // Limit file size to 5MB
 });
 
 export default upload;

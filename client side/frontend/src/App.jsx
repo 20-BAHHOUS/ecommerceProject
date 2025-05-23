@@ -16,6 +16,7 @@ import ProfilePage from "./pages/dashboard/ProfilePage";
 import EditAnnonce from "./pages/dashboard/editAnnonce";
 import ChangePassword from "./components/layouts/inputs/changePassowd";
 import UserOrdersPage from "./pages/dashboard/oredersPage";
+import SoldItems from "./pages/dashboard/SoldItems";
 const App = () => {
   return (
     <div>
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/edit-annonce/:id" exact element={<EditAnnonce />} />
           <Route path="/change-pass" exact element={<ChangePassword/>} />
           <Route path="/user-orders" exact element={<UserOrdersPage />} />
+          <Route path="/sold-items" exact element={<SoldItems />} />
         </Routes>
       </Router>
     </div>

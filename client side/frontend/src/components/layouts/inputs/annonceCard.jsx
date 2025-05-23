@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { parseImages } from "../../../utils/parseImages";
+import { FaMapMarkerAlt, FaImage } from "react-icons/fa";
+import { parseImages, markImageAsFailed } from "../../../utils/parseImages";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -25,14 +25,9 @@ const AnnonceCard = ({ annonce }) => {
 
   // Check if we have valid images array
   const hasValidImages = annonce.images && 
-                          Array.isArray(annonce.images) && 
-                          annonce.images.length > 0 && 
-                          typeof annonce.images[0] === 'string';
-  
-  // Use a direct path to the placeholder image instead of applying parseImages to it
-  const imageSrc = hasValidImages 
-    ? parseImages(annonce.images[0]) 
-    : "/placeholder-image.png";
+                        Array.isArray(annonce.images) && 
+                        annonce.images.length > 0 && 
+                        typeof annonce.images[0] === 'string';
 
   const detailLink = annonce._id ? `/annonces/${annonce._id}` : "#";
 
@@ -42,18 +37,27 @@ const AnnonceCard = ({ annonce }) => {
         to={detailLink}
         className="block relative h-48 w-full overflow-hidden group"
       >
-        <img
-          className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-          src={imageSrc}
-          alt={annonce.title || "Announcement image"}
-          onError={(e) => {
-            // Prevent infinite error loop
-            e.target.onerror = null;
-            // Use absolute path to placeholder
-            e.target.src = "/placeholder-image.png";
-          }}
-          loading="lazy"
-        />
+        {!hasValidImages ? (
+          <div className="h-full w-full flex items-center justify-center bg-gray-100">
+            <FaImage className="text-4xl text-gray-400" />
+          </div>
+        ) : (
+          <img
+            className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+            src={parseImages(annonce.images[0])}
+            alt={annonce.title || "Announcement image"}
+            onError={(e) => {
+              // Prevent infinite error loop
+              e.target.onerror = null;
+              // Mark this image as failed to prevent future attempts
+              markImageAsFailed(annonce.images[0]);
+              // Replace with placeholder div
+              e.target.parentElement.innerHTML = '<div class="h-full w-full flex items-center justify-center bg-gray-100"><svg class="text-4xl text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H4z"/><path d="M18 18H6v-4l3-3 2 2 6-6"/><circle cx="8" cy="9" r="2"/></svg></div>';
+            }}
+            loading="lazy"
+          />
+        )}
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300" />
       </Link>
 
       <div className="p-4 flex flex-col flex-grow">
@@ -65,7 +69,7 @@ const AnnonceCard = ({ annonce }) => {
 
         <Link to={detailLink} className="block mb-2">
           <h3
-            className="text-md font-semibold text-gray-800 hover:text-i-600 line-clamp-2" // Limit title to 2 lines
+            className="text-md font-semibold text-gray-800 hover:text-indigo-600 line-clamp-2"
             title={annonce.title}
           >
             {annonce.title || "Untitled Announcement"}

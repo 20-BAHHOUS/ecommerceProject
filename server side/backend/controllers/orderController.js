@@ -1,5 +1,6 @@
 import Order from "../models/order.js";
 import Annonce from "../models/annonce.js";
+import { createNotification } from "../controllers/notificationController.js";
 
 const placeOrder = async (req, res) => {
   try {
@@ -58,6 +59,19 @@ const placeOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
+    // Create notification for seller
+    await createNotification({
+      recipient: sellerId,
+      type: "ORDER_REQUEST",
+      message: `New order request received for your announcement: ${annonce.title}`,
+      relatedOrder: savedOrder._id,
+      metadata: {
+        annonceId: annonceId,
+        annonceTitle: annonce.title,
+        buyerId: buyerId,
+      },
+    });
+
     res.status(201).json({
       success: true,
       data: savedOrder,
@@ -65,7 +79,7 @@ const placeOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("Error placing order:", error);
-    res.status(500).json({ message: "Could not place order.", error: error.message });
+    res.status(500).json({ message: "Error placing order" });
   }
 };
 
@@ -105,37 +119,39 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
-    const sellerId = req.user._id;
+    const userId = req.user._id;
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate("annonce");
+    
     if (!order) {
-      return res.status(404).json({ message: "Order request not found." });
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    if (order.seller.toString() !== sellerId.toString()) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this order." });
-    }
-
-    if (!["accepted", "rejected"].includes(status)) {
-      return res.status(400).json({ message: "Invalid order status." });
+    // Verify the user is the seller
+    if (order.seller.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Not authorized to update this order" });
     }
 
     order.status = status;
-    const updatedOrder = await order.save();
+    await order.save();
 
-    res.status(200).json({
-      success: true,
-      data: updatedOrder,
-      message: `Order ${status} successfully.`,
+    // Create notification for buyer
+    await createNotification({
+      recipient: order.buyer,
+      type: "ORDER_STATUS_CHANGE",
+      message: `Your order for "${order.annonce.title}" has been ${status}`,
+      relatedOrder: order._id,
+      metadata: {
+        annonceId: order.annonce._id,
+        annonceTitle: order.annonce.title,
+        newStatus: status,
+      },
     });
+
+    res.json({ success: true, order });
   } catch (error) {
     console.error("Error updating order status:", error);
-    res.status(500).json({
-      message: "Could not update order status.",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Error updating order status" });
   }
 };
 

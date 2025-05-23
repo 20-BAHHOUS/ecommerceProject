@@ -18,7 +18,7 @@ export const API_PATHS = {
     GET_ANNONCES_BY_USER: (userId) => `/annonce/getByUser/${userId}`,
   },
   IMAGE: {
-    UPLOAD_IMAGE: "/image/upload",
+    UPLOAD_IMAGE: "/auth/upload-image",
   },
   ORDER: {
     PLACE_ORDER: "/orders",
@@ -26,6 +26,13 @@ export const API_PATHS = {
     GET_ORDERS_BY_BUYER: "/orders/user",
     UPDATE_ORDER_STATUS: (orderId) => `/orders/${orderId}/status`,
     DELETE_ORDER: (orderId) => `/orders/${orderId}`,
+  },
+  NOTIFICATIONS: {
+    GET_NOTIFICATIONS: "/notifications",
+    MARK_AS_READ: (notificationId) => `/notifications/${notificationId}/read`,
+    MARK_ALL_AS_READ: "/notifications/mark-all-read",
+    DELETE_NOTIFICATION: (notificationId) => `/notifications/${notificationId}`,
+    GET_UNREAD_COUNT: "/notifications/unread-count",
   },
 };
 
