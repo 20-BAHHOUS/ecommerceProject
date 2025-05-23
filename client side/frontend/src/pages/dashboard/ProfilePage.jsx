@@ -35,6 +35,7 @@ const ProfilePage = () => {
     email: "",
     phone: "",
     profileImageUrl: "",
+    location: "",
   });
 
   useEffect(() => {
@@ -51,6 +52,7 @@ const ProfilePage = () => {
           email: userResponse.data.email || "",
           phone: userResponse.data.phone || "",
           profileImageUrl: userResponse.data.profileImageUrl || "",
+          location: userResponse.data.location || "",
         });
 
         const annoncesResponse = await axiosInstance.get(
@@ -149,6 +151,7 @@ const ProfilePage = () => {
         email: user?.email || "",
         phone: user?.phone || "",
         profileImageUrl: user?.profileImageUrl || "",
+        location: user?.location || "",
       });
     }
   };
@@ -391,6 +394,25 @@ const ProfilePage = () => {
                   ) : (
                     <p className="text-gray-900 font-medium text-lg py-3">
                       {user?.phone || "Not provided"}
+                    </p>
+                  )}
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="block text-sm font-medium text-gray-600">
+                    Location
+                  </label>
+                  {isEditingPersonal ? (
+                    <input
+                      type="text"
+                      name="location"
+                      value={updatedInfo.location}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                      placeholder="Enter your location"
+                    />
+                  ) : (
+                    <p className="text-gray-900 font-medium text-lg py-3">
+                      {user?.location || "Not provided"}
                     </p>
                   )}
                 </div>

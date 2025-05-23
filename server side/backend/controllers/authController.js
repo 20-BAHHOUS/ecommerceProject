@@ -87,12 +87,12 @@ const getUserInfo = async (req, res) => {
   // Update user profile information
 const updateUserProfile = async (req, res) => {
   try {
-    const { fullName, email, phone, profileImageUrl } = req.body;
+    const { fullName, email, phone, profileImageUrl, location } = req.body;
     const userId = req.user.id;
 
     const user = await User.findByIdAndUpdate(
       userId,
-      { fullName, email, phone, profileImageUrl },
+      { fullName, email, phone, profileImageUrl, location },
       { new: true, runValidators: true }
     ).select("-password");
 

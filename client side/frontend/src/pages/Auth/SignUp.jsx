@@ -83,6 +83,14 @@ const SignUp = () => {
               error={errors.phone?.message}
               {...register("phone")}
             />
+
+            <Input
+              type="text"
+              placeholder="your location"
+              label="Location"
+              error={errors.location?.message}
+              {...register("location")}
+            />
           </div>
           {/* submit button */}
           <div className="w-full">

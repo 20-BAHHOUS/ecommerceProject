@@ -9,6 +9,7 @@ export const SignupValidator = z.object({
     .regex(/^\d+$/, { message: "Phone must contain only digits" })
     .min(10, { message: "Phone number must be exactly 10 digits" })
     .max(10, { message: "Phone number must be exactly 10 digits" }),
+  location: z.string().optional(),
 }); 
 
 export const LoginValidator = z.object({
