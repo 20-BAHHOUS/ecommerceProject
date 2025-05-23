@@ -12,6 +12,15 @@ export const API_PATHS = {
   HOME: {
     GET_DATA: "/home",
   },
+  CATEGORIES: {
+    GET_ALL: "/categories",
+    GET_BY_ID: (id) => `/categories/${id}`,
+    GET_ANNOUNCEMENTS: (category, subcategory) => 
+      subcategory 
+        ? `/categories/${category}/${subcategory}/announcements`
+        : `/categories/${category}/announcements`,
+    GET_STATS: "/categories/stats/counts"
+  },
   ANNONCE: {
     ADD_GET_ANNONCE: "/annonce",
     ANNONCE_BY_ID: (annonceId) => `/annonce/${annonceId}`,

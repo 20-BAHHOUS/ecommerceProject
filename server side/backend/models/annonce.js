@@ -10,16 +10,14 @@ const annonceSchema = new mongoose.Schema(
     },
     images: { type: [String] },
     category: {
-      type: String,
-      enum: [
-        "electronic",
-        "clothing",
-        "toys & games",
-        "sports & outdoors",
-        "arts & crafts",
-        "phones & accessories",
-      ],
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true
+    },
+    subcategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subcategory',
+      required: true
     },
     type: {
       type: String,
@@ -44,6 +42,10 @@ const annonceSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Index for efficient category and subcategory queries
+annonceSchema.index({ category: 1, subcategory: 1 });
+annonceSchema.index({ createdAt: -1 });
 
 const Annonce = mongoose.model("Annonce", annonceSchema);
 export default Annonce;

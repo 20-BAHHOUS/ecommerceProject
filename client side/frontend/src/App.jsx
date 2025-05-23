@@ -17,6 +17,8 @@ import EditAnnonce from "./pages/dashboard/editAnnonce";
 import ChangePassword from "./components/layouts/inputs/changePassowd";
 import UserOrdersPage from "./pages/dashboard/oredersPage";
 import SoldItems from "./pages/dashboard/SoldItems";
+import CategoryListings from "./pages/CategoryListings";
+
 const App = () => {
   return (
     <div>
@@ -35,6 +37,10 @@ const App = () => {
           <Route path="/change-pass" exact element={<ChangePassword/>} />
           <Route path="/user-orders" exact element={<UserOrdersPage />} />
           <Route path="/sold-items" exact element={<SoldItems />} />
+          
+          {/* Category Routes */}
+          <Route path="/category/:category" element={<CategoryListings />} />
+          <Route path="/category/:category/:subcategory" element={<CategoryListings />} />
         </Routes>
       </Router>
     </div>
