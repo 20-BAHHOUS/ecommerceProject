@@ -27,7 +27,7 @@ const ChangePassword = () => {
     
     const { oldPassword, newPassword, confirmNewPassword } = passwordForm;
     
-    // Clear previous error
+   
     setError("");
     
     // Validate form

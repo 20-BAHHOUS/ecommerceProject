@@ -83,16 +83,22 @@ const AnnonceDetail = () => {
 
     try {
       const response = await axiosInstance.post(
-        API_PATHS.ORDER.ADD_GET_ORDER,
+        API_PATHS.ORDER.PLACE_ORDER,
         { annonceId: annonceId }
       );
       toast.success(response.data.message);
+      // Redirect to orders page after successful order placement
+      window.location.href = "/user-orders";
     } catch (error) {
-      // Show error message to the user
-      if (error.response?.data?.message) {
+      // Handle specific error cases
+      if (error.response?.data?.errorCode === "SELF_ORDER") {
+        toast.error("You cannot place an order on your own announcement");
+      } else if (error.response?.data?.errorCode === "DUPLICATE_ORDER") {
+        toast.error("You have already placed an order for this announcement");
+      } else if (error.response?.data?.errorCode === "MISSING_SELLER") {
+        toast.error("This announcement cannot be ordered at this time");
+      } else if (error.response?.data?.message) {
         toast.error(error.response.data.message);
-      } else if (error.response?.data?.error) {
-        toast.error(error.response.data.error);
       } else {
         toast.error("Could not place order. Please try again later.");
       }

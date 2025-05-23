@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { FaCamera } from "react-icons/fa";
 
 const AnnonceImages = ({ setValue, watch }) => {
-  //External states
   const images = watch("images");
 
-  //local states
   const [displayImages, setDisplayImages] = useState([]);
 
-  //Effects
   useEffect(() => {
     setDisplayImages(images.map((image) => URL.createObjectURL(image)));
   }, [images]);

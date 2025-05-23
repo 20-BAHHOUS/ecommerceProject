@@ -8,6 +8,7 @@ import API_PATHS from "../../utils/apiPaths";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupValidator } from "../../lib/validators/auth.validator";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const {
@@ -26,6 +27,7 @@ const SignUp = () => {
     try {
       await axiosInstance.post(API_PATHS.AUTH.REGISTER, data).then((res) => {
         if (res.status === 200) {
+          toast.success("sign Up successful!");
           Navigate("/login");
         }
       });

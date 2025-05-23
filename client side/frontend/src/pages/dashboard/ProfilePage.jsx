@@ -98,7 +98,7 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-100">
-        <FaSpinner className="animate-spin text-5xl text-blue-600" />
+        <FaSpinner className="animate-spin text-5xl text-teal-600" />
       </div>
     );
   }
@@ -176,12 +176,7 @@ const ProfilePage = () => {
                       </span>
                     </Link>
                   </li>
-                  {/* Add more settings links here */}
-                  {/* <li>
-                    <Link to="/settings/privacy" className="w-full flex items-center justify-between text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-md hover:bg-gray-50 transition duration-200 ease-in-out">
-                      <span><FaShieldAlt className="inline mr-2" /> Privacy Settings</span>
-                    </Link>
-                  </li> */}
+                
                 </ul>
               </div>
             </div>

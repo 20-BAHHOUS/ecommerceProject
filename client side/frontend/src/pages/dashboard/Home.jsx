@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
@@ -19,7 +20,7 @@ const Home = () => {
     const fetchAnnonces = async () => {
       setLoading(true);
       setError(null);
-      // Fetch annonces from the server
+     
       try {
         console.log(
           "Fetching annonces from relative path:",

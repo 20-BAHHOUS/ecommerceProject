@@ -9,6 +9,7 @@ import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
 import Input from "../../components/layouts/inputs/input";
 import TextArea from "../../components/layouts/inputs/TextArea";
 import Select from "../../components/layouts/inputs/select";
+import { toast } from "react-toastify";
 
 const PostAd = () => {
   const Navigate = useNavigate();
@@ -54,6 +55,7 @@ const PostAd = () => {
         }
       );
       if (response.data.success) {
+        toast.success("posting announce successful!");
         Navigate("/home");
       } else {
         console.error("Error creating annonce", response.data.message);
