@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
@@ -13,6 +13,10 @@ import { toast } from "react-toastify";
 
 const PostAd = () => {
   const Navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   const {
     handleSubmit,
     register,
@@ -27,41 +31,92 @@ const PostAd = () => {
       price: 0,
       images: [],
       category: "",
+      subcategory: "",
       type: "",
       location: "",
       condition: "",
     },
   });
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get(API_PATHS.CATEGORIES.GET_ALL);
+        if (response.data.success) {
+          setCategories(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to load categories");
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Update subcategories when category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      const category = categories.find(cat => cat._id === selectedCategory);
+      if (category && category.subcategories) {
+        setSubcategories(category.subcategories);
+        // Reset subcategory selection when category changes
+        setValue("subcategory", "");
+      }
+    } else {
+      setSubcategories([]);
+    }
+  }, [selectedCategory, categories, setValue]);
+
+  // Handle category change
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
+    setValue("category", categoryId);
+  };
+
   async function onSubmit(data) {
     try {
-      const formaData = new FormData();
+      // Validate that both category and subcategory are selected
+      if (!data.category || !data.subcategory) {
+        toast.error("Please select both a category and subcategory");
+        return;
+      }
+
+      const formData = new FormData();
 
       data.images.forEach((image) => {
-        formaData.append("images", image);
+        formData.append("images", image);
       });
+      
       Object.keys(data).forEach((key) => {
-        if (key != "image") {
-          formaData.append(key, data[key]);
+        if (key !== "images") {
+          formData.append(key, data[key]);
         }
       });
 
       const response = await axiosInstance.post(
         API_PATHS.ANNONCE.ADD_GET_ANNONCE,
-        formaData,
+        formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
       );
+      
       if (response.data.success) {
-        toast.success("posting announce successful!");
+        toast.success("Posting announce successful!");
         Navigate("/home");
       } else {
-        console.error("Error creating annonce", response.data.message);
+        toast.error(response.data.message || "Error creating announcement");
       }
     } catch (error) {
-      console.error("Error creating annonce:", error.response?.data?.message || error.message);
+      console.error("Error creating annonce:", error);
+      const errorMessage = error.response?.data?.errors?.subcategory || 
+                         error.response?.data?.message || 
+                         "Error creating announcement";
+      toast.error(errorMessage);
     }
   }
 
@@ -99,6 +154,30 @@ const PostAd = () => {
           {...register("location", { required: true })}
         />
         <Select
+          label="Category"
+          defaultOption="Select annonce category"
+          options={categories.map(cat => ({
+            value: cat._id,
+            label: cat.name
+          }))}
+          error={errors?.category?.message}
+          {...register("category", { 
+            required: true,
+            onChange: handleCategoryChange
+          })}
+        />
+        <Select
+          label="Subcategory"
+          defaultOption="Select subcategory"
+          options={subcategories.map(sub => ({
+            value: sub._id,
+            label: sub.name
+          }))}
+          error={errors?.subcategory?.message}
+          disabled={!selectedCategory}
+          {...register("subcategory", { required: true })}
+        />
+        <Select
           label="Type"
           defaultOption="Select annonce type"
           options={[
@@ -109,20 +188,6 @@ const PostAd = () => {
           ]}
           error={errors?.type?.message}
           {...register("type", { required: true })}
-        />
-        <Select
-          label="Category"
-          defaultOption="Select annonce category"
-          options={[
-            { value: "electronic", label: "Electronic" },
-            { value: "clothing", label: "Clothing" },
-            { value: "toys & games", label: "Toys & Games" },
-            { value: "sports & outdoors", label: "Sports & Outdoors" },
-            { value: "arts & crafts", label: "Arts & Crafts" },
-            { value: "phones & accessories", label: "Phones & Accessories" },
-          ]}
-          error={errors?.category?.message}
-          {...register("category", { required: true })}
         />
         <Select
           label="Condition"
