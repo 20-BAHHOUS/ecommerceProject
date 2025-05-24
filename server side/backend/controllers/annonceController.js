@@ -63,8 +63,11 @@ const getAllAnnonces = async (req, res) => {
 //Get annonce by id
 const getAnnonceById = async (req, res) => {
   try {
-    // Find the annonce and populate createdBy field
-    const annonce = await Annonce.findById(req.params.id).populate("createdBy", "_id fullName");
+    // Find the annonce and populate necessary fields
+    const annonce = await Annonce.findById(req.params.id)
+      .populate("createdBy", "_id fullName")
+      .populate("category", "name")
+      .populate("subcategory", "name");
     
     if (!annonce) {
       return res.status(404).json({ error: "Annonce not found" });

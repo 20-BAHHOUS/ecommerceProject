@@ -9,13 +9,19 @@ import {
   FaBoxOpen,
   FaSpinner,
   FaExclamationTriangle,
-  FaChevronLeft, // Added for image navigation
-  FaChevronRight, // Added for image navigation
+  FaChevronLeft,
+  FaChevronRight,
+  FaHeart,
+  FaClock,
+  FaUser,
+  FaShoppingCart,
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
 import { parseImages } from "../../utils/parseImages";
 import { toast } from "react-toastify";
+import moment from 'moment';
+import Header from "../../components/layouts/inputs/header";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -34,6 +40,8 @@ const AnnonceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isOrderLoading, setIsOrderLoading] = useState(false);
 
   useEffect(() => {
     if (!annonceId) {
@@ -81,6 +89,7 @@ const AnnonceDetail = () => {
       return;
     }
 
+    setIsOrderLoading(true);
     try {
       const response = await axiosInstance.post(
         API_PATHS.ORDER.PLACE_ORDER,
@@ -102,6 +111,8 @@ const AnnonceDetail = () => {
       } else {
         toast.error("Could not place order. Please try again later.");
       }
+    } finally {
+      setIsOrderLoading(false);
     }
   };
 
@@ -138,42 +149,6 @@ const AnnonceDetail = () => {
     };
   }, [annonce, currentImageIndex]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-gray-600">
-        <FaSpinner className="animate-spin text-4xl mb-4 text-indigo-500" />
-        <p className="text-lg">Loading announcement details...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-red-600 p-4 text-center">
-        <FaExclamationTriangle className="text-5xl mb-4" />
-        <p className="text-xl font-semibold mb-2">
-          Oops! Something went wrong.
-        </p>
-        <p className="mb-4">{error}</p>
-        <Link to="/" className="text-indigo-600 hover:underline">
-          Go back to Home
-        </Link>
-      </div>
-    );
-  }
-
-  if (!annonce) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-gray-500">
-        <FaExclamationTriangle className="text-5xl mb-4" />
-        <p className="text-xl">Announcement not found.</p>
-        <Link to="/" className="mt-4 text-indigo-600 hover:underline">
-          Go back to Home
-        </Link>
-      </div>
-    );
-  }
-
   const handleNextImage = () => {
     if (imagesArray.length > 1) {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imagesArray.length);
@@ -186,96 +161,237 @@ const AnnonceDetail = () => {
     }
   };
 
-  return (
-    <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden my-10 border border-gray-200">
-      <div className="md:flex">
-        {/* Image Section */}
-        <div className="md:w-1/2 relative bg-gray-100 flex items-center justify-center">
-          <img
-            className="h-96 w-full object-contain md:h-full rounded-l-xl" // object-contain ensures image fits without cropping
-            src={displayImage}
-            alt={annonce.title || "Announcement image"}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = "/placeholder-image.png";
-            }}
-            loading="lazy"
-          />
-          {hasImages && imagesArray.length > 1 && (
-            <>
-              <button
-                onClick={handlePrevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-3 rounded-full hover:bg-opacity-60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 z-10"
-                aria-label="Previous image"
-              >
-                <FaChevronLeft className="text-lg" />
-              </button>
-              <button
-                onClick={handleNextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-3 rounded-full hover:bg-opacity-60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 z-10"
-                aria-label="Next image"
-              >
-                <FaChevronRight className="text-lg" />
-              </button>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-white text-sm px-3 py-1.5 rounded-full font-medium">
-                {currentImageIndex + 1} / {imagesArray.length}
-              </div>
-            </>
-          )}
+  const handleThumbnailClick = (index) => {
+    setCurrentImageIndex(index);
+  };
+
+  const handleFavoriteToggle = () => {
+    setIsFavorite(!isFavorite);
+    // Add your favorite logic here
+    toast.success(isFavorite ? "Removed from favorites" : "Added to favorites");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50">
+        <Header />
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
+          <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
+          <p className="text-lg text-gray-700 font-medium">Loading announcement details...</p>
         </div>
+      </div>
+    );
+  }
 
-        <div className="p-8 md:w-1/2 flex flex-col justify-between">
-          <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
-              {annonce.title}
-            </h1>
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50">
+        <Header />
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)] p-4 text-center">
+          <FaExclamationTriangle className="text-5xl mb-4 text-red-500" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Link to="/" className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-200">
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-            <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-              {annonce.description || "No description provided."}
-            </p>
+  if (!annonce) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50">
+        <Header />
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
+          <FaExclamationTriangle className="text-5xl mb-4 text-yellow-500" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Announcement not found</h2>
+          <Link to="/" className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-200">
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-            <div className="mb-6">
-              <span className="text-4xl font-extrabold text-indigo-700">
-                {formatPrice(annonce.price)}
-              </span>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50">
+      <Header />
+      <div className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Navigation */}
+          <nav className="mb-8">
+            <Link to="/" className="text-teal-600 hover:text-teal-700 font-medium flex items-center">
+              <FaChevronLeft className="mr-2" />
+              Back to Listings
+            </Link>
+          </nav>
+
+          {/* Main Content */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-white/20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Image Gallery Section */}
+              <div className="p-6 space-y-4">
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
+                  <img
+                    src={displayImage}
+                    alt={annonce.title}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder-image.png";
+                    }}
+                  />
+                  {hasImages && imagesArray.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300"
+                      >
+                        <FaChevronLeft />
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all duration-300"
+                      >
+                        <FaChevronRight />
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Thumbnails */}
+                {hasImages && imagesArray.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {imagesArray.map((img, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleThumbnailClick(index)}
+                        className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden ${
+                          currentImageIndex === index
+                            ? 'ring-2 ring-teal-500'
+                            : 'ring-1 ring-gray-200'
+                        }`}
+                      >
+                        <img
+                          src={parseImages(img)}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Product Information Section */}
+              <div className="p-6 lg:p-8 flex flex-col h-full">
+                <div className="flex-grow">
+                  <div className="flex justify-between items-start mb-4">
+                    <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+                      {annonce.title}
+                    </h1>
+                    <button
+                      onClick={handleFavoriteToggle}
+                      className={`p-2 rounded-full ${
+                        isFavorite
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      } transition-all duration-300`}
+                    >
+                      <FaHeart className={isFavorite ? 'fill-current' : ''} />
+                    </button>
+                  </div>
+
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold text-teal-600">
+                      {formatPrice(annonce.price)}
+                    </span>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Description */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {annonce.description || "No description provided."}
+                      </p>
+                    </div>
+
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <DetailItem
+                        icon={<FaTag />}
+                        label="Category"
+                        value={annonce.category && annonce.subcategory 
+                          ? `${annonce.category.name} › ${annonce.subcategory.name}`
+                          : "Not specified"}
+                      />
+                      <DetailItem
+                        icon={<FaBoxOpen />}
+                        label="Condition"
+                        value={annonce.condition}
+                      />
+                      <DetailItem
+                        icon={<FaMapMarkerAlt />}
+                        label="Location"
+                        value={annonce.location || "Not specified"}
+                      />
+                      <DetailItem
+                        icon={<FaClock />}
+                        label="Posted"
+                        value={moment(annonce.createdAt).fromNow()}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-8 space-y-4">
+                  {!isOwner && (
+                    <button
+                      onClick={handlePlaceOrder}
+                      disabled={isOrderLoading}
+                      className={`w-full flex items-center justify-center gap-3 px-8 py-4 
+                        ${isOrderLoading 
+                          ? 'bg-teal-400 cursor-not-allowed' 
+                          : 'bg-teal-600 hover:bg-teal-700 active:bg-teal-800'
+                        } 
+                        text-white rounded-xl transition-all duration-300 transform hover:scale-[1.02]
+                        shadow-lg hover:shadow-xl
+                        relative overflow-hidden group`}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-teal-600/0 via-teal-500/30 to-teal-600/0 
+                        transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000">
+                      </div>
+                      <div className="relative flex items-center gap-3">
+                        {isOrderLoading ? (
+                          <>
+                            <FaSpinner className="animate-spin text-xl" />
+                            <span className="font-medium">Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FaShoppingCart className="text-xl" />
+                            <span className="font-medium">Place Order</span>
+                          </>
+                        )}
+                      </div>
+                    </button>
+                  )}
+                  {annonce.phone && (
+                    <a
+                      href={`tel:${annonce.phone}`}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 
+                        bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 
+                        transition-all duration-200 font-medium"
+                    >
+                      Contact Seller
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
-
-            <div className="space-y-4 text-base text-gray-800">
-              <DetailItem
-                icon={<FaTag className="text-indigo-600 text-xl" />}
-                label="Category"
-                value={annonce.category}
-              />
-              <DetailItem
-                icon={<FaInfoCircle className="text-indigo-600 text-xl" />}
-                label="Condition"
-                value={annonce.condition}
-              />
-              <DetailItem
-                icon={<FaBoxOpen className="text-indigo-600 text-xl" />}
-                label="Type"
-                value={annonce.type}
-              />
-              <DetailItem
-                icon={<FaMapMarkerAlt className="text-indigo-600 text-xl" />}
-                label="Location"
-                value={annonce.location}
-              />
-            </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-              Contact Seller
-            </button>
-            {!isOwner && (
-              <button
-                onClick={handlePlaceOrder}
-                className="w-full mt-4 bg-teal-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              >
-                Place an Order
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -284,17 +400,19 @@ const AnnonceDetail = () => {
 };
 
 const DetailItem = ({ icon, label, value }) => (
-  <div className="flex items-center space-x-3">
-    <span className="flex-shrink-0">{icon}</span>
-    <span className="font-semibold">{label}:</span>
-    <span className="text-gray-600">{value}</span>
+  <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+    <div className="text-teal-600">{icon}</div>
+    <div>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="font-medium text-gray-900">{value}</p>
+    </div>
   </div>
 );
-
-export default AnnonceDetail;
 
 DetailItem.propTypes = {
   icon: PropTypes.node.isRequired,
   label: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  value: PropTypes.string.isRequired,
 };
+
+export default AnnonceDetail;
