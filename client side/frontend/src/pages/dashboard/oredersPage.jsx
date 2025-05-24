@@ -39,8 +39,8 @@ const formatDate = (date) => {
 };
 
 const ORDER_STATUS_COLORS = {
-  pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-200' },
-  accepted: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200' }
+  pending: { bg: 'bg-gray-200', text: 'text-gray-700', border: 'border-gray-300' },
+  accepted: { bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-200' }
 };
 
 const ITEMS_PER_PAGE = 5;
@@ -130,8 +130,8 @@ const MyOrdersPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-        <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <FaSpinner className="animate-spin text-4xl mb-4 text-teal-500" />
         <p className="text-lg text-gray-700">Loading your orders...</p>
       </div>
     );
@@ -139,14 +139,14 @@ const MyOrdersPage = () => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
           <FaExclamationTriangle className="text-5xl mb-4 text-red-500 mx-auto" />
           <p className="text-xl font-semibold mb-2 text-gray-800">
             Oops! Something went wrong.
           </p>
           <p className="mb-6 text-gray-600">{error}</p>
-          <Link to="/home" className="text-teal-600 hover:text-teal-700 font-medium hover:underline">
+          <Link to="/home" className="text-teal-500 hover:text-teal-600 font-medium hover:underline">
             Return to Home
           </Link>
         </div>
@@ -156,14 +156,14 @@ const MyOrdersPage = () => {
 
   if (orders.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <FaShoppingBag className="text-5xl mb-4 text-gray-400 mx-auto" />
+          <FaShoppingBag className="text-5xl mb-4 text-gray-500 mx-auto" />
           <p className="text-xl font-semibold mb-4 text-gray-800">No Orders Yet</p>
           <p className="text-gray-600 mb-6">Start shopping and place your first order!</p>
           <Link 
             to="/home" 
-            className="inline-block bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors duration-200"
+            className="inline-block bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-colors duration-200"
           >
             Browse Products
           </Link>
@@ -173,13 +173,13 @@ const MyOrdersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                <FaShoppingBag className="mr-3 text-teal-600" />
+              <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+                <FaShoppingBag className="mr-3 text-teal-500" />
                 My Orders
               </h1>
 
@@ -193,7 +193,7 @@ const MyOrdersPage = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   />
-                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 </div>
 
                 <select
@@ -225,7 +225,7 @@ const MyOrdersPage = () => {
               <div key={order._id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
+                    <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
                       {order.annonce && order.annonce.images && order.annonce.images.length > 0 ? (
                         <img
                           className="w-full h-full object-cover"
@@ -238,39 +238,39 @@ const MyOrdersPage = () => {
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <FaShoppingBag className="text-gray-400 text-3xl" />
+                          <FaShoppingBag className="text-gray-500 text-3xl" />
                         </div>
                       )}
                     </div>
 
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-gray-800">
                           {order.annonce ? order.annonce.title : "N/A"}
                         </h3>
                         <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
                           ORDER_STATUS_COLORS[order.status]?.bg || 'bg-gray-100'
-                        } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-800'}`}>
+                        } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-700'}`}>
                           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
                       </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                         <div className="flex items-center text-sm text-gray-600">
-                          <FaUser className="mr-2 text-teal-600" />
+                          <FaUser className="mr-2 text-teal-500" />
                           <span>Seller: {order.seller ? order.seller.fullName : "N/A"}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <FaCalendar className="mr-2 text-teal-600" />
+                          <FaCalendar className="mr-2 text-teal-500" />
                           <span>Ordered: {formatDate(order.createdAt)}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
-                          <FaTag className="mr-2 text-teal-600" />
+                          <FaTag className="mr-2 text-teal-500" />
                           <span>Price: {order.annonce ? formatPrice(order.annonce.price) : "N/A"}</span>
                         </div>
                         {order.annonce && order.annonce.location && (
                           <div className="flex items-center text-sm text-gray-600">
-                            <FaMapMarkerAlt className="mr-2 text-teal-600" />
+                            <FaMapMarkerAlt className="mr-2 text-teal-500" />
                             <span>{order.annonce.location}</span>
                           </div>
                         )}
@@ -284,7 +284,7 @@ const MyOrdersPage = () => {
                         to={`/annonce/${order.annonce?._id}`}
                         className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                       >
-                        <FaEye className="mr-2" />
+                        <FaEye className="mr-2 text-gray-600" />
                         View Details
                       </Link>
 
@@ -292,16 +292,16 @@ const MyOrdersPage = () => {
                         onClick={() => handleContactSeller(order.seller)}
                         className="inline-flex items-center px-3 py-2 border border-teal-500 rounded-md text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100"
                       >
-                        <FaEnvelope className="mr-2" />
+                        <FaEnvelope className="mr-2 text-teal-500" />
                         Contact Seller
                       </button>
 
                       {order.status === "pending" && (
                         <button
                           onClick={() => handleCancelOrder(order._id)}
-                          className="inline-flex items-center px-3 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100"
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100"
                         >
-                          <FaTrash className="mr-2" />
+                          <FaTrash className="mr-2 text-gray-600" />
                           Cancel Order
                         </button>
                       )}
@@ -335,7 +335,7 @@ const MyOrdersPage = () => {
                       onClick={() => setCurrentPage(page)}
                       className={`px-4 py-2 text-sm font-medium rounded-md ${
                         currentPage === page
-                          ? 'bg-teal-600 text-white'
+                          ? 'bg-teal-500 text-white'
                           : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                       }`}
                     >
@@ -365,7 +365,7 @@ const MyOrdersPage = () => {
       {contactModalOpen && selectedSeller && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">Contact Seller</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Contact Seller</h3>
             <div className="space-y-4">
               <div>
                 <p className="font-medium text-gray-700">Seller Name</p>
@@ -376,7 +376,7 @@ const MyOrdersPage = () => {
                   <p className="font-medium text-gray-700">Email</p>
                   <a 
                     href={`mailto:${selectedSeller.email}`}
-                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
+                    className="text-teal-500 hover:text-teal-600 flex items-center gap-2"
                   >
                     <FaEnvelope />
                     {selectedSeller.email}
@@ -388,7 +388,7 @@ const MyOrdersPage = () => {
                   <p className="font-medium text-gray-700">Phone</p>
                   <a 
                     href={`tel:${selectedSeller.phone}`}
-                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
+                    className="text-teal-500 hover:text-teal-600 flex items-center gap-2"
                   >
                     <FaPhoneAlt />
                     {selectedSeller.phone}
