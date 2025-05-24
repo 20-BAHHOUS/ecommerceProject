@@ -8,15 +8,8 @@ import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
 import { toast } from "react-toastify";
 import {
-  FaTag,
-  FaImage,
-  FaList,
-  FaBoxOpen,
-  FaMoneyBillWave,
   FaArrowLeft,
   FaSpinner,
-  FaCheck,
-  FaChevronRight,
   FaSearch,
   FaTimes
 } from "react-icons/fa";

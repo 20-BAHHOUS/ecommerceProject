@@ -91,6 +91,7 @@ const AnnonceDetail = () => {
         }
       } catch (err) {
         if (err.response) {
+          // Don't handle 401 errors specially - allow viewing without login
           setError(
             `Error ${err.response.status}: ${
               err.response.data?.message ||

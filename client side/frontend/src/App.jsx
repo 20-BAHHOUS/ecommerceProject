@@ -24,7 +24,7 @@ const App = () => {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<Root />} />
+          <Route path="/" element={<Home />} />
           <Route path="/home" exact element={<Home />} />
           <Route path="/signup" exact element={<SignUp />} />
           <Route path="/postad" exact element={<PostAd />} />
@@ -47,11 +47,3 @@ const App = () => {
   );
 };
 export default App;
-
-const Root = () => {
-  //Check if  token is exists in local storage
-  const isAuthenticated = !!localStorage.getItem("token");
-
-  // Redirect to dashboard if authenticated, otherwise to login
-  return isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />;
-};

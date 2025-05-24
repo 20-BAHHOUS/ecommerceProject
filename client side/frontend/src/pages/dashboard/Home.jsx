@@ -47,10 +47,7 @@ const Home = () => {
 
   const handleError = (err) => {
     if (err.response) {
-      if (err.response.status === 401) {
-        localStorage.removeItem("token");
-        navigate("/login");
-      }
+      // Don't redirect to login for 401 errors, just show error message
       setError(err.response.data?.message || "Failed to load announcements.");
     } else if (err.request) {
       setError("Network Error: Could not connect to the server.");

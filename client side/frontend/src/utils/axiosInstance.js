@@ -33,9 +33,19 @@ axiosInstance.interceptors.response.use(
     // Handle common errors globelly
     if (error.response) {
       if (error.response.status === 401) {
-        // Don't redirect if we're on the login page
+        // Don't redirect if we're on public routes (login, signup, home, annonce details, category)
         const currentPath = window.location.pathname;
-        if (currentPath !== "/login" && currentPath !== "/signup") {
+        const publicRoutes = [
+          '/login', 
+          '/signup', 
+          '/home', 
+          '/'
+        ];
+        // Check if current path is a public route or matches annonce detail/category pattern
+        const isAnnonceDetail = /^\/annonces\/[^/]+$/.test(currentPath);
+        const isCategoryRoute = /^\/category\//.test(currentPath);
+        
+        if (!publicRoutes.includes(currentPath) && !isAnnonceDetail && !isCategoryRoute) {
           // Clear token if unauthorized
           localStorage.removeItem("token");
           localStorage.removeItem("userId");
