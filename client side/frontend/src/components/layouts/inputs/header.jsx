@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search, User, Heart, Bell, MessageSquare } from "lucide-react"; 
+import { Search, User, Bell, MessageSquare } from "lucide-react"; 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import { FaCaretDown } from "react-icons/fa";
+import { FaCaretDown, FaHeart } from "react-icons/fa";
 import axiosInstance from "../../../utils/axiosInstance";
 import API_PATHS from "../../../utils/apiPaths";
 import { toast } from "react-toastify";
@@ -236,10 +236,10 @@ const Navbar = () => {
               <div className="flex items-center space-x-6">
                 <button 
                   onClick={handleFavoritesClick}
-                  className="relative p-2 text-gray-600 hover:text-teal-600 transition-colors duration-200 rounded-full hover:bg-gray-100"
+                  className="relative p-2 text-gray-600 hover:text-teal-600 transition-colors duration-200 rounded-full hover:bg-gray-100 focus:outline-none"
                   aria-label="Favorites"
                 >
-                  <Heart className="h-5 w-5" />
+                  <FaHeart size={18} />
                   {favoritesCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
                       {favoritesCount}
@@ -375,7 +375,7 @@ const Navbar = () => {
                           to="/favourites"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors duration-200"
                         >
-                          <Heart className="h-4 w-4 mr-3" />
+                          <FaHeart className="h-4 w-4 mr-3" />
                           My Favorites
                         </Link>
                         <Link
