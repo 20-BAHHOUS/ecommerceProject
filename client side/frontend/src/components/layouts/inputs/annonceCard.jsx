@@ -8,7 +8,6 @@ import moment from 'moment';
 const formatPrice = (price) => {
   const numericPrice = Number(price);
   if (isNaN(numericPrice)) {
-    console.warn(`Invalid price value received: ${price}`);
     return "N/A";
   }
   return new Intl.NumberFormat("en-US", {
@@ -22,6 +21,7 @@ const formatPrice = (price) => {
 const AnnonceCard = ({ annonce }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   if (!annonce) {
     return null;
@@ -44,6 +44,12 @@ const AnnonceCard = ({ annonce }) => {
     // Add your favorite logic here
   };
 
+  const handleImageError = () => {
+    // Use React state to track image errors instead of DOM manipulation
+    markImageAsFailed(hasValidImages ? annonce.images[0] : null);
+    setImageError(true);
+  };
+
   return (
     <div 
       className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full relative overflow-hidden"
@@ -55,7 +61,7 @@ const AnnonceCard = ({ annonce }) => {
         to={detailLink}
         className="block relative aspect-[4/3] w-full overflow-hidden"
       >
-        {!hasValidImages ? (
+        {(!hasValidImages || imageError) ? (
           <div className="h-full w-full flex items-center justify-center bg-gray-50">
             <FaImage className="text-4xl text-gray-300" />
           </div>
@@ -64,11 +70,7 @@ const AnnonceCard = ({ annonce }) => {
             className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
             src={parseImages(annonce.images[0])}
             alt={annonce.title || "Announcement image"}
-            onError={(e) => {
-              e.target.onerror = null;
-              markImageAsFailed(annonce.images[0]);
-              e.target.parentElement.innerHTML = '<div class="h-full w-full flex items-center justify-center bg-gray-50"><svg class="text-4xl text-gray-300" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H4z"/><path d="M18 18H6v-4l3-3 2 2 6-6"/><circle cx="8" cy="9" r="2"/></svg></div>';
-            }}
+            onError={handleImageError}
             loading="lazy"
           />
         )}

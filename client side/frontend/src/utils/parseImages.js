@@ -66,7 +66,9 @@ export const parseImages = (filename) => {
     
     return imageUrl;
   } catch (error) {
-    console.error('Error parsing image path:', error, 'Filename:', filename);
+    // Silently handle errors (removed console.error that can cause performance issues)
+    // Mark the image as failed
+    markImageAsFailed(filename);
     return '/placeholder-image.png';
   }
 };

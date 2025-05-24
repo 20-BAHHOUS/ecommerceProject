@@ -15,10 +15,11 @@ import {
   FaClock,
   FaUser,
   FaShoppingCart,
+  FaImage
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
-import { parseImages } from "../../utils/parseImages";
+import { parseImages, markImageAsFailed } from "../../utils/parseImages";
 import { toast } from "react-toastify";
 import moment from 'moment';
 
@@ -43,6 +44,8 @@ const AnnonceDetail = () => {
   const [isOrderLoading, setIsOrderLoading] = useState(false);
   const [hasPlacedOrder, setHasPlacedOrder] = useState(false);
   const [orderStatus, setOrderStatus] = useState(null);
+  const [mainImageError, setMainImageError] = useState(false);
+  const [thumbnailErrors, setThumbnailErrors] = useState({});
 
   // Add function to check existing order
   const checkExistingOrder = async () => {
@@ -56,7 +59,7 @@ const AnnonceDetail = () => {
         setOrderStatus(existingOrder.status);
       }
     } catch (error) {
-      console.error("Error checking existing order:", error);
+      // Silently handle error
     }
   };
 
@@ -114,10 +117,7 @@ const AnnonceDetail = () => {
     }
 
     setIsOrderLoading(true);
-    try {
-      // Log the auth token before making the request
-      console.log("Auth Token:", localStorage.getItem("token"));
-      
+    try {      
       // Create a more complete order payload
       const orderPayload = {
         annonceId,
@@ -126,8 +126,6 @@ const AnnonceDetail = () => {
         price: annonce.price,
         status: "pending"
       };
-
-      console.log("Sending order payload:", orderPayload);
       
       const response = await axiosInstance.post(
         API_PATHS.ORDER.PLACE_ORDER,
@@ -142,20 +140,6 @@ const AnnonceDetail = () => {
         throw new Error(response.data.message || "Failed to place order");
       }
     } catch (error) {
-      // Enhanced error logging
-      console.error("Detailed Error Information:", {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        responseData: error.response?.data,
-        requestConfig: {
-          url: error.config?.url,
-          method: error.config?.method,
-          headers: error.config?.headers,
-          data: error.config?.data
-        }
-      });
-
       // Handle specific error cases
       if (error.response?.data?.errorCode === "SELF_ORDER") {
         toast.error("You cannot place an order on your own announcement");
@@ -170,6 +154,25 @@ const AnnonceDetail = () => {
       }
     } finally {
       setIsOrderLoading(false);
+    }
+  };
+
+  // Handle main image error
+  const handleMainImageError = () => {
+    setMainImageError(true);
+    if (annonce?.images && annonce.images.length > 0) {
+      markImageAsFailed(annonce.images[currentImageIndex]);
+    }
+  };
+
+  // Handle thumbnail image error
+  const handleThumbnailError = (index) => {
+    setThumbnailErrors(prev => ({
+      ...prev,
+      [index]: true
+    }));
+    if (annonce?.images && annonce.images[index]) {
+      markImageAsFailed(annonce.images[index]);
     }
   };
 
@@ -188,14 +191,10 @@ const AnnonceDetail = () => {
                         Array.isArray(annonce.images) &&
                         annonce.images.length > 0;
 
-    // Create safe image display path
-    let currentImage = "/placeholder-image.png";
-    if (validImages && typeof annonce.images[currentImageIndex] === 'string') {
-      try {
-        currentImage = parseImages(annonce.images[currentImageIndex]);
-      } catch (err) {
-        currentImage = "/placeholder-image.png";
-      }
+    // Create safe image display path - use placeholder if there's an error
+    let currentImage = '/placeholder-image.png';
+    if (!mainImageError && validImages && typeof annonce.images[currentImageIndex] === 'string') {
+      currentImage = parseImages(annonce.images[currentImageIndex]);
     }
 
     return {
@@ -204,22 +203,25 @@ const AnnonceDetail = () => {
       hasImages: validImages,
       imagesArray: validImages ? annonce.images : []
     };
-  }, [annonce, currentImageIndex]);
+  }, [annonce, currentImageIndex, mainImageError]);
 
   const handleNextImage = () => {
     if (imagesArray.length > 1) {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imagesArray.length);
+      setMainImageError(false); // Reset error state when changing image
     }
   };
 
   const handlePrevImage = () => {
     if (imagesArray.length > 1) {
       setCurrentImageIndex((prevIndex) => (prevIndex - 1 + imagesArray.length) % imagesArray.length);
+      setMainImageError(false); // Reset error state when changing image
     }
   };
 
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
+    setMainImageError(false); // Reset error state when changing image
   };
 
   const handleFavoriteToggle = () => {
@@ -279,15 +281,19 @@ const AnnonceDetail = () => {
             {/* Image Gallery Section */}
             <div className="p-6 space-y-4">
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
-                <img
-                  src={displayImage}
-                  alt={annonce.title}
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/placeholder-image.png";
-                  }}
-                />
+                {mainImageError ? (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                    <FaImage className="text-6xl text-gray-300" />
+                  </div>
+                ) : (
+                  <img
+                    src={displayImage}
+                    alt={annonce.title}
+                    className="w-full h-full object-contain"
+                    onError={handleMainImageError}
+                    loading="lazy"
+                  />
+                )}
                 {hasImages && imagesArray.length > 1 && (
                   <>
                     <button
@@ -319,11 +325,19 @@ const AnnonceDetail = () => {
                           : 'ring-1 ring-gray-200'
                       }`}
                     >
-                      <img
-                        src={parseImages(img)}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                      {thumbnailErrors[index] ? (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                          <FaImage className="text-2xl text-gray-300" />
+                        </div>
+                      ) : (
+                        <img
+                          src={parseImages(img)}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={() => handleThumbnailError(index)}
+                          loading="lazy"
+                        />
+                      )}
                     </button>
                   ))}
                 </div>
