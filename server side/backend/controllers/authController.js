@@ -1,7 +1,6 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import validateUserBody from "../validators/user.validator.js";
-import bcrypt from "bcryptjs";
 
 
 //Generate jwt token

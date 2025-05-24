@@ -1,18 +1,16 @@
 import Annonce from "../models/annonce.js";
-import validateAnnonceBody from "../validators/annonce.validator.js";
 
-//add product source *
 const addAnnonce = async (req, res, next) => {
   try {
-    // Get other form data from req.body
+
     const { body } = req;
 
-    // Add the user ID from the authentication middleware
+   
     body.createdBy = req.user._id;
 
-    //Get the file paths - normalize paths to use forward slashes
+   
     body.images = req.files.map((file) => {
-      // Remove the leading ./ and normalize backslashes to forward slashes
+
       return file.path.replace(/\\/g, '/').replace(/^\.\//, '');
     });
 
