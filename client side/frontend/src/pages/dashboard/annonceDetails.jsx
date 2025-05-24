@@ -41,6 +41,24 @@ const AnnonceDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isOrderLoading, setIsOrderLoading] = useState(false);
+  const [hasPlacedOrder, setHasPlacedOrder] = useState(false);
+  const [orderStatus, setOrderStatus] = useState(null);
+
+  // Add function to check existing order
+  const checkExistingOrder = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.ORDER.GET_ORDERS_BY_BUYER);
+      const orders = response.data.data;
+      const existingOrder = orders.find(order => order.annonce?._id === annonceId);
+      
+      if (existingOrder) {
+        setHasPlacedOrder(true);
+        setOrderStatus(existingOrder.status);
+      }
+    } catch (error) {
+      console.error("Error checking existing order:", error);
+    }
+  };
 
   useEffect(() => {
     if (!annonceId) {
@@ -48,7 +66,8 @@ const AnnonceDetail = () => {
       setLoading(false);
       return;
     }
-    const fetchAnnonceDetails = async () => {
+
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
@@ -56,6 +75,11 @@ const AnnonceDetail = () => {
           API_PATHS.ANNONCE.ANNONCE_BY_ID(annonceId)
         );
         setAnnonce(response.data);
+        
+        // Check for existing order if user is logged in
+        if (localStorage.getItem("token")) {
+          await checkExistingOrder();
+        }
       } catch (err) {
         if (err.response) {
           setError(
@@ -75,7 +99,7 @@ const AnnonceDetail = () => {
       }
     };
 
-    fetchAnnonceDetails();
+    fetchData();
   }, [annonceId]);
 
   const handlePlaceOrder = async () => {
@@ -373,24 +397,37 @@ const AnnonceDetail = () => {
                 {!isOwner && (
                   <button
                     onClick={handlePlaceOrder}
-                    disabled={isOrderLoading}
+                    disabled={isOrderLoading || hasPlacedOrder}
                     className={`w-full flex items-center justify-center gap-3 px-8 py-4 
                       ${isOrderLoading 
                         ? 'bg-teal-400 cursor-not-allowed' 
-                        : 'bg-teal-600 hover:bg-teal-700 active:bg-teal-800'
+                        : hasPlacedOrder
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-teal-600 hover:bg-teal-700 active:bg-teal-800'
                       } 
                       text-white rounded-xl transition-all duration-300 transform hover:scale-[1.02]
                       shadow-lg hover:shadow-xl
                       relative overflow-hidden group`}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-teal-600/0 via-teal-500/30 to-teal-600/0 
-                      transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000">
+                    <div className={`absolute inset-0 bg-gradient-to-r 
+                      ${!hasPlacedOrder ? 'from-teal-600/0 via-teal-500/30 to-teal-600/0' : ''} 
+                      transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000`}>
                     </div>
                     <div className="relative flex items-center gap-3">
                       {isOrderLoading ? (
                         <>
                           <FaSpinner className="animate-spin text-xl" />
                           <span className="font-medium">Processing...</span>
+                        </>
+                      ) : hasPlacedOrder ? (
+                        <>
+                          <FaShoppingCart className="text-xl" />
+                          <span className="font-medium">
+                            {orderStatus === 'pending' ? 'Order Pending' :
+                             orderStatus === 'accepted' ? 'Order Accepted' :
+                             orderStatus === 'rejected' ? 'Order Rejected' :
+                             'Order Placed'}
+                          </span>
                         </>
                       ) : (
                         <>
