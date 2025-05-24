@@ -3,9 +3,25 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
 import { Link } from "react-router-dom";
-import { FaSpinner, FaExclamationTriangle, FaTrash, FaShoppingBag, FaUser, FaCalendar, FaTag, FaMapMarkerAlt } from "react-icons/fa";
+import { 
+  FaSpinner, 
+  FaExclamationTriangle, 
+  FaTrash, 
+  FaShoppingBag, 
+  FaUser, 
+  FaCalendar, 
+  FaTag, 
+  FaMapMarkerAlt,
+  FaSearch,
+  FaFilter,
+  FaSortAmountDown,
+  FaEye,
+  FaPhoneAlt,
+  FaEnvelope
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import { parseImages } from "../../utils/parseImages";
+import moment from 'moment';
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -19,42 +35,49 @@ const formatPrice = (price) => {
 };
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  return moment(date).format('MMMM D, YYYY [at] h:mm A');
 };
+
+const ORDER_STATUS_COLORS = {
+  pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-200' },
+  accepted: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200' }
+};
+
+const ITEMS_PER_PAGE = 5;
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date-desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [selectedSeller, setSelectedSeller] = useState(null);
 
   useEffect(() => {
-    const fetchUserOrders = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axiosInstance.get(
-          API_PATHS.ORDER.GET_ORDERS_BY_BUYER
-        );
-        setOrders(response.data.data);
-      } catch (err) {
-        setError(
-          err.response?.data?.message ||
-            err.response?.data?.error ||
-            "Failed to fetch your orders."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserOrders();
   }, []);
+
+  const fetchUserOrders = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.ORDER.GET_ORDERS_BY_BUYER
+      );
+      setOrders(response.data.data);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Failed to fetch your orders."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCancelOrder = async (orderId) => {
     if (window.confirm("Are you sure you want to cancel this order?")) {
@@ -72,6 +95,38 @@ const MyOrdersPage = () => {
       }
     }
   };
+
+  const handleContactSeller = (seller) => {
+    setSelectedSeller(seller);
+    setContactModalOpen(true);
+  };
+
+  const filteredOrders = orders
+    .filter(order => {
+      const matchesSearch = order.annonce?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          order.seller?.fullName?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "date-asc":
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        case "price-desc":
+          return (b.annonce?.price || 0) - (a.annonce?.price || 0);
+        case "price-asc":
+          return (a.annonce?.price || 0) - (b.annonce?.price || 0);
+        case "date-desc":
+        default:
+          return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+    });
+
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (loading) {
     return (
@@ -122,14 +177,51 @@ const MyOrdersPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-              <FaShoppingBag className="mr-3 text-teal-600" />
-              My Orders
-            </h1>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                <FaShoppingBag className="mr-3 text-teal-600" />
+                My Orders
+              </h1>
+
+              {/* Search and Filters */}
+              <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search orders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                </div>
+
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                </select>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                >
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="price-asc">Price: Low to High</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <div className="divide-y divide-gray-200">
-            {orders.map((order) => (
+            {paginatedOrders.map((order) => (
               <div key={order._id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-start space-x-4">
@@ -152,9 +244,16 @@ const MyOrdersPage = () => {
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {order.annonce ? order.annonce.title : "N/A"}
-                      </h3>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {order.annonce ? order.annonce.title : "N/A"}
+                        </h3>
+                        <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                          ORDER_STATUS_COLORS[order.status]?.bg || 'bg-gray-100'
+                        } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-800'}`}>
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                      </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                         <div className="flex items-center text-sm text-gray-600">
@@ -180,34 +279,134 @@ const MyOrdersPage = () => {
                   </div>
 
                   <div className="mt-4 lg:mt-0 flex flex-col items-end space-y-3">
-                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                      order.status === "pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : order.status === "accepted"
-                        ? "bg-green-100 text-green-800"
-                        : order.status === "rejected"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
-
-                    {order.status === "pending" && (
-                      <button
-                        onClick={() => handleCancelOrder(order._id)}
-                        className="flex items-center text-red-600 hover:text-red-800 transition-colors duration-200"
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to={`/annonce/${order.annonce?._id}`}
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                       >
-                        <FaTrash className="mr-2" />
-                        <span>Cancel Order</span>
+                        <FaEye className="mr-2" />
+                        View Details
+                      </Link>
+
+                      <button
+                        onClick={() => handleContactSeller(order.seller)}
+                        className="inline-flex items-center px-3 py-2 border border-teal-500 rounded-md text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100"
+                      >
+                        <FaEnvelope className="mr-2" />
+                        Contact Seller
                       </button>
-                    )}
+
+                      {order.status === "pending" && (
+                        <button
+                          onClick={() => handleCancelOrder(order._id)}
+                          className="inline-flex items-center px-3 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100"
+                        >
+                          <FaTrash className="mr-2" />
+                          Cancel Order
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    currentPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                  }`}
+                >
+                  Previous
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-4 py-2 text-sm font-medium rounded-md ${
+                        currentPage === page
+                          ? 'bg-teal-600 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    currentPage === totalPages
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Contact Modal */}
+      {contactModalOpen && selectedSeller && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">Contact Seller</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="font-medium text-gray-700">Seller Name</p>
+                <p className="text-gray-600">{selectedSeller.fullName}</p>
+              </div>
+              {selectedSeller.email && (
+                <div>
+                  <p className="font-medium text-gray-700">Email</p>
+                  <a 
+                    href={`mailto:${selectedSeller.email}`}
+                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
+                  >
+                    <FaEnvelope />
+                    {selectedSeller.email}
+                  </a>
+                </div>
+              )}
+              {selectedSeller.phone && (
+                <div>
+                  <p className="font-medium text-gray-700">Phone</p>
+                  <a 
+                    href={`tel:${selectedSeller.phone}`}
+                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
+                  >
+                    <FaPhoneAlt />
+                    {selectedSeller.phone}
+                  </a>
+                </div>
+              )}
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setContactModalOpen(false)}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
