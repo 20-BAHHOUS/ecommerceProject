@@ -83,38 +83,43 @@ const UserAnnonces = () => {
   };
 
   return (
-    <div>
+    <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen">
       <Header />
-      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap justify-between items-center gap-6 mb-8 pb-6 border-b border-gray-200">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">
-            Your Announcements
-          </h1>
+      <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              Your Announcements
+            </h1>
+            <p className="text-gray-500">{AnnoncesUser.length} {AnnoncesUser.length === 1 ? 'announcement' : 'announcements'} published</p>
+          </div>
           <Link
             to="/postad"
-            className="bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 flex items-center"
+            className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 flex items-center gap-2 hover:translate-y-[-2px]"
           >
-            <FaPlusCircle className="mr-3 text-lg" /> Post New Ad
+            <FaPlusCircle /> Create New
           </Link>
         </div>
 
         {loading && (
-          <div className="flex justify-center items-center h-80">
-            <FaSpinner className="animate-spin text-5xl text-teal-600" />
-            <p className="ml-4 text-lg text-gray-600">Loading your announcements...</p>
+          <div className="flex flex-col justify-center items-center h-60 bg-white rounded-lg shadow-sm border border-gray-100 p-8">
+            <FaSpinner className="animate-spin text-3xl text-gray-400 mb-4" />
+            <p className="text-gray-500">Loading your announcements...</p>
           </div>
         )}
 
         {error && (
-          <div className="text-center p-8 bg-red-50 border border-red-300 text-red-700 rounded-lg shadow-md max-w-lg mx-auto">
-            <FaExclamationTriangle className="text-4xl mx-auto mb-4 text-red-500" />
-            <p className="font-bold text-xl mb-2">Error!</p>
-            <p className="text-lg">{error}</p>
+          <div className="flex flex-col justify-center items-center bg-white rounded-lg shadow-sm border border-gray-100 p-8 text-center max-w-lg mx-auto">
+            <div className="bg-red-50 p-3 rounded-full mb-4">
+              <FaExclamationTriangle className="text-2xl text-red-500" />
+            </div>
+            <h3 className="font-medium text-lg text-gray-900 mb-2">Unable to load announcements</h3>
+            <p className="text-gray-500 mb-5">{error}</p>
             <button
               onClick={fetchAnnoncesUser}
-              className="mt-6 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-5 rounded-lg transition duration-200"
+              className="bg-gray-900 hover:bg-black text-white font-medium py-2 px-4 rounded-md shadow-sm transition-all duration-200"
             >
-              Try Again
+              Retry
             </button>
           </div>
         )}
@@ -122,40 +127,46 @@ const UserAnnonces = () => {
         {!loading && !error && (
           <>
             {AnnoncesUser.length === 0 ? (
-              <div className="text-center p-12 bg-gray-50 rounded-lg shadow-inner max-w-xl mx-auto">
-                <p className="text-2xl text-gray-600 font-semibold mb-4">
-                  No announcements found!
-                </p>
-                <p className="text-lg text-gray-500 mb-6">
-                  It looks like you haven't posted any ads yet.
+              <div className="flex flex-col justify-center items-center bg-white rounded-lg shadow-sm border border-gray-100 p-12 text-center max-w-md mx-auto">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-5">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-gray-500">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                </div>
+                <h3 className="font-medium text-xl text-gray-900 mb-2">
+                  No announcements yet
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Start selling by creating your first announcement
                 </p>
                 <Link
                   to="/postad"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-300 ease-in-out transform hover:scale-105 inline-flex items-center"
+                  className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 inline-flex items-center gap-2 hover:translate-y-[-2px]"
                 >
-                  <FaPlusCircle className="mr-2" /> Start Posting Now
+                  <FaPlusCircle /> Create Announcement
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {AnnoncesUser.map((annonce) =>
                   annonce._id ? (
-                    <div key={annonce._id} className="relative group">
+                    <div key={annonce._id} className="group relative bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md border border-gray-100">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                       <AnnonceCard annonce={annonce} />
-                      <div className="absolute top-3 right-3 flex flex-col items-end space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
                         <Link
                           to={`/edit-annonce/${annonce._id}`}
-                          className="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-full shadow-lg transition duration-200 transform hover:scale-110 tooltip"
-                          data-tooltip="Edit"
+                          className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-full shadow-sm transition-all duration-200"
+                          title="Edit"
                         >
-                          <FaEdit className="text-lg" />
+                          <FaEdit />
                         </Link>
                         <button
                           onClick={() => handleDeleteAnnonce(annonce._id)}
-                          className="bg-red-600 hover:bg-red-700 text-white p-2.5 rounded-full shadow-lg transition duration-200 transform hover:scale-110 tooltip"
-                          data-tooltip="Delete"
+                          className="bg-white hover:bg-red-50 text-red-500 p-2 rounded-full shadow-sm transition-all duration-200"
+                          title="Delete"
                         >
-                          <FaTrash className="text-lg" />
+                          <FaTrash />
                         </button>
                       </div>
                     </div>
