@@ -19,6 +19,7 @@ import UserOrdersPage from "./pages/dashboard/oredersPage";
 import SoldItems from "./pages/dashboard/SoldItems";
 import CategoryListings from "./pages/CategoryListings";
 import SearchResults from "./pages/dashboard/SearchResults";
+import FavoritesPage from "./components/Favorites/FavoritesPage";
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/user-orders" exact element={<UserOrdersPage />} />
           <Route path="/sold-items" exact element={<SoldItems />} />
           <Route path="/search" exact element={<SearchResults />} />
+          <Route path="/favourites" exact element={<FavoritesPage />} />
           
           {/* Category Routes */}
           <Route path="/category/:category" element={<CategoryListings />} />

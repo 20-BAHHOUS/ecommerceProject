@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaImage, FaHeart, FaClock } from "react-icons/fa";
 import { parseImages, markImageAsFailed } from "../../../utils/parseImages";
 import moment from 'moment';
+import axiosInstance from "../../../utils/axiosInstance";
+import API_PATHS from "../../../utils/apiPaths";
+import { toast } from "react-toastify";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -23,6 +26,23 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  useEffect(() => {
+    // Check if the announcement is in favorites when component mounts
+    const checkFavoriteStatus = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token || !annonce._id) return;
+
+        const response = await axiosInstance.get(API_PATHS.AUTH.CHECK_FAVORITE(annonce._id));
+        setIsFavorite(response.data.isFavorite);
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [annonce._id]);
+
   if (!annonce) {
     return null;
   }
@@ -38,10 +58,57 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
     ? moment(annonce.createdAt).fromNow()
     : null;
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = async (e) => {
     e.preventDefault();
-    setIsFavorite(!isFavorite);
-    // Add your favorite logic here
+    e.stopPropagation();
+    
+    // Check if user is logged in first
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to save favorites");
+      // Redirect to login page with return URL
+      const returnUrl = encodeURIComponent(window.location.pathname);
+      window.location.href = `/login?redirect=${returnUrl}`;
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.TOGGLE_FAVORITE, {
+        annonceId: annonce._id
+      });
+      
+      // Update local state
+      const newFavoriteStatus = response.data.isFavorite;
+      setIsFavorite(newFavoriteStatus);
+      
+      // Show toast notification
+      toast.success(newFavoriteStatus 
+        ? "Added to favorites" 
+        : "Removed from favorites", 
+        { position: "bottom-right", autoClose: 2000 }
+      );
+      
+      // Notify other components about the favorites update
+      localStorage.setItem("favoritesUpdated", Date.now().toString());
+      
+      // If we're on the favorites page and removing an item, we need to handle that
+      const currentPath = window.location.pathname;
+      if (currentPath === "/favourites" && !newFavoriteStatus) {
+        // Notify FavoritesPage to remove this item
+        const event = new CustomEvent('removeFavorite', { 
+          detail: { annonceId: annonce._id } 
+        });
+        window.dispatchEvent(event);
+      }
+      
+      // Remove the localStorage item to allow future updates
+      setTimeout(() => {
+        localStorage.removeItem("favoritesUpdated");
+      }, 100);
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Could not update favorites. Please try again later.");
+    }
   };
 
   const handleImageError = () => {
@@ -87,6 +154,8 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
                 ? 'bg-red-500 text-white' 
                 : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
             } transition-all duration-300 shadow-sm hover:shadow`}
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
             <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
           </button>
@@ -170,6 +239,8 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
               ? 'bg-red-500 text-white' 
               : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
           } transition-all duration-300 shadow-sm hover:shadow`}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          title={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
         </button>

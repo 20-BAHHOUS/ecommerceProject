@@ -7,7 +7,11 @@ export const API_PATHS = {
     REGISTER: "/auth/register",
     GET_USER_INFO: "/auth/getuser",
     UPDATE_PROFILE: "/auth/profile", 
-    UPDATE_PASSWORD: "/auth/password", 
+    UPDATE_PASSWORD: "/auth/password",
+    GET_FAVORITES: "/auth/favorites",
+    TOGGLE_FAVORITE: "/auth/favorites",
+    CHECK_FAVORITE: (annonceId) => `/auth/favorites/${annonceId}`,
+    GET_FAVORITES_COUNT: "/auth/favorites-count"
   },
   HOME: {
     GET_DATA: "/home",

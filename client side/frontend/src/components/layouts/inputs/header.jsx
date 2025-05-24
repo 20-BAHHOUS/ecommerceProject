@@ -41,6 +41,7 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,6 +55,7 @@ const Navbar = () => {
     if (token) {
       fetchNotifications();
       fetchUserInfo();
+      fetchFavoritesCount();
     }
 
     // Close dropdowns when clicking outside
@@ -70,6 +72,9 @@ const Navbar = () => {
     const handleStorageChange = (e) => {
       if (e.key === "profileUpdated" && token) {
         fetchUserInfo();
+      }
+      if (e.key === "favoritesUpdated" && token) {
+        fetchFavoritesCount();
       }
     };
 
@@ -88,6 +93,7 @@ const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserInfo();
+      fetchFavoritesCount();
     }
   }, []);
 
@@ -99,6 +105,17 @@ const Navbar = () => {
       }
     } catch (error) {
       console.error("Error fetching user info:", error);
+    }
+  };
+
+  const fetchFavoritesCount = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.AUTH.GET_FAVORITES_COUNT);
+      if (response.data) {
+        setFavoritesCount(response.data.count);
+      }
+    } catch (error) {
+      console.error("Error fetching favorites count:", error);
     }
   };
 
@@ -166,6 +183,10 @@ const Navbar = () => {
     }
   };
 
+  const handleFavoritesClick = () => {
+    navigate("/favourites");
+  };
+
   return (
     <nav className="bg-white sticky top-0 z-50 shadow-sm backdrop-blur-sm bg-white/90">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -222,12 +243,18 @@ const Navbar = () => {
           <div className="flex items-center space-x-6">
             {isAuthenticated ? (
               <div className="flex items-center space-x-6">
-                <Link 
-                  to="/favourites" 
+                <button 
+                  onClick={handleFavoritesClick}
                   className="relative p-2 text-gray-600 hover:text-teal-600 transition-colors duration-200 rounded-full hover:bg-gray-100"
+                  aria-label="Favorites"
                 >
                   <Heart className="h-5 w-5" />
-                </Link>
+                  {favoritesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+                      {favoritesCount}
+                    </span>
+                  )}
+                </button>
                 
                 <div className="relative" ref={notificationRef}>
                   <button
@@ -352,6 +379,13 @@ const Navbar = () => {
                             <path d="M16 11a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
                           My Orders
+                        </Link>
+                        <Link
+                          to="/favourites"
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors duration-200"
+                        >
+                          <Heart className="h-4 w-4 mr-3" />
+                          My Favorites
                         </Link>
                         <Link
                           to="/sold-items"

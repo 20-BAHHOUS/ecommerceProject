@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import {
   FaMapMarkerAlt,
   FaTag,
-  FaInfoCircle,
   FaBoxOpen,
   FaSpinner,
   FaExclamationTriangle,
@@ -62,6 +61,19 @@ const AnnonceDetail = () => {
       // Silently handle error
     }
   };
+  
+  // Check if announcement is in favorites
+  const checkFavoriteStatus = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await axiosInstance.get(API_PATHS.AUTH.CHECK_FAVORITE(annonceId));
+      setIsFavorite(response.data.isFavorite);
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+    }
+  };
 
   useEffect(() => {
     if (!annonceId) {
@@ -88,6 +100,7 @@ const AnnonceDetail = () => {
         // Check for existing order if user is logged in
         if (localStorage.getItem("token")) {
           await checkExistingOrder();
+          await checkFavoriteStatus();
         }
       } catch (err) {
         if (err.response) {
@@ -232,10 +245,32 @@ const AnnonceDetail = () => {
     setMainImageError(false); // Reset error state when changing image
   };
 
-  const handleFavoriteToggle = () => {
-    setIsFavorite(!isFavorite);
-    // Add your favorite logic here
-    toast.success(isFavorite ? "Removed from favorites" : "Added to favorites");
+  const handleFavoriteToggle = async () => {
+    // Check if user is logged in first
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to save favorites");
+      // Redirect to login page with return URL
+      const returnUrl = encodeURIComponent(window.location.pathname);
+      window.location.href = `/login?redirect=${returnUrl}`;
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.TOGGLE_FAVORITE, {
+        annonceId
+      });
+      
+      setIsFavorite(response.data.isFavorite);
+      toast.success(response.data.isFavorite ? "Added to favorites" : "Removed from favorites");
+      
+      // Notify other components about the favorites update
+      localStorage.setItem("favoritesUpdated", Date.now().toString());
+      localStorage.removeItem("favoritesUpdated"); // Immediately remove to allow future updates
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Could not update favorites. Please try again later.");
+    }
   };
 
   if (loading) {

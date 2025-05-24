@@ -6,6 +6,10 @@ import {
   getUserInfo,
   updateUserProfile,
   updateUserPassword,
+  getUserFavorites,
+  toggleFavorite,
+  checkFavorite,
+  getFavoritesCount
 } from "../controllers/authController.js";
 import upload from "../middleware/uploadMiddleware.js";
 
@@ -16,6 +20,12 @@ router.post("/login", loginUser);
 router.post("/getuser", protect, getUserInfo);
 router.put("/profile", protect, updateUserProfile);
 router.put("/password", protect, updateUserPassword);
+
+// Favorites routes
+router.get("/favorites", protect, getUserFavorites);
+router.post("/favorites", protect, toggleFavorite);
+router.get("/favorites/:annonceId", protect, checkFavorite);
+router.get("/favorites-count", protect, getFavoritesCount);
 
 router.post("/upload-image", protect, upload.single("image"), (req, res) => {
   if (!req.file) {
