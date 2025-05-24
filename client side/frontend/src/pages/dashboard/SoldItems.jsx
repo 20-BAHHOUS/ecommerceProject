@@ -20,33 +20,45 @@ const SoldItems = () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(API_PATHS.ORDER.GET_SOLD_ITEMS);
-      setSoldItems(response.data);
+      console.log('Sold items response:', response.data);
+      
+      // Ensure we're setting an array
+      const items = Array.isArray(response.data?.data) ? response.data.data : [];
+      setSoldItems(items);
       setError(null);
     } catch (err) {
       console.error('Error fetching sold items:', err);
+      setSoldItems([]); // Reset to empty array on error
       setError('Failed to load sold items. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredAndSortedItems = soldItems
+  // Ensure soldItems is always treated as an array
+  const items = Array.isArray(soldItems) ? soldItems : [];
+  
+  const filteredAndSortedItems = items
     .filter(item => {
+      if (!item) return false;
       if (filterStatus === 'all') return true;
       return item.status === filterStatus;
     })
-    .filter(item => 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.buyer.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter(item => {
+      if (!item || (!item.annonce && !item.buyer)) return false;
+      const titleMatch = item.annonce?.title?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+      const buyerMatch = item.buyer?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+      return searchQuery === '' || titleMatch || buyerMatch;
+    })
     .sort((a, b) => {
+      if (!a || !b) return 0;
       switch (sortBy) {
         case 'date':
-          return new Date(b.soldDate) - new Date(a.soldDate);
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         case 'price':
-          return b.price - a.price;
+          return (b.annonce?.price || 0) - (a.annonce?.price || 0);
         case 'title':
-          return a.title.localeCompare(b.title);
+          return (a.annonce?.title || '').localeCompare(b.annonce?.title || '');
         default:
           return 0;
       }
@@ -147,34 +159,38 @@ const SoldItems = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredAndSortedItems.map((item) => (
-                    <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                  {filteredAndSortedItems.filter(item => item != null).map((item, index) => (
+                    <tr key={item._id || `sold-item-${index}`} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <img
-                            src={item.image}
-                            alt={item.title}
+                            src={item.annonce?.images?.[0] || '/placeholder-image.jpg'}
+                            alt={item.annonce?.title || 'Item image'}
                             className="h-10 w-10 rounded-md object-cover"
+                            onError={(e) => {
+                              e.target.src = '/placeholder-image.jpg';
+                              e.target.onerror = null;
+                            }}
                           />
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                            <div className="text-sm text-gray-500">{item.description}</div>
+                            <div className="text-sm font-medium text-gray-900">{item.annonce?.title || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{item.annonce?.description || 'No description'}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{item.buyer.name}</div>
-                        <div className="text-sm text-gray-500">{item.buyer.email}</div>
+                        <div className="text-sm text-gray-900">{item.buyer?.fullName || 'N/A'}</div>
+                        <div className="text-sm text-gray-500">{item.buyer?.email || 'N/A'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">${item.price.toFixed(2)}</div>
+                        <div className="text-sm text-gray-900">${(item.annonce?.price || 0).toFixed(2)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {new Date(item.soldDate).toLocaleDateString()}
+                          {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {new Date(item.soldDate).toLocaleTimeString()}
+                          {item.createdAt ? new Date(item.createdAt).toLocaleTimeString() : ''}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -182,8 +198,9 @@ const SoldItems = () => {
                           ${item.status === 'completed' ? 'bg-green-100 text-green-800' : ''}
                           ${item.status === 'shipped' ? 'bg-blue-100 text-blue-800' : ''}
                           ${item.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                          ${!item.status ? 'bg-gray-100 text-gray-800' : ''}
                         `}>
-                          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                          {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'Unknown'}
                         </span>
                       </td>
                     </tr>

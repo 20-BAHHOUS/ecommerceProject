@@ -35,6 +35,7 @@ export const API_PATHS = {
     GET_ORDERS_BY_BUYER: "/orders/user",
     UPDATE_ORDER_STATUS: (orderId) => `/orders/${orderId}/status`,
     DELETE_ORDER: (orderId) => `/orders/${orderId}`,
+    GET_SOLD_ITEMS: "/orders/seller",
   },
   NOTIFICATIONS: {
     GET_NOTIFICATIONS: "/notifications",
