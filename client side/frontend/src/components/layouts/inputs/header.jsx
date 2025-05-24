@@ -202,16 +202,17 @@ const Navbar = () => {
           {/* Search Bar (for larger screens) */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
-              <div className="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-gray-50 overflow-hidden group border border-gray-200 focus-within:border-teal-500 hover:border-teal-400 transition-all duration-200">
-                <div className="grid place-items-center h-full w-12 text-gray-400 group-hover:text-teal-500 transition-colors duration-200">
+              <div className="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-gray-100 overflow-hidden group border border-gray-300 focus-within:border-gray-400 hover:border-gray-400 transition-all duration-200">
+                <div className="grid place-items-center h-full w-12 text-gray-500 group-hover:text-gray-600 transition-colors duration-200">
                   <Search className="h-5 w-5" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search for announcements..."
-                  className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-50 px-2 group-focus-within:bg-white transition-colors duration-200"
+                  className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-100 px-2 group-focus-within:bg-white transition-colors duration-200"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
                 />
                 {searchQuery && (
                   <button
@@ -225,16 +226,6 @@ const Navbar = () => {
                     </svg>
                   </button>
                 )}
-                <button
-                  type="submit"
-                  className="h-full px-5 bg-teal-500 text-white font-medium hover:bg-teal-600 transition-all duration-200 flex items-center gap-2"
-                  aria-label="Search"
-                >
-                  <span>Search</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </button>
               </div>
             </form>
           </div>
@@ -434,16 +425,17 @@ const Navbar = () => {
       {/* Search Bar (for smaller screens) */}
       <div className="md:hidden px-4 py-3 border-t border-gray-100">
         <form onSubmit={handleSearch} className="relative w-full">
-          <div className="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-gray-50 overflow-hidden group border border-gray-200 focus-within:border-teal-500 hover:border-teal-400 transition-all duration-200">
-            <div className="grid place-items-center h-full w-12 text-gray-400 group-hover:text-teal-500 transition-colors duration-200">
+          <div className="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-gray-100 overflow-hidden group border border-gray-300 focus-within:border-gray-400 hover:border-gray-400 transition-all duration-200">
+            <div className="grid place-items-center h-full w-12 text-gray-500 group-hover:text-gray-600 transition-colors duration-200">
               <Search className="h-5 w-5" />
             </div>
             <input
               type="text"
               placeholder="Search for announcements..."
-              className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-50 px-2 group-focus-within:bg-white transition-colors duration-200"
+              className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-100 px-2 group-focus-within:bg-white transition-colors duration-200"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
             />
             {searchQuery && (
               <button
@@ -457,16 +449,6 @@ const Navbar = () => {
                 </svg>
               </button>
             )}
-            <button
-              type="submit"
-              className="h-full px-5 bg-teal-500 text-white font-medium hover:bg-teal-600 transition-all duration-200 flex items-center gap-2"
-              aria-label="Search"
-            >
-              <span>Search</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
           </div>
         </form>
       </div>
