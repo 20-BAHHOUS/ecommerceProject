@@ -117,15 +117,14 @@ const Navbar = () => {
     try {
       console.log('Updating order:', orderId, 'with action:', action);
       
-      // Update order status
-      const orderResponse = await axiosInstance.put(`/orders/${orderId}/status`, {
-        orderId: orderId,
+      // Update order status using the correct API path
+      const orderResponse = await axiosInstance.put(API_PATHS.ORDER.UPDATE_ORDER_STATUS(orderId), {
         status: action
       });
 
       if (orderResponse.data.success) {
         // Mark notification as read only if order update was successful
-        await axiosInstance.put(`/notifications/${notificationId}/read`);
+        await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_AS_READ(notificationId));
         
         // Refresh notifications
         await fetchNotifications();
