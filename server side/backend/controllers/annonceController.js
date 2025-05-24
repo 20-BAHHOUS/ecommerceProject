@@ -128,17 +128,29 @@ const updateAnnonceById = async (req, res) => {
       
       // Handle existing images if provided
       if (req.body.existingImages) {
-        // Parse the JSON string of existing images to keep
-        const existingImages = JSON.parse(req.body.existingImages);
-        // Combine existing and new images
-        updateData.images = [...existingImages, ...newImagePaths];
+        try {
+          // Parse the JSON string of existing images to keep
+          const existingImages = JSON.parse(req.body.existingImages);
+          // Combine existing and new images
+          updateData.images = [...existingImages, ...newImagePaths];
+        } catch (e) {
+          console.error("Error parsing existingImages:", e);
+          // Fallback to just using new images if parsing fails
+          updateData.images = newImagePaths;
+        }
       } else {
         // If no existing images specified, use only new uploads
         updateData.images = newImagePaths;
       }
     } else if (req.body.existingImages) {
       // If no new uploads but existing images are specified
-      updateData.images = JSON.parse(req.body.existingImages);
+      try {
+        updateData.images = JSON.parse(req.body.existingImages);
+      } catch (e) {
+        console.error("Error parsing existingImages:", e);
+        // If parsing fails, keep the original images
+        updateData.images = annonce.images;
+      }
     }
     
     // Remove unnecessary fields from updateData that were only needed for processing

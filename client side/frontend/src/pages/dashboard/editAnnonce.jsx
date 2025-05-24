@@ -140,12 +140,26 @@ const EditAnnonce = () => {
 
       // Handle images
       if (data.images) {
+        // Separate existing images (string URLs) from new uploads (File objects)
+        const existingImages = [];
+        const newImages = [];
+        
         data.images.forEach((image) => {
           if (image instanceof File) {
-            formData.append("images", image);
-          } else {
-            formData.append("existingImages", image);
+            newImages.push(image);
+          } else if (typeof image === 'string') {
+            existingImages.push(image);
           }
+        });
+        
+        // Add existing images as JSON string
+        if (existingImages.length > 0) {
+          formData.append("existingImages", JSON.stringify(existingImages));
+        }
+        
+        // Add new images as files
+        newImages.forEach(file => {
+          formData.append("images", file);
         });
       }
 

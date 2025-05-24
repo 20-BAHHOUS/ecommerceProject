@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FaPlus, FaTrash, FaImage } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { parseImages } from '../../../utils/parseImages';
 
 const AnnonceImages = ({ setValue, watch }) => {
   const images = watch('images') || [];
@@ -45,6 +46,27 @@ const AnnonceImages = ({ setValue, watch }) => {
     maxFiles: 8
   });
 
+  // Helper function to get image source URL
+  const getImageSrc = (file) => {
+    if (file instanceof File) {
+      return URL.createObjectURL(file);
+    } else if (typeof file === 'string') {
+      return parseImages(file);
+    }
+    return null;
+  };
+
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      images.forEach(file => {
+        if (file instanceof File && file._objectUrl) {
+          URL.revokeObjectURL(file._objectUrl);
+        }
+      });
+    };
+  }, [images]);
+
   return (
     <div>
       {/* Image Grid with Upload Button */}
@@ -71,7 +93,7 @@ const AnnonceImages = ({ setValue, watch }) => {
                 </div>
               ) : (
                 <img
-                  src={URL.createObjectURL(file)}
+                  src={getImageSrc(file)}
                   alt={`Preview ${index + 1}`}
                   className="w-full h-full object-cover"
                   onError={() => handleImageError(index)}
