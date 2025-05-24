@@ -304,7 +304,7 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center">
           <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
           <p className="text-lg text-gray-700 font-medium">Loading announcement details...</p>
         </div>
@@ -316,7 +316,7 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 flex flex-col items-center justify-center p-4 text-center">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 text-center">
           <FaExclamationTriangle className="text-5xl mb-4 text-red-500" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h2>
           <p className="text-gray-600 mb-6">{error}</p>
@@ -332,7 +332,7 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center">
           <FaExclamationTriangle className="text-5xl mb-4 text-yellow-500" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Announcement not found</h2>
           <Link to="/" className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-200">
@@ -346,7 +346,7 @@ const AnnonceDetail = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Navigation */}
           <nav className="mb-8">
@@ -357,7 +357,7 @@ const AnnonceDetail = () => {
           </nav>
 
           {/* Main Content */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20">
+          <div className="bg-white rounded-2xl overflow-hidden border border-gray-200">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image Gallery Section */}
               <div className="p-6 space-y-4">
