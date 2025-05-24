@@ -315,11 +315,6 @@ const Navbar = () => {
                               e.target.src = "https://via.placeholder.com/32";
                             }}
                           />
-                          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 animate-fade-in">
-                            <div className="px-3 py-1.5 text-sm font-medium text-teal-700 bg-white/95 backdrop-blur-sm rounded-full shadow-md border border-teal-100">
-                              Hi, {userInfo?.fullName?.split(' ')[0] || 'User'}! 👋
-                            </div>
-                          </div>
                         </div>
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center ring-2 ring-offset-2 ring-teal-500 transition-all duration-200 group-hover:ring-teal-600">
