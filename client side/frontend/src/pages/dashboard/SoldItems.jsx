@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSort, FaFilter, FaSearch, FaSpinner } from 'react-icons/fa';
+import {  FaSearch, FaSpinner } from 'react-icons/fa';
 import axiosInstance from '../../utils/axiosInstance';
 import API_PATHS from '../../utils/apiPaths';
 import Navbar from '../../components/layouts/inputs/header';
@@ -22,20 +22,20 @@ const SoldItems = () => {
       const response = await axiosInstance.get(API_PATHS.ORDER.GET_SOLD_ITEMS);
       console.log('Sold items response:', response.data);
       
-      // Ensure we're setting an array
+
       const items = Array.isArray(response.data?.data) ? response.data.data : [];
       setSoldItems(items);
       setError(null);
     } catch (err) {
       console.error('Error fetching sold items:', err);
-      setSoldItems([]); // Reset to empty array on error
+      setSoldItems([]); 
       setError('Failed to load sold items. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Ensure soldItems is always treated as an array
+  
   const items = Array.isArray(soldItems) ? soldItems : [];
   
   const filteredAndSortedItems = items
