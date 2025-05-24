@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ChevronRight, AlertCircle, Package, PlusCircle } from "lucide-react";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
-
 import API_PATHS from "../../utils/apiPaths";
 import Header from "../../components/layouts/inputs/header";
 import Banner from "../../components/layouts/inputs/banner";
@@ -15,122 +15,180 @@ const Home = () => {
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('newest');
+  const [viewType, setViewType] = useState('grid');
 
   useEffect(() => {
-    const fetchAnnonces = async () => {
-      setLoading(true);
-      setError(null);
-     
-      try {
-        console.log(
-          "Fetching annonces from relative path:",
-          API_PATHS.ANNONCE.ADD_GET_ANNONCE
-        );
-        const response = await axiosInstance.get(
-          API_PATHS.ANNONCE.ADD_GET_ANNONCE
-        );
-        console.log("Response data:", response.data);
-
-        if (Array.isArray(response.data)) {
-          setAnnonces(response.data);
-        } else {
-          console.warn(
-            "Received non-array response for annonces:",
-            response.data
-          );
-          setAnnonces([]);
-          setError("Received unexpected data format from server.");
-        }
-      } catch (err) {
-        console.error("Error fetching annonces:", err);
-        if (err.response) {
-          setError(
-            `Error ${err.response.status}: ${
-              err.response.data?.message || "Failed to load announcements."
-            }`
-          );
-          if (err.response.status === 401) {
-            localStorage.removeItem("token");
-            navigate("/login");
-          }
-        } else if (err.request) {
-          setError("Network Error: Could not connect to the server.");
-        } else {
-          setError(`Error: ${err.message || "Failed to load announcements."}`);
-        }
-        setAnnonces([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAnnonces();
-  }, []);
+  }, [sortBy]);
+
+  const fetchAnnonces = async () => {
+    setLoading(true);
+    setError(null);
+   
+    try {
+      const response = await axiosInstance.get(API_PATHS.ANNONCE.ADD_GET_ANNONCE, {
+        params: { sort: sortBy }
+      });
+
+      if (Array.isArray(response.data)) {
+        setAnnonces(response.data);
+      } else {
+        console.warn("Received non-array response for annonces:", response.data);
+        setAnnonces([]);
+        setError("Received unexpected data format from server.");
+      }
+    } catch (err) {
+      console.error("Error fetching annonces:", err);
+      handleError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleError = (err) => {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+      setError(err.response.data?.message || "Failed to load announcements.");
+    } else if (err.request) {
+      setError("Network Error: Could not connect to the server.");
+    } else {
+      setError(err.message || "Failed to load announcements.");
+    }
+    setAnnonces([]);
+  };
+
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'price-low', label: 'Price: Low to High' }
+  ];
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Header />
       <MultiLevelNavbar />
       <Banner />
       <Hero />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-gray-200">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {" "}
-            Listings
-          </h1>
+      <main className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <nav className="flex mb-6 text-gray-500 text-sm">
+          <Link to="/" className="hover:text-gray-700">Home</Link>
+          <ChevronRight className="w-4 h-4 mx-2" />
+          <span className="text-gray-900">Listings</span>
+        </nav>
+
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Browse Listings
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Discover amazing deals from our community
+            </p>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
+            >
+              {sortOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
+              <button
+                onClick={() => setViewType('grid')}
+                className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewType('list')}
+                className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
+        {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500"></div>
+          <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg shadow-sm">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-teal-500"></div>
+            <p className="mt-4 text-gray-500">Loading listings...</p>
           </div>
         )}
 
+        {/* Error State */}
         {error && (
-          <div className="text-center p-6 bg-red-100 border border-red-400 text-red-700 rounded-md shadow-sm">
-            <p className="font-semibold text-lg mb-2">
-              Oops! Something went wrong.
-            </p>
-            <p>{error}</p>
+          <div className="flex items-start gap-4 p-6 bg-red-50 border border-red-100 rounded-lg">
+            <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="font-semibold text-red-800">Error Loading Listings</h3>
+              <p className="text-red-600 mt-1">{error}</p>
+              <button
+                onClick={fetchAnnonces}
+                className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors duration-200"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         )}
 
-        {!loading && !error && (
-          <>
-            {annonces.length === 0 ? (
-              // Empty State
-              <div className="text-center p-10 text-gray-500">
-                <p className="text-xl mb-4">No announcements found.</p>
-                <p>
-                  Be the first to{" "}
-                  <Link
-                    to="/postad"
-                    className="text-teal-700 hover:underline font-medium"
-                  >
-                    post an ad
-                  </Link>
-                  !
-                </p>
-              </div>
-            ) : (
-              //Grid of Announcement Cards
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {annonces.map((annonce) =>
-                  // Render AnnonceCard for each item, passing the data and a unique key
-                  annonce._id ? (
-                    <AnnonceCard key={annonce._id} annonce={annonce} />
-                  ) : (
-                    // Log warning and skip rendering if _id is missing
-                    (console.warn("Announcement missing _id:", annonce), null)
-                  )
-                )}
-              </div>
-            )}
-          </>
+        {/* Empty State */}
+        {!loading && !error && annonces.length === 0 && (
+          <div className="text-center py-12 px-4 bg-white rounded-lg shadow-sm">
+            <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Listings Found</h3>
+            <p className="text-gray-500 mb-6">Be the first to post a listing in our marketplace!</p>
+            <Link
+              to="/postad"
+              className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors duration-200"
+            >
+              <PlusCircle className="w-5 h-5 mr-2" />
+              Create Listing
+            </Link>
+          </div>
         )}
-      </div>
+
+        {/* Listings Grid */}
+        {!loading && !error && annonces.length > 0 && (
+          <div className={
+            viewType === 'grid'
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "flex flex-col gap-4"
+          }>
+            {annonces.map((annonce) => (
+              annonce._id ? (
+                <AnnonceCard 
+                  key={annonce._id} 
+                  annonce={annonce} 
+                  viewType={viewType}
+                />
+              ) : null
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 };
