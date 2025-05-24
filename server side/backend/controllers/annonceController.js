@@ -52,7 +52,19 @@ const addAnnonce = async (req, res, next) => {
 //Get all annonces
 const getAllAnnonces = async (req, res) => {
   try {
-    const annonces = await Annonce.find().sort({ date: -1 });
+    const { sort } = req.query;
+    let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    
+    // Handle different sort options
+    if (sort === 'oldest') {
+      sortOptions = { createdAt: 1 }; // Oldest first
+    } else if (sort === 'price-high') {
+      sortOptions = { price: -1 }; // Price high to low
+    } else if (sort === 'price-low') {
+      sortOptions = { price: 1 }; // Price low to high
+    }
+    
+    const annonces = await Annonce.find().sort(sortOptions);
     res.json(annonces);
   } catch (error) {
     res.status(500).json({
@@ -181,10 +193,21 @@ const updateAnnonceById = async (req, res) => {
 const getUserAnnonces = async (req, res) => {
   try {
     const { id } = req.params;
+    const { sort } = req.query;
+    
+    // Determine sort options
+    let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    
+    if (sort === 'oldest') {
+      sortOptions = { createdAt: 1 }; // Oldest first
+    } else if (sort === 'price-high') {
+      sortOptions = { price: -1 }; // Price high to low
+    } else if (sort === 'price-low') {
+      sortOptions = { price: 1 }; // Price low to high
+    }
+    
     const annonces = await Annonce.find({ createdBy: id })
-      .sort({
-        date: -1,
-      })
+      .sort(sortOptions)
       .lean();
     if (!annonces) {
       return res.status(404).json({ message: "No annonces found ." });
@@ -200,7 +223,7 @@ const getUserAnnonces = async (req, res) => {
 // Search for annonces based on a query string
 const searchAnnonces = async (req, res) => {
   try {
-    const { query } = req.query;
+    const { query, sort } = req.query;
     
     if (!query || query.trim() === '') {
       return res.status(400).json({ 
@@ -212,6 +235,17 @@ const searchAnnonces = async (req, res) => {
     // Create a regex pattern for case-insensitive search
     const searchRegex = new RegExp(query, 'i');
 
+    // Determine sort options
+    let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    
+    if (sort === 'oldest') {
+      sortOptions = { createdAt: 1 }; // Oldest first
+    } else if (sort === 'price-high') {
+      sortOptions = { price: -1 }; // Price high to low
+    } else if (sort === 'price-low') {
+      sortOptions = { price: 1 }; // Price low to high
+    }
+
     // Search in multiple fields
     const searchResults = await Annonce.find({
       $or: [
@@ -221,7 +255,7 @@ const searchAnnonces = async (req, res) => {
         { condition: searchRegex },
       ]
     })
-    .sort({ createdAt: -1 })
+    .sort(sortOptions)
     .populate("createdBy", "_id fullName")
     .populate("category", "name")
     .populate("subcategory", "name");
