@@ -372,13 +372,6 @@ const Navbar = () => {
                           My Orders
                         </Link>
                         <Link
-                          to="/favourites"
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors duration-200"
-                        >
-                          <FaHeart className="h-4 w-4 mr-3" />
-                          My Favorites
-                        </Link>
-                        <Link
                           to="/sold-items"
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors duration-200"
                         >
