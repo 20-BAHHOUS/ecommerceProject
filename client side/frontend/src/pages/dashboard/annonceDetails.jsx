@@ -45,6 +45,7 @@ const AnnonceDetail = () => {
   const [orderStatus, setOrderStatus] = useState(null);
   const [mainImageError, setMainImageError] = useState(false);
   const [thumbnailErrors, setThumbnailErrors] = useState({});
+  const [userInfo, setUserInfo] = useState(null);
 
   // Add function to check existing order
   const checkExistingOrder = async () => {
@@ -75,6 +76,22 @@ const AnnonceDetail = () => {
     }
   };
 
+  // Fetch user info for location comparison
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      
+      const userResponse = await axiosInstance.post(API_PATHS.AUTH.GET_USER_INFO);
+      if (userResponse && userResponse.data) {
+        console.log("User location:", userResponse.data.location);
+        setUserInfo(userResponse.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
   useEffect(() => {
     if (!annonceId) {
       setError("Announcement ID is missing.");
@@ -96,11 +113,14 @@ const AnnonceDetail = () => {
         }
         
         setAnnonce(response.data);
+        console.log("Annonce location:", response.data.location);
         
         // Check for existing order if user is logged in
         if (localStorage.getItem("token")) {
           await checkExistingOrder();
           await checkFavoriteStatus();
+          // Fetch user info to compare locations
+          await fetchUserInfo();
         }
       } catch (err) {
         if (err.response) {
@@ -198,7 +218,7 @@ const AnnonceDetail = () => {
   };
 
   // Using useMemo to avoid recalculating these values on every render
-  const { isOwner, displayImage, hasImages, imagesArray } = useMemo(() => {
+  const { isOwner, displayImage, hasImages, imagesArray, isLocationMatch } = useMemo(() => {
     // Check if the current user is the owner of the annonce
     const userId = localStorage.getItem("userId");
     const hasCreatedBy = !!annonce?.createdBy;
@@ -206,6 +226,11 @@ const AnnonceDetail = () => {
 
     // Only consider the user the owner if both values exist and are equal
     const isOwnerValue = hasCreatedBy && hasUserId && annonce?.createdBy.toString() === userId.toString();
+
+    // Check if location matches user's location - with better comparison
+    const isLocationMatchValue = userInfo?.location && 
+                                annonce?.location && 
+                                userInfo.location.toLowerCase().trim() === annonce.location.toLowerCase().trim();
 
     // Validate images array
     const validImages = annonce?.images &&
@@ -222,9 +247,10 @@ const AnnonceDetail = () => {
       isOwner: isOwnerValue,
       displayImage: currentImage,
       hasImages: validImages,
-      imagesArray: validImages ? annonce.images : []
+      imagesArray: validImages ? annonce.images : [],
+      isLocationMatch: isLocationMatchValue
     };
-  }, [annonce, currentImageIndex, mainImageError]);
+  }, [annonce, currentImageIndex, mainImageError, userInfo]);
 
   const handleNextImage = () => {
     if (imagesArray.length > 1) {
@@ -319,7 +345,7 @@ const AnnonceDetail = () => {
         </nav>
 
         {/* Main Content */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-white/20">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Image Gallery Section */}
             <div className="p-6 space-y-4">
@@ -439,6 +465,7 @@ const AnnonceDetail = () => {
                       icon={<FaMapMarkerAlt />}
                       label="Location"
                       value={annonce.location || "Not specified"}
+                      highlight={isLocationMatch}
                     />
                     <DetailItem
                       icon={<FaClock />}
@@ -463,7 +490,6 @@ const AnnonceDetail = () => {
                           : 'bg-teal-600 hover:bg-teal-700 active:bg-teal-800'
                       } 
                       text-white rounded-xl transition-all duration-300 transform hover:scale-[1.02]
-                      shadow-lg hover:shadow-xl
                       relative overflow-hidden group`}
                   >
                     <div className={`absolute inset-0 bg-gradient-to-r 
@@ -514,12 +540,21 @@ const AnnonceDetail = () => {
   );
 };
 
-const DetailItem = ({ icon, label, value }) => (
-  <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-    <div className="text-teal-600">{icon}</div>
+const DetailItem = ({ icon, label, value, highlight = false }) => (
+  <div className={`flex items-start gap-3 p-3 rounded-lg ${
+    highlight ? 'bg-teal-50 border border-teal-200' : 'bg-gray-50'
+  } transition-colors duration-300`}>
+    <div className={highlight ? 'text-teal-600' : 'text-teal-600'}>{icon}</div>
     <div>
       <p className="text-sm text-gray-500">{label}</p>
-      <p className="font-medium text-gray-900">{value}</p>
+      <p className={`font-medium ${highlight ? 'text-teal-700' : 'text-gray-900'}`}>
+        {value}
+        {highlight && (
+          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-100 text-teal-800">
+            Your location
+          </span>
+        )}
+      </p>
     </div>
   </div>
 );
@@ -528,6 +563,7 @@ DetailItem.propTypes = {
   icon: PropTypes.node.isRequired,
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
+  highlight: PropTypes.bool,
 };
 
 export default AnnonceDetail;
