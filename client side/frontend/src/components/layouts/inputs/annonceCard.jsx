@@ -18,7 +18,7 @@ const formatPrice = (price) => {
   }).format(numericPrice);
 };
 
-const AnnonceCard = ({ annonce }) => {
+const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -46,20 +46,106 @@ const AnnonceCard = ({ annonce }) => {
 
   const handleImageError = () => {
     // Use React state to track image errors instead of DOM manipulation
-    markImageAsFailed(hasValidImages ? annonce.images[0] : null);
+    if (hasValidImages) {
+      markImageAsFailed(annonce.images[0]);
+    }
     setImageError(true);
   };
 
+  // Grid view card (default)
+  if (viewType === 'grid') {
+    return (
+      <div 
+        className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full relative overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Image Section */}
+        <Link
+          to={detailLink}
+          className="block relative aspect-[4/3] w-full overflow-hidden"
+        >
+          {(!hasValidImages || imageError) ? (
+            <div className="h-full w-full flex items-center justify-center bg-gray-50">
+              <FaImage className="text-4xl text-gray-300" />
+            </div>
+          ) : (
+            <img
+              className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
+              src={parseImages(annonce.images[0])}
+              alt={annonce.title || "Announcement image"}
+              onError={handleImageError}
+              loading="lazy"
+            />
+          )}
+          
+          {/* Favorite Button */}
+          <button
+            onClick={handleFavoriteClick}
+            className={`absolute top-3 right-3 p-2 rounded-full ${
+              isFavorite 
+                ? 'bg-red-500 text-white' 
+                : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
+            } transition-all duration-300 shadow-sm hover:shadow`}
+          >
+            <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
+          </button>
+        </Link>
+
+        {/* Content Section */}
+        <div className="p-4 flex flex-col flex-grow">
+          {/* Title */}
+          <Link to={detailLink} className="block mb-2 group">
+            <h3 className="text-lg font-semibold text-gray-800 group-hover:text-teal-600 line-clamp-2 transition-colors duration-200">
+              {annonce.title || "Untitled Announcement"}
+            </h3>
+          </Link>
+
+          {/* Price and Type */}
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xl font-bold text-teal-600">
+              {formatPrice(annonce.price)}
+            </p>
+            {annonce.type && (
+              <span className="inline-flex items-center bg-teal-50 text-teal-700 text-xs font-medium px-2.5 py-1 rounded-full capitalize">
+                {annonce.type}
+              </span>
+            )}
+          </div>
+
+          {/* Footer Info */}
+          <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
+            {annonce.location && (
+              <div className="flex items-center">
+                <FaMapMarkerAlt className="mr-1.5 text-gray-400" size={14} />
+                <span className="truncate max-w-[150px]" title={annonce.location}>
+                  {annonce.location}
+                </span>
+              </div>
+            )}
+            {timeAgo && (
+              <div className="flex items-center">
+                <FaClock className="mr-1.5 text-gray-400" size={14} />
+                <span>{timeAgo}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // List view card
   return (
     <div 
-      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full relative overflow-hidden"
+      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-row h-full relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Section */}
+      {/* Image Section - List View */}
       <Link
         to={detailLink}
-        className="block relative aspect-[4/3] w-full overflow-hidden"
+        className="block relative w-1/3 min-w-[120px] overflow-hidden"
       >
         {(!hasValidImages || imageError) ? (
           <div className="h-full w-full flex items-center justify-center bg-gray-50">
@@ -72,6 +158,7 @@ const AnnonceCard = ({ annonce }) => {
             alt={annonce.title || "Announcement image"}
             onError={handleImageError}
             loading="lazy"
+            style={{ height: '100%', minHeight: '140px' }}
           />
         )}
         
@@ -88,43 +175,53 @@ const AnnonceCard = ({ annonce }) => {
         </button>
       </Link>
 
-      {/* Content Section */}
+      {/* Content Section - List View */}
       <div className="p-4 flex flex-col flex-grow">
-        {/* Title */}
-        <Link to={detailLink} className="block mb-2 group">
-          <h3 className="text-lg font-semibold text-gray-800 group-hover:text-teal-600 line-clamp-2 transition-colors duration-200">
-            {annonce.title || "Untitled Announcement"}
-          </h3>
-        </Link>
-
-        {/* Price and Type */}
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-xl font-bold text-teal-600">
-            {formatPrice(annonce.price)}
-          </p>
-          {annonce.type && (
-            <span className="inline-flex items-center bg-teal-50 text-teal-700 text-xs font-medium px-2.5 py-1 rounded-full capitalize">
-              {annonce.type}
-            </span>
-          )}
-        </div>
-
-        {/* Footer Info */}
-        <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
-          {annonce.location && (
-            <div className="flex items-center">
-              <FaMapMarkerAlt className="mr-1.5 text-gray-400" size={14} />
-              <span className="truncate max-w-[150px]" title={annonce.location}>
-                {annonce.location}
+        <div className="flex items-start justify-between">
+          {/* Title and Description */}
+          <div className="flex-grow pr-4">
+            <Link to={detailLink} className="block mb-2 group">
+              <h3 className="text-lg font-semibold text-gray-800 group-hover:text-teal-600 transition-colors duration-200">
+                {annonce.title || "Untitled Announcement"}
+              </h3>
+            </Link>
+            
+            {annonce.description && (
+              <p className="text-sm text-gray-500 line-clamp-2 mb-3">
+                {annonce.description}
+              </p>
+            )}
+            
+            {/* Location and Time */}
+            <div className="flex items-center gap-4 text-sm text-gray-500 mb-2">
+              {annonce.location && (
+                <div className="flex items-center">
+                  <FaMapMarkerAlt className="mr-1.5 text-gray-400" size={14} />
+                  <span className="truncate max-w-[150px]" title={annonce.location}>
+                    {annonce.location}
+                  </span>
+                </div>
+              )}
+              {timeAgo && (
+                <div className="flex items-center">
+                  <FaClock className="mr-1.5 text-gray-400" size={14} />
+                  <span>{timeAgo}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Price and Type */}
+          <div className="flex flex-col items-end">
+            <p className="text-xl font-bold text-teal-600 mb-2">
+              {formatPrice(annonce.price)}
+            </p>
+            {annonce.type && (
+              <span className="inline-flex items-center bg-teal-50 text-teal-700 text-xs font-medium px-2.5 py-1 rounded-full capitalize">
+                {annonce.type}
               </span>
-            </div>
-          )}
-          {timeAgo && (
-            <div className="flex items-center">
-              <FaClock className="mr-1.5 text-gray-400" size={14} />
-              <span>{timeAgo}</span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -140,7 +237,9 @@ AnnonceCard.propTypes = {
     location: PropTypes.string,
     images: PropTypes.arrayOf(PropTypes.string),
     createdAt: PropTypes.string,
+    description: PropTypes.string,
   }).isRequired,
+  viewType: PropTypes.oneOf(['grid', 'list']),
 };
 
 export default AnnonceCard;

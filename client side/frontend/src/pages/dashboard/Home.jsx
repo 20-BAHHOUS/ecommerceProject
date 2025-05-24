@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, AlertCircle, Package, PlusCircle } from "lucide-react";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
@@ -18,11 +18,8 @@ const Home = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [viewType, setViewType] = useState('grid');
 
-  useEffect(() => {
-    fetchAnnonces();
-  }, [sortBy]);
-
-  const fetchAnnonces = async () => {
+  // Memoize the fetch function to avoid unnecessary re-renders
+  const fetchAnnonces = useCallback(async () => {
     setLoading(true);
     setError(null);
    
@@ -34,17 +31,19 @@ const Home = () => {
       if (Array.isArray(response.data)) {
         setAnnonces(response.data);
       } else {
-        console.warn("Received non-array response for annonces:", response.data);
         setAnnonces([]);
         setError("Received unexpected data format from server.");
       }
     } catch (err) {
-      console.error("Error fetching annonces:", err);
       handleError(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortBy]);
+
+  useEffect(() => {
+    fetchAnnonces();
+  }, [fetchAnnonces]);
 
   const handleError = (err) => {
     if (err.response) {
@@ -67,6 +66,11 @@ const Home = () => {
     { value: 'price-high', label: 'Price: High to Low' },
     { value: 'price-low', label: 'Price: Low to High' }
   ];
+
+  // Validate annonces data before rendering
+  const validAnnonces = annonces.filter(annonce => 
+    annonce && typeof annonce === 'object' && annonce._id
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -155,7 +159,7 @@ const Home = () => {
         )}
 
         {/* Empty State */}
-        {!loading && !error && annonces.length === 0 && (
+        {!loading && !error && validAnnonces.length === 0 && (
           <div className="text-center py-12 px-4 bg-white rounded-lg shadow-sm">
             <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Listings Found</h3>
@@ -171,20 +175,18 @@ const Home = () => {
         )}
 
         {/* Listings Grid */}
-        {!loading && !error && annonces.length > 0 && (
+        {!loading && !error && validAnnonces.length > 0 && (
           <div className={
             viewType === 'grid'
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               : "flex flex-col gap-4"
           }>
-            {annonces.map((annonce) => (
-              annonce._id ? (
-                <AnnonceCard 
-                  key={annonce._id} 
-                  annonce={annonce} 
-                  viewType={viewType}
-                />
-              ) : null
+            {validAnnonces.map((annonce) => (
+              <AnnonceCard 
+                key={annonce._id} 
+                annonce={annonce} 
+                viewType={viewType}
+              />
             ))}
           </div>
         )}

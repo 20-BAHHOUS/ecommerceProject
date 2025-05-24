@@ -33,32 +33,39 @@ export const parseImages = (filename) => {
       return filename;
     }
 
-    // Clean up the filename
-    let cleanFilename = filename;
-    
-    // Handle different path formats
-    if (filename.includes('\\')) {
-      // Windows-style path
-      cleanFilename = filename.split('\\').pop();
-    } else if (filename.includes('/')) {
-      // Unix-style path
-      cleanFilename = filename.split('/').pop();
-    }
-
-    // Remove any query parameters or hashes
-    cleanFilename = cleanFilename.split('?')[0].split('#')[0];
-    
-    // Ensure the filename is properly encoded
-    const encodedFile = encodeURIComponent(cleanFilename);
-    
-    // Build the URL with the correct base path
+    // Handle the server's image path format
     let imageUrl;
-    if (filename.startsWith('/')) {
-      // If it starts with /, append to backend URL directly
-      imageUrl = `${BACKEND_URL}${filename}`;
-    } else {
-      // Otherwise, use the annonce-images directory
-      imageUrl = `${BACKEND_URL}/annonce-images/${encodedFile}`;
+    
+    // If it starts with 'uploads/' or '/uploads/', append to backend URL
+    if (filename.startsWith('uploads/') || filename.startsWith('/uploads/')) {
+      const cleanPath = filename.startsWith('/') ? filename : `/${filename}`;
+      imageUrl = `${BACKEND_URL}${cleanPath}`;
+    } 
+    // If it has a specific format used by the server (path with timestamp and ID)
+    else if (filename.includes('images-')) {
+      // Make sure we handle the correct path
+      if (!filename.startsWith('/')) {
+        imageUrl = `${BACKEND_URL}/uploads/annonces/${filename.split('/').pop()}`;
+      } else {
+        imageUrl = `${BACKEND_URL}${filename}`;
+      }
+    }
+    // For Windows-style paths, extract the filename and use the annonce-images directory
+    else if (filename.includes('\\')) {
+      const cleanFilename = filename.split('\\').pop().split('?')[0].split('#')[0];
+      imageUrl = `${BACKEND_URL}/annonce-images/${encodeURIComponent(cleanFilename)}`;
+    } 
+    // For other paths, try direct access or fallback to annonce-images
+    else {
+      // Remove any query parameters or hashes
+      const cleanFilename = filename.split('/').pop().split('?')[0].split('#')[0];
+      
+      // If the filename looks like a server path (e.g., contains timestamp format)
+      if (filename.startsWith('/')) {
+        imageUrl = `${BACKEND_URL}${filename}`;
+      } else {
+        imageUrl = `${BACKEND_URL}/annonce-images/${encodeURIComponent(cleanFilename)}`;
+      }
     }
 
     // Cache the result
@@ -66,8 +73,7 @@ export const parseImages = (filename) => {
     
     return imageUrl;
   } catch (error) {
-    // Silently handle errors (removed console.error that can cause performance issues)
-    // Mark the image as failed
+    // Silently handle errors
     markImageAsFailed(filename);
     return '/placeholder-image.png';
   }
