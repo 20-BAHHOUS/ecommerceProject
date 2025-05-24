@@ -296,7 +296,7 @@ const MyOrdersPage = () => {
                     <div className="mt-4 lg:mt-0 flex flex-col items-end space-y-3">
                       <div className="flex flex-wrap gap-2">
                         <Link
-                          to={`/annonce/${order.annonce?._id}`}
+                          to={`/annonces/${order.annonce?._id}`}
                           className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                         >
                           <FaEye className="mr-2 text-gray-600" />
