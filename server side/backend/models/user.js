@@ -9,8 +9,9 @@ const userSchema = new mongoose.Schema(
     phone: { type: String },
     location: { type: String },
     profileImageUrl: { type: String },
+    favorites: { type:[mongoose.Schema.Types.ObjectId], ref: 'Annonce' },
   },
-  { timestamps: true }
+
 );
 
 // Hash password before saving
