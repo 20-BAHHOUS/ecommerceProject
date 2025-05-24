@@ -65,17 +65,36 @@ const Navbar = () => {
       }
     };
 
+    // Listen for storage events (for profile updates from other components)
+    const handleStorageChange = (e) => {
+      if (e.key === "profileUpdated" && token) {
+        fetchUserInfo();
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("storage", handleStorageChange);
+    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("storage", handleStorageChange);
     };
+  }, []);
+
+  // Add a second useEffect to refresh user info when component mounts
+  useEffect(() => {
+    // This will help fetch user info when returning from profile page
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchUserInfo();
+    }
   }, []);
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axiosInstance.get(API_PATHS.USER.GET_PROFILE);
-      if (response.data.success) {
-        setUserInfo(response.data.user);
+      const response = await axiosInstance.post(API_PATHS.AUTH.GET_USER_INFO);
+      if (response.data) {
+        setUserInfo(response.data);
       }
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -128,6 +147,10 @@ const Navbar = () => {
   };
 
   const toggleDropdown = () => {
+    // When dropdown is toggled, refresh user info to ensure we have the latest profile image
+    if (!isDropdownOpen && isAuthenticated) {
+      fetchUserInfo();
+    }
     setIsDropdownOpen(!isDropdownOpen);
   };
 

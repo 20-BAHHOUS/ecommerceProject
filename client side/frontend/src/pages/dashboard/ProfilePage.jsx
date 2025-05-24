@@ -128,6 +128,10 @@ const ProfilePage = () => {
         profileImageUrl: imageUrl,
       }));
       
+      // Force refresh the header by triggering a localStorage change
+      const token = localStorage.getItem("token");
+      localStorage.setItem("profileUpdated", Date.now().toString());
+      
       toast.success('Profile picture updated successfully!');
     } catch (error) {
       console.error('Error uploading image:', error);
