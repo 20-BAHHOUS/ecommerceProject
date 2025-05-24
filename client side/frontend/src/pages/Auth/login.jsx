@@ -60,27 +60,25 @@ const Login = () => {
     }
   }
 
-  // Formulaire SignUp
-
   return (
     <AuthLayout>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <form
-          className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-300 rounded-lg"
+          className="h-full w-1/4 flex flex-col items-center gap-8 p-8 bg-white border border-gray-200 rounded-lg shadow-md"
           onSubmit={handleSubmit(onSubmit)}
         >
           {/* title */}
-          <h2 className="text-2xl font-semibold">Login</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">Sign In</h2>
           
           {/* Error message */}
           {loginError && (
-            <div className="w-full p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="w-full p-3 bg-red-50 border border-red-300 text-red-700 rounded-md text-sm">
               {loginError}
             </div>
           )}
           
           {/* inputs */}
-          <div className="flex flex-col gap-4 h-full w-full">
+          <div className="flex flex-col gap-6 h-full w-full">
             <Input
               label="Email Address"
               placeholder="name@example.com"
@@ -97,31 +95,33 @@ const Login = () => {
               error={errors.password?.message}
               {...register("password")}
             />
-          </div>
-          {/* submit button */}
-          <div className="w-full">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full font-medium inline-block rounded-sm bg-blue-600 px-8 py-3 text-sm text-white transition hover:scale-110 hover:shadow-xl focus:ring-3 focus:outline-hidden ${
-                isLoading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {isLoading ? "LOGGING IN..." : "LOGIN"}
-            </button>
-            <p className="text-sm text-slate-800 mt-2">
-              Don't have an account?{" "}
-              <Link
-                className="font-semibold text-blue-500 underline hover:text-blue-600"
-                to="/signup"
+          
+            {/* submit button */}
+            <div className="w-full mt-4">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`w-full font-medium rounded-md bg-teal-600 px-8 py-3 text-sm text-white transition hover:bg-teal-700 hover:shadow-lg focus:ring-3 focus:ring-teal-300 focus:outline-none ${
+                  isLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
               >
-                Sign up
-              </Link>
-            </p>
+                {isLoading ? "LOGGING IN..." : "LOGIN"}
+              </button>
+              <p className="text-sm text-slate-600 mt-4 text-center">
+                Don't have an account?{" "}
+                <Link
+                  className="font-semibold text-teal-600 hover:text-teal-700 hover:underline"
+                  to="/signup"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </div>
           </div>
         </form>
       </div>
     </AuthLayout>
   );
 };
+
 export default Login;
