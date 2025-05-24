@@ -22,6 +22,7 @@ import {
 import { toast } from "react-toastify";
 import { parseImages } from "../../utils/parseImages";
 import moment from 'moment';
+import Navbar from "../../components/layouts/inputs/header";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -130,241 +131,256 @@ const MyOrdersPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <FaSpinner className="animate-spin text-4xl mb-4 text-teal-500" />
-        <p className="text-lg text-gray-700">Loading your orders...</p>
-      </div>
+      <>
+        <Navbar />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+          <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
+          <p className="text-lg text-gray-700">Loading your orders...</p>
+        </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <FaExclamationTriangle className="text-5xl mb-4 text-red-500 mx-auto" />
-          <p className="text-xl font-semibold mb-2 text-gray-800">
-            Oops! Something went wrong.
-          </p>
-          <p className="mb-6 text-gray-600">{error}</p>
-          <Link to="/home" className="text-teal-500 hover:text-teal-600 font-medium hover:underline">
-            Return to Home
-          </Link>
+      <>
+        <Navbar />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+          <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
+            <FaExclamationTriangle className="text-5xl mb-4 text-gray-500 mx-auto" />
+            <p className="text-xl font-semibold mb-2 text-gray-800">
+              Oops! Something went wrong.
+            </p>
+            <p className="mb-6 text-gray-600">{error}</p>
+            <Link to="/home" className="text-teal-600 hover:text-teal-700 font-medium hover:underline">
+              Return to Home
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (orders.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <FaShoppingBag className="text-5xl mb-4 text-gray-500 mx-auto" />
-          <p className="text-xl font-semibold mb-4 text-gray-800">No Orders Yet</p>
-          <p className="text-gray-600 mb-6">Start shopping and place your first order!</p>
-          <Link 
-            to="/home" 
-            className="inline-block bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-colors duration-200"
-          >
-            Browse Products
-          </Link>
+      <>
+        <Navbar />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+          <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
+            <FaShoppingBag className="text-5xl mb-4 text-teal-500 mx-auto" />
+            <p className="text-xl font-semibold mb-4 text-gray-800">No Orders Yet</p>
+            <p className="text-gray-600 mb-6">Start shopping and place your first order!</p>
+            <Link 
+              to="/home" 
+              className="inline-block bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors duration-200"
+            >
+              Browse Products
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <h1 className="text-2xl font-bold text-gray-800 flex items-center">
-                <FaShoppingBag className="mr-3 text-teal-500" />
-                My Orders
-              </h1>
-
-              {/* Search and Filters */}
-              <div className="flex flex-col md:flex-row gap-4 md:items-center">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search orders..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+    <>
+      <Navbar />
+      
+    
+      
+      <div className="min-h-screen bg-gray-100 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="text-gray-600 flex items-center">
+                  <FaShoppingBag className="mr-2 text-teal-600" />
+                  <span className="font-medium text-gray-700">My Orders</span>
                 </div>
 
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                >
-                  <option value="all">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="accepted">Accepted</option>
-                </select>
+                {/* Search and Filters */}
+                <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search orders..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  </div>
 
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                >
-                  <option value="date-desc">Newest First</option>
-                  <option value="date-asc">Oldest First</option>
-                  <option value="price-desc">Price: High to Low</option>
-                  <option value="price-asc">Price: Low to High</option>
-                </select>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                  </select>
+
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  >
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="price-asc">Price: Low to High</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="divide-y divide-gray-200">
-            {paginatedOrders.map((order) => (
-              <div key={order._id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
-                      {order.annonce && order.annonce.images && order.annonce.images.length > 0 ? (
-                        <img
-                          className="w-full h-full object-cover"
-                          src={parseImages(order.annonce.images[0])}
-                          alt={order.annonce.title}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholder-image.png";
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <FaShoppingBag className="text-gray-500 text-3xl" />
+            <div className="divide-y divide-gray-200">
+              {paginatedOrders.map((order) => (
+                <div key={order._id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                        {order.annonce && order.annonce.images && order.annonce.images.length > 0 ? (
+                          <img
+                            className="w-full h-full object-cover"
+                            src={parseImages(order.annonce.images[0])}
+                            alt={order.annonce.title}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/placeholder-image.png";
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <FaShoppingBag className="text-gray-400 text-3xl" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {order.annonce ? order.annonce.title : "N/A"}
+                          </h3>
+                          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            ORDER_STATUS_COLORS[order.status]?.bg || 'bg-gray-100'
+                          } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-800'}`}>
+                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          </span>
                         </div>
-                      )}
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <FaUser className="mr-2 text-teal-600" />
+                            <span>Seller: {order.seller ? order.seller.fullName : "N/A"}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <FaCalendar className="mr-2 text-teal-600" />
+                            <span>Ordered: {formatDate(order.createdAt)}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <FaTag className="mr-2 text-teal-600" />
+                            <span>Price: {order.annonce ? formatPrice(order.annonce.price) : "N/A"}</span>
+                          </div>
+                          {order.annonce && order.annonce.location && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <FaMapMarkerAlt className="mr-2 text-teal-600" />
+                              <span>{order.annonce.location}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-gray-800">
-                          {order.annonce ? order.annonce.title : "N/A"}
-                        </h3>
-                        <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                          ORDER_STATUS_COLORS[order.status]?.bg || 'bg-gray-100'
-                        } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-700'}`}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </span>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <FaUser className="mr-2 text-teal-500" />
-                          <span>Seller: {order.seller ? order.seller.fullName : "N/A"}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <FaCalendar className="mr-2 text-teal-500" />
-                          <span>Ordered: {formatDate(order.createdAt)}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <FaTag className="mr-2 text-teal-500" />
-                          <span>Price: {order.annonce ? formatPrice(order.annonce.price) : "N/A"}</span>
-                        </div>
-                        {order.annonce && order.annonce.location && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <FaMapMarkerAlt className="mr-2 text-teal-500" />
-                            <span>{order.annonce.location}</span>
-                          </div>
+                    <div className="mt-4 lg:mt-0 flex flex-col items-end space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          to={`/annonce/${order.annonce?._id}`}
+                          className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                        >
+                          <FaEye className="mr-2 text-gray-600" />
+                          View Details
+                        </Link>
+
+                        <button
+                          onClick={() => handleContactSeller(order.seller)}
+                          className="inline-flex items-center px-3 py-2 border border-teal-200 rounded-md text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100"
+                        >
+                          <FaEnvelope className="mr-2 text-teal-600" />
+                          Contact Seller
+                        </button>
+
+                        {order.status === "pending" && (
+                          <button
+                            onClick={() => handleCancelOrder(order._id)}
+                            className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100"
+                          >
+                            <FaTrash className="mr-2 text-gray-600" />
+                            Cancel Order
+                          </button>
                         )}
                       </div>
                     </div>
                   </div>
-
-                  <div className="mt-4 lg:mt-0 flex flex-col items-end space-y-3">
-                    <div className="flex flex-wrap gap-2">
-                      <Link
-                        to={`/annonce/${order.annonce?._id}`}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                      >
-                        <FaEye className="mr-2 text-gray-600" />
-                        View Details
-                      </Link>
-
-                      <button
-                        onClick={() => handleContactSeller(order.seller)}
-                        className="inline-flex items-center px-3 py-2 border border-teal-500 rounded-md text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100"
-                      >
-                        <FaEnvelope className="mr-2 text-teal-500" />
-                        Contact Seller
-                      </button>
-
-                      {order.status === "pending" && (
-                        <button
-                          onClick={() => handleCancelOrder(order._id)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100"
-                        >
-                          <FaTrash className="mr-2 text-gray-600" />
-                          Cancel Order
-                        </button>
-                      )}
-                    </div>
-                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    currentPage === 1
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                  }`}
-                >
-                  Previous
-                </button>
-
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-4 py-2 text-sm font-medium rounded-md ${
-                        currentPage === page
-                          ? 'bg-teal-500 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    currentPage === totalPages
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                  }`}
-                >
-                  Next
-                </button>
-              </div>
+              ))}
             </div>
-          )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 text-sm font-medium rounded-md ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                    }`}
+                  >
+                    Previous
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-4 py-2 text-sm font-medium rounded-md ${
+                          currentPage === page
+                            ? 'bg-teal-600 text-white border border-teal-600'
+                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 text-sm font-medium rounded-md ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Contact Modal */}
       {contactModalOpen && selectedSeller && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200">
             <h3 className="text-xl font-semibold mb-4 text-gray-800">Contact Seller</h3>
             <div className="space-y-4">
               <div>
@@ -376,9 +392,9 @@ const MyOrdersPage = () => {
                   <p className="font-medium text-gray-700">Email</p>
                   <a 
                     href={`mailto:${selectedSeller.email}`}
-                    className="text-teal-500 hover:text-teal-600 flex items-center gap-2"
+                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
                   >
-                    <FaEnvelope />
+                    <FaEnvelope className="text-teal-600" />
                     {selectedSeller.email}
                   </a>
                 </div>
@@ -388,9 +404,9 @@ const MyOrdersPage = () => {
                   <p className="font-medium text-gray-700">Phone</p>
                   <a 
                     href={`tel:${selectedSeller.phone}`}
-                    className="text-teal-500 hover:text-teal-600 flex items-center gap-2"
+                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
                   >
-                    <FaPhoneAlt />
+                    <FaPhoneAlt className="text-teal-600" />
                     {selectedSeller.phone}
                   </a>
                 </div>
@@ -399,7 +415,7 @@ const MyOrdersPage = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setContactModalOpen(false)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                className="px-4 py-2 bg-gray-50 text-gray-700 rounded-md hover:bg-gray-100 border border-gray-200"
               >
                 Close
               </button>
@@ -407,7 +423,7 @@ const MyOrdersPage = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
