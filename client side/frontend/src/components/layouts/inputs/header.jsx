@@ -144,7 +144,7 @@ const Navbar = () => {
             to="/home" 
             className="flex items-center space-x-2"
           >
-            <span className="text-2xl font-bold text-teal-600">Loopify</span>
+            <span className="text-2xl font-bold text-gray-800 hover:text-gray-600 transition-colors duration-200">Loopify</span>
           </Link>
 
           {/* Search Bar (for larger screens) */}
