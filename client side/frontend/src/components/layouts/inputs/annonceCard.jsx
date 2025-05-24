@@ -84,6 +84,13 @@ const AnnonceCard = ({ annonce }) => {
         >
           <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
         </button>
+
+        {/* Category Badge */}
+        {annonce.category && (
+          <span className="absolute top-3 left-3 bg-white/80 backdrop-blur-sm text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full capitalize shadow-sm">
+            {annonce.category}
+          </span>
+        )}
       </Link>
 
       {/* Content Section */}
@@ -134,6 +141,7 @@ AnnonceCard.propTypes = {
     _id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    category: PropTypes.string,
     type: PropTypes.string,
     location: PropTypes.string,
     images: PropTypes.arrayOf(PropTypes.string),
