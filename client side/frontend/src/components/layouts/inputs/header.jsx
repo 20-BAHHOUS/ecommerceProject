@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search, User, Heart, Bell, MessageSquare } from "lucide-react"; // Import icons
+import { Search, User, Heart, Bell, MessageSquare } from "lucide-react"; 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
@@ -43,6 +43,7 @@ const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
   const notificationRef = useRef(null);
 
@@ -158,6 +159,14 @@ const Navbar = () => {
     setShowNotifications(!showNotifications);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
+
   return (
     <nav className="bg-white sticky top-0 z-50 shadow-sm backdrop-blur-sm bg-white/90">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -172,18 +181,42 @@ const Navbar = () => {
 
           {/* Search Bar (for larger screens) */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-            <div className="relative w-full">
-              <div className="relative flex items-center w-full h-10 rounded-lg focus-within:shadow-lg bg-gray-50 overflow-hidden group border border-gray-200 focus-within:border-teal-500 transition-all duration-200">
-                <div className="grid place-items-center h-full w-12 text-gray-400">
+            <form onSubmit={handleSearch} className="relative w-full">
+              <div className="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-gray-50 overflow-hidden group border border-gray-200 focus-within:border-teal-500 hover:border-teal-400 transition-all duration-200">
+                <div className="grid place-items-center h-full w-12 text-gray-400 group-hover:text-teal-500 transition-colors duration-200">
                   <Search className="h-5 w-5" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Search for items..."
+                  placeholder="Search for announcements..."
                   className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-50 px-2 group-focus-within:bg-white transition-colors duration-200"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="h-full px-2 text-gray-400 hover:text-gray-600 transition-all duration-200"
+                    aria-label="Clear search"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  className="h-full px-5 bg-teal-500 text-white font-medium hover:bg-teal-600 transition-all duration-200 flex items-center gap-2"
+                  aria-label="Search"
+                >
+                  <span>Search</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
               </div>
-            </div>
+            </form>
           </div>
 
           {/* Navigation Links */}
@@ -372,16 +405,42 @@ const Navbar = () => {
 
       {/* Search Bar (for smaller screens) */}
       <div className="md:hidden px-4 py-3 border-t border-gray-100">
-        <div className="relative flex items-center w-full h-10 rounded-lg focus-within:shadow-lg bg-gray-50 overflow-hidden group border border-gray-200 focus-within:border-teal-500 transition-all duration-200">
-          <div className="grid place-items-center h-full w-12 text-gray-400">
-            <Search className="h-5 w-5" />
+        <form onSubmit={handleSearch} className="relative w-full">
+          <div className="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-gray-50 overflow-hidden group border border-gray-200 focus-within:border-teal-500 hover:border-teal-400 transition-all duration-200">
+            <div className="grid place-items-center h-full w-12 text-gray-400 group-hover:text-teal-500 transition-colors duration-200">
+              <Search className="h-5 w-5" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search for announcements..."
+              className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-50 px-2 group-focus-within:bg-white transition-colors duration-200"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="h-full px-2 text-gray-400 hover:text-gray-600 transition-all duration-200"
+                aria-label="Clear search"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            <button
+              type="submit"
+              className="h-full px-5 bg-teal-500 text-white font-medium hover:bg-teal-600 transition-all duration-200 flex items-center gap-2"
+              aria-label="Search"
+            >
+              <span>Search</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
           </div>
-          <input
-            type="text"
-            placeholder="Search for items..."
-            className="peer h-full w-full outline-none text-sm text-gray-700 bg-gray-50 px-2 group-focus-within:bg-white transition-colors duration-200"
-          />
-        </div>
+        </form>
       </div>
     </nav>
   );

@@ -18,6 +18,7 @@ import ChangePassword from "./components/layouts/inputs/changePassowd";
 import UserOrdersPage from "./pages/dashboard/oredersPage";
 import SoldItems from "./pages/dashboard/SoldItems";
 import CategoryListings from "./pages/CategoryListings";
+import SearchResults from "./pages/dashboard/SearchResults";
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/change-pass" exact element={<ChangePassword/>} />
           <Route path="/user-orders" exact element={<UserOrdersPage />} />
           <Route path="/sold-items" exact element={<SoldItems />} />
+          <Route path="/search" exact element={<SearchResults />} />
           
           {/* Category Routes */}
           <Route path="/category/:category" element={<CategoryListings />} />

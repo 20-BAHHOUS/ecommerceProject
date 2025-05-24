@@ -185,6 +185,46 @@ const getUserAnnonces = async (req, res) => {
   }
 };
 
+// Search for annonces based on a query string
+const searchAnnonces = async (req, res) => {
+  try {
+    const { query } = req.query;
+    
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ 
+        success: false,
+        message: "Search query is required" 
+      });
+    }
+
+    // Create a regex pattern for case-insensitive search
+    const searchRegex = new RegExp(query, 'i');
+
+    // Search in multiple fields
+    const searchResults = await Annonce.find({
+      $or: [
+        { title: searchRegex },
+        { description: searchRegex },
+        { type: searchRegex },
+        { condition: searchRegex },
+      ]
+    })
+    .sort({ createdAt: -1 })
+    .populate("createdBy", "_id fullName")
+    .populate("category", "name")
+    .populate("subcategory", "name");
+
+    res.status(200).json(searchResults);
+  } catch (error) {
+    console.error("Error searching annonces:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error searching annonces",
+      error: error.message
+    });
+  }
+};
+
 export {
   addAnnonce,
   getAllAnnonces,
@@ -192,4 +232,5 @@ export {
   deleteAnnonceById,
   updateAnnonceById,
   getUserAnnonces,
+  searchAnnonces,
 };
