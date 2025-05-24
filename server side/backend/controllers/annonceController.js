@@ -10,8 +10,11 @@ const addAnnonce = async (req, res, next) => {
     // Add the user ID from the authentication middleware
     body.createdBy = req.user._id;
 
-    //Get the file paths
-    body.images = req.files.map((file) => file.path);
+    //Get the file paths - normalize paths to use forward slashes
+    body.images = req.files.map((file) => {
+      // Remove the leading ./ and normalize backslashes to forward slashes
+      return file.path.replace(/\\/g, '/').replace(/^\.\//, '');
+    });
 
     //create a new annonce in database
     const newAnnonce = new Annonce(body);
@@ -123,7 +126,7 @@ const updateAnnonceById = async (req, res) => {
     // Handle image updates
     if (req.files && req.files.length > 0) {
       // If there are new uploaded files
-      const newImagePaths = req.files.map(file => file.path);
+      const newImagePaths = req.files.map(file => file.path.replace(/\\/g, '/').replace(/^\.\//, ''));
       
       // Handle existing images if provided
       if (req.body.existingImages) {

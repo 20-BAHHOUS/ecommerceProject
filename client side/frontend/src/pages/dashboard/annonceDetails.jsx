@@ -77,6 +77,12 @@ const AnnonceDetail = () => {
         const response = await axiosInstance.get(
           API_PATHS.ANNONCE.ANNONCE_BY_ID(annonceId)
         );
+        
+        // Debug the images array
+        if (response.data.images) {
+          console.log("Image paths from API:", response.data.images);
+        }
+        
         setAnnonce(response.data);
         
         // Check for existing order if user is logged in
@@ -159,6 +165,7 @@ const AnnonceDetail = () => {
 
   // Handle main image error
   const handleMainImageError = () => {
+    console.error('Main image failed to load:', annonce?.images?.[currentImageIndex]);
     setMainImageError(true);
     if (annonce?.images && annonce.images.length > 0) {
       markImageAsFailed(annonce.images[currentImageIndex]);

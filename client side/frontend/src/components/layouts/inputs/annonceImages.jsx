@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FaCloudUploadAlt, FaTrash, FaImage } from 'react-icons/fa';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 const AnnonceImages = ({ setValue, watch }) => {
   const images = watch('images') || [];
+  const [previewErrors, setPreviewErrors] = useState({});
 
   const onDrop = useCallback((acceptedFiles) => {
     const newImages = [...images, ...acceptedFiles];
@@ -19,6 +20,20 @@ const AnnonceImages = ({ setValue, watch }) => {
   const removeImage = (indexToRemove) => {
     const newImages = images.filter((_, index) => index !== indexToRemove);
     setValue('images', newImages);
+    
+    // Also clear any error for this image
+    if (previewErrors[indexToRemove]) {
+      const newErrors = { ...previewErrors };
+      delete newErrors[indexToRemove];
+      setPreviewErrors(newErrors);
+    }
+  };
+
+  const handleImageError = (index) => {
+    setPreviewErrors(prev => ({
+      ...prev,
+      [index]: true
+    }));
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -88,11 +103,18 @@ const AnnonceImages = ({ setValue, watch }) => {
         {images.map((file, index) => (
           <div key={index} className="relative group aspect-square">
             <div className="w-full h-full rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-              <img
-                src={URL.createObjectURL(file)}
-                alt={`Preview ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
+              {previewErrors[index] ? (
+                <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                  <FaImage className="w-8 h-8 text-gray-300" />
+                </div>
+              ) : (
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`Preview ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={() => handleImageError(index)}
+                />
+              )}
             </div>
             <button
               type="button"

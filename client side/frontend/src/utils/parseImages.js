@@ -33,46 +33,37 @@ export const parseImages = (filename) => {
       return filename;
     }
 
-    // Handle the server's image path format
+    // Normalize path - replace Windows backslashes with forward slashes
+    const normalizedPath = filename.replace(/\\/g, '/');
+    
+    // Simple and direct approach to handle all image paths
     let imageUrl;
     
-    // If it starts with 'uploads/' or '/uploads/', append to backend URL
-    if (filename.startsWith('uploads/') || filename.startsWith('/uploads/')) {
-      const cleanPath = filename.startsWith('/') ? filename : `/${filename}`;
-      imageUrl = `${BACKEND_URL}${cleanPath}`;
+    // If path already starts with 'uploads/', just append to backend URL
+    if (normalizedPath.startsWith('uploads/')) {
+      imageUrl = `${BACKEND_URL}/${normalizedPath}`;
     } 
-    // If it has a specific format used by the server (path with timestamp and ID)
-    else if (filename.includes('images-')) {
-      // Make sure we handle the correct path
-      if (!filename.startsWith('/')) {
-        imageUrl = `${BACKEND_URL}/uploads/annonces/${filename.split('/').pop()}`;
-      } else {
-        imageUrl = `${BACKEND_URL}${filename}`;
-      }
+    // For filenames that might just have the filename portion
+    else if (!normalizedPath.includes('/')) {
+      imageUrl = `${BACKEND_URL}/uploads/annonces/${normalizedPath}`;
     }
-    // For Windows-style paths, extract the filename and use the annonce-images directory
-    else if (filename.includes('\\')) {
-      const cleanFilename = filename.split('\\').pop().split('?')[0].split('#')[0];
-      imageUrl = `${BACKEND_URL}/annonce-images/${encodeURIComponent(cleanFilename)}`;
-    } 
-    // For other paths, try direct access or fallback to annonce-images
+    // For any other path format
     else {
-      // Remove any query parameters or hashes
-      const cleanFilename = filename.split('/').pop().split('?')[0].split('#')[0];
-      
-      // If the filename looks like a server path (e.g., contains timestamp format)
-      if (filename.startsWith('/')) {
-        imageUrl = `${BACKEND_URL}${filename}`;
-      } else {
-        imageUrl = `${BACKEND_URL}/annonce-images/${encodeURIComponent(cleanFilename)}`;
-      }
+      // Remove any leading ./ from the path
+      const cleanPath = normalizedPath.replace(/^\.\//, '');
+      imageUrl = `${BACKEND_URL}/${cleanPath}`;
     }
 
     // Cache the result
     imagePathCache.set(filename, imageUrl);
     
+    // For debugging
+    console.log('Original path:', filename);
+    console.log('Parsed URL:', imageUrl);
+    
     return imageUrl;
   } catch (error) {
+    console.error('Error parsing image path:', error, filename);
     // Silently handle errors
     markImageAsFailed(filename);
     return '/placeholder-image.png';
