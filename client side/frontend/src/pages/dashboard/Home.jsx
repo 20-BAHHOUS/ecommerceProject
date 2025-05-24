@@ -6,8 +6,8 @@ import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
 import API_PATHS from "../../utils/apiPaths";
 import Header from "../../components/layouts/inputs/header";
-import Banner from "../../components/layouts/inputs/banner";
 import Hero from "../../components/layouts/inputs/hero";
+import Footer from "../../components/layouts/inputs/footer";
 import axiosInstance from "../../utils/axiosInstance";
 
 const Home = () => {
@@ -73,20 +73,12 @@ const Home = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
       <MultiLevelNavbar />
-      <Banner />
-      <Hero />
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex mb-6 text-gray-500 text-sm">
-          <Link to="/" className="hover:text-gray-700">Home</Link>
-          <ChevronRight className="w-4 h-4 mx-2" />
-          <span className="text-gray-900">Listings</span>
-        </nav>
-
+      <main className="container mx-auto px-4 py-8 flex-grow">
+       
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -188,9 +180,15 @@ const Home = () => {
                 viewType={viewType}
               />
             ))}
+           
           </div>
+          
         )}
+        
+       
       </main>
+      <Hero />
+      <Footer />
     </div>
   );
 };
