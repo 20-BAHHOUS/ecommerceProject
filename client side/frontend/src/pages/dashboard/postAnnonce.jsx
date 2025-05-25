@@ -207,7 +207,7 @@ const PostAd = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <Navbar />
       <div className="flex-grow container mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">

@@ -33,7 +33,7 @@ export const FavoritesProvider = ({ children }) => {
       setFavorites(prev => [...prev, annonceId]);
 
       // Then update the backend
-      await axios.post('/api/user/favorites', { 
+      await axios.post(API_PATHS.FAVORITES.ADD_FAVORITE, { 
         annonceId,
         userId: localStorage.getItem('userId') // Assuming you store userId in localStorage
       });
@@ -51,7 +51,7 @@ export const FavoritesProvider = ({ children }) => {
       setFavorites(prev => prev.filter(id => id !== annonceId));
 
       // Then update the backend
-      await axios.delete(`/api/user/favorites/${annonceId}`, {
+      await axios.delete(API_PATHS.FAVORITES.REMOVE_FAVORITE, {
         data: { userId: localStorage.getItem('userId') }
       });
     } catch (error) {
@@ -76,7 +76,9 @@ export const FavoritesProvider = ({ children }) => {
       const userId = localStorage.getItem('userId');
       if (!userId) return;
 
-      const response = await axios.get(`/api/user/favorites/${userId}`);
+      const response = await axios.get(API_PATHS.FAVORITES.GET_FAVORITES, {
+        params: { userId }
+      });
       const serverFavorites = response.data.favorites || [];
       
       // Update local state with server state

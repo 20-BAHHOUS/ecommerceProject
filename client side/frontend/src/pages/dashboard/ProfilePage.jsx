@@ -179,7 +179,7 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-white">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="text-center p-8 rounded-2xl">
           <FaSpinner className="animate-spin text-6xl text-teal-600 mx-auto mb-4" />
           <p className="text-gray-700 text-lg font-medium">Loading your profile...</p>

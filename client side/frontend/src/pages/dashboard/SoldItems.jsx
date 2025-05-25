@@ -129,7 +129,7 @@ const SoldItems = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gray-100">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">

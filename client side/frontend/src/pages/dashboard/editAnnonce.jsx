@@ -282,7 +282,7 @@ const EditAnnonce = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
         <FaSpinner className="animate-spin text-5xl text-teal-600 mb-4" />
         <p className="text-xl text-gray-600">Loading announcement details...</p>
       </div>

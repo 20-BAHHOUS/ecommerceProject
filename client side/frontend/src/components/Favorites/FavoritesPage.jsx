@@ -79,7 +79,7 @@ const FavoritesPage = () => {
     return (
       <>
         <Navbar />
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12 bg-gray-100">
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Something went wrong</h2>

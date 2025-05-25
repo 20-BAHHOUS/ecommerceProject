@@ -325,7 +325,7 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
           <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
           <p className="text-lg text-gray-700 font-medium">Loading announcement details...</p>
         </div>
