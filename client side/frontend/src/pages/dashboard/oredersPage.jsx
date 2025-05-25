@@ -239,19 +239,21 @@ const MyOrdersPage = () => {
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
                         {order.annonce && order.annonce.images && order.annonce.images.length > 0 ? (
-                          <img
-                            className="w-full h-full object-cover"
-                            src={parseImages(order.annonce.images[0])}
-                            alt={order.annonce.title}
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "/placeholder-image.png";
-                            }}
-                          />
+                          <Link to={`/annonces/${order.annonce?._id}`}>
+                            <img
+                              className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                              src={parseImages(order.annonce.images[0])}
+                              alt={order.annonce.title}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/placeholder-image.png";
+                              }}
+                            />
+                          </Link>
                         ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <Link to={`/annonces/${order.annonce?._id}`} className="w-full h-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors">
                             <FaShoppingBag className="text-gray-400 text-3xl" />
-                          </div>
+                          </Link>
                         )}
                       </div>
 
@@ -269,16 +271,8 @@ const MyOrdersPage = () => {
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                           <div className="flex items-center text-sm text-gray-600">
-                            <FaUser className="mr-2 text-teal-600" />
-                            <span>Seller: {order.seller ? order.seller.fullName : "N/A"}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
                             <FaCalendar className="mr-2 text-teal-600" />
                             <span>Ordered: {formatDate(order.createdAt)}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <FaTag className="mr-2 text-teal-600" />
-                            <span>Price: {order.annonce ? formatPrice(order.annonce.price) : "N/A"}</span>
                           </div>
                           {order.annonce && order.annonce.location && (
                             <div className="flex items-center text-sm text-gray-600">
@@ -292,14 +286,6 @@ const MyOrdersPage = () => {
 
                     <div className="mt-4 lg:mt-0 flex flex-col items-end space-y-3">
                       <div className="flex flex-wrap gap-2">
-                        <Link
-                          to={`/annonces/${order.annonce?._id}`}
-                          className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                          <FaEye className="mr-2 text-gray-600" />
-                          View Details
-                        </Link>
-
                         <button
                           onClick={() => handleContactSeller(order.seller)}
                           className="inline-flex items-center px-3 py-2 border border-teal-200 rounded-md text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100"
