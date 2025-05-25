@@ -145,14 +145,11 @@ const Navbar = () => {
         
         // Refresh notifications
         await fetchNotifications();
-        
-        toast.success(`Order ${action} successfully`);
       } else {
         throw new Error(orderResponse.data.message || 'Failed to update order');
       }
     } catch (error) {
       console.error(`Error ${action}ing order:`, error);
-      toast.error(error.response?.data?.message || `Failed to ${action} order`);
     }
   };
 

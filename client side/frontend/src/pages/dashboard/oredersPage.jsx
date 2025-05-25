@@ -95,6 +95,31 @@ const MyOrdersPage = () => {
     }
   };
 
+  const handleDeleteAllOrders = async () => {
+    if (filteredOrders.length === 0) return;
+    
+    if (window.confirm("Are you sure you want to delete ALL your orders? This action cannot be undone.")) {
+      try {
+        // Delete each order one by one
+        const deletePromises = filteredOrders.map(order => 
+          axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(order._id))
+        );
+        
+        await Promise.all(deletePromises);
+        
+        // Clear orders from state
+        setOrders(prevOrders => prevOrders.filter(order => 
+          !filteredOrders.some(filtered => filtered._id === order._id)
+        ));
+        
+        toast.success("All orders deleted successfully");
+      } catch (err) {
+        console.error("Error deleting all orders:", err);
+        toast.error("Failed to delete all orders");
+      }
+    }
+  };
+
   const handleContactSeller = (seller) => {
     setSelectedSeller(seller);
     setContactModalOpen(true);
@@ -228,6 +253,16 @@ const MyOrdersPage = () => {
                     <option value="price-desc">Price: High to Low</option>
                     <option value="price-asc">Price: Low to High</option>
                   </select>
+                  
+                  {filteredOrders.length > 1 && (
+                    <button
+                      onClick={handleDeleteAllOrders}
+                      className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center shadow-sm"
+                    >
+                      <FaTrash className="mr-2" />
+                      DELETE ALL
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

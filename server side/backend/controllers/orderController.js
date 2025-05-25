@@ -180,9 +180,9 @@ const deleteOrder = async (req, res) => {
       return res.status(400).json({ message: "Only pending orders can be cancelled by buyers." });
     }
 
-    // Seller can delete accepted orders
-    if (isSeller && order.status !== 'accepted') {
-      return res.status(400).json({ message: "Only accepted orders can be deleted by sellers." });
+    // Seller can delete accepted or rejected orders
+    if (isSeller && order.status !== 'accepted' && order.status !== 'rejected') {
+      return res.status(400).json({ message: "Only accepted or rejected orders can be deleted by sellers." });
     }
 
     // Delete the order
