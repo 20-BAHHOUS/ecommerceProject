@@ -81,14 +81,20 @@ const MyOrdersPage = () => {
   const handleCancelOrder = async (orderId) => {
     if (window.confirm("Are you sure you want to cancel this order?")) {
       try {
-        await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(orderId));
-        toast.success("Order cancelled successfully.");
-        setOrders((prevOrders) => prevOrders.filter(order => order._id !== orderId));
+        const response = await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(orderId));
+        
+        if (response.data.success) {
+          toast.success("Order cancelled successfully.");
+          // Update the orders list by removing the cancelled order
+          setOrders((prevOrders) => prevOrders.filter(order => order._id !== orderId));
+        } else {
+          throw new Error(response.data.message || "Failed to cancel the order.");
+        }
       } catch (err) {
         console.error("Error cancelling order:", err);
         toast.error(
           err.response?.data?.message ||
-            err.response?.data?.error ||
+            err.message ||
             "Failed to cancel the order."
         );
       }
@@ -100,22 +106,42 @@ const MyOrdersPage = () => {
     
     if (window.confirm("Are you sure you want to delete ALL your orders? This action cannot be undone.")) {
       try {
-        // Delete each order one by one
-        const deletePromises = filteredOrders.map(order => 
-          axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(order._id))
-        );
+        let successCount = 0;
+        let failCount = 0;
         
-        await Promise.all(deletePromises);
+        // Process orders one by one
+        for (const order of filteredOrders) {
+          if (order.status !== 'pending') {
+            failCount++;
+            continue; // Skip non-pending orders
+          }
+          
+          try {
+            const response = await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(order._id));
+            if (response.data.success) {
+              successCount++;
+            } else {
+              failCount++;
+            }
+          } catch (error) {
+            console.error(`Error deleting order ${order._id}:`, error);
+            failCount++;
+          }
+        }
         
-        // Clear orders from state
-        setOrders(prevOrders => prevOrders.filter(order => 
-          !filteredOrders.some(filtered => filtered._id === order._id)
-        ));
+        // Refresh the orders list to show current state
+        await fetchUserOrders();
         
-        toast.success("All orders deleted successfully");
+        if (successCount > 0) {
+          toast.success(`Successfully deleted ${successCount} order(s)`);
+        }
+        
+        if (failCount > 0) {
+          toast.warning(`Failed to delete ${failCount} order(s). Only pending orders can be cancelled.`);
+        }
       } catch (err) {
-        console.error("Error deleting all orders:", err);
-        toast.error("Failed to delete all orders");
+        console.error("Error in batch delete operation:", err);
+        toast.error("An error occurred while deleting orders");
       }
     }
   };
