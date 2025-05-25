@@ -42,14 +42,16 @@ const Modal = ({ isOpen, onClose, title, children, buttonText = "OK" }) => {
       >
         {title && <h3 className="text-xl font-semibold mb-4 text-teal-700 border-b border-teal-100 pb-2">{title}</h3>}
         <div className="mb-6 text-gray-700">{children}</div>
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 active:bg-teal-800 transition-all duration-200 transform hover:scale-[1.02]"
-          >
-            {buttonText}
-          </button>
-        </div>
+        {buttonText !== null && (
+          <div className="flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 active:bg-teal-800 transition-all duration-200 transform hover:scale-[1.02]"
+            >
+              {buttonText}
+            </button>
+          </div>
+        )}
       </motion.div>
     </div>,
     document.body

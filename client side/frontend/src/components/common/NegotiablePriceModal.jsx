@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
-import { FaMoneyBillWave } from 'react-icons/fa';
+import { FaMoneyBillWave, FaTimes } from 'react-icons/fa';
 
 const NegotiablePriceModal = ({ isOpen, onClose, onSubmit, originalPrice }) => {
   const [negotiablePrice, setNegotiablePrice] = useState('');
@@ -23,19 +23,37 @@ const NegotiablePriceModal = ({ isOpen, onClose, onSubmit, originalPrice }) => {
   };
 
   const handleCancel = () => {
+    // User doesn't want to negotiate, set value to "non"
+    onSubmit("non");
+    
     // Clear the form and close the modal
     setNegotiablePrice('');
     setError('');
     onClose();
   };
 
+  // Custom header with close button
+  const customHeader = (
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-xl font-semibold text-teal-700">Begin Negotiation</h3>
+      <button 
+        onClick={onClose}
+        className="text-gray-500 hover:text-gray-700 focus:outline-none"
+      >
+        <FaTimes size={20} />
+      </button>
+    </div>
+  );
+
   return (
     <Modal 
       isOpen={isOpen} 
-      onClose={handleCancel} 
-      title="Suggest a Price"
-      buttonText={null} // We'll provide custom buttons
+      onClose={onClose} 
+      title={null} // We're providing our own custom header
+      buttonText={null} // We're providing custom buttons
     >
+      {customHeader}
+
       <div className="flex flex-col items-center text-center mb-6">
         <div className="mb-4 text-teal-600">
           <FaMoneyBillWave size={48} />
@@ -76,7 +94,7 @@ const NegotiablePriceModal = ({ isOpen, onClose, onSubmit, originalPrice }) => {
           onClick={handleCancel}
           className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition-all duration-200"
         >
-          Cancel
+          No Negotiation
         </button>
         <button
           onClick={handleSubmit}
