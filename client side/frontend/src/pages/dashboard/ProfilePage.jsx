@@ -179,8 +179,8 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-teal-50 to-gray-100">
-        <div className="text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl">
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="text-center p-8 rounded-2xl">
           <FaSpinner className="animate-spin text-6xl text-teal-600 mx-auto mb-4" />
           <p className="text-gray-700 text-lg font-medium">Loading your profile...</p>
         </div>
@@ -190,8 +190,8 @@ const ProfilePage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-gray-100 px-4">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Oops!</h2>
           <p className="text-gray-600 mb-6">{error}</p>
@@ -207,7 +207,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-gray-50 to-blue-50 font-sans">
+    <div className="min-h-screen bg-white font-sans">
       <Navbar />
       <ToastContainer
         position="top-right"
@@ -227,10 +227,10 @@ const ProfilePage = () => {
           {/* Left Column: Profile Summary & Actions */}
           <div className="lg:col-span-1 space-y-6">
             {/* Profile Summary Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-white/20 transition-all duration-300 hover:shadow-xl">
+            <div className="bg-white rounded-2xl p-8 border border-gray-200">
               <div className="flex flex-col items-center mb-8">
                 <div className="relative group">
-                  <div className="w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 transform transition-transform duration-300 group-hover:scale-105">
+                  <div className="w-36 h-36 rounded-full overflow-hidden border-4 border-gray-100 mb-6 transform transition-transform duration-300 group-hover:scale-105">
                     {imageLoading ? (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100">
                         <FaSpinner className="animate-spin text-3xl text-teal-600" />
@@ -288,7 +288,7 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="border-t border-gray-200/50 pt-6">
+              <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
                   <FaCog className="mr-3 text-teal-600" /> Account Settings
                 </h3>
@@ -329,19 +329,11 @@ const ProfilePage = () => {
           {/* Right Column: Personal Info Details & Announcements */}
           <div className="lg:col-span-2 space-y-6">
             {/* Personal Information Details Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-white/20 transition-all duration-300 hover:shadow-xl">
+            <div className="bg-white rounded-2xl p-8 border border-gray-200">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center">
                   <FaUser className="mr-3 text-teal-600" /> Your Details
                 </h2>
-                {!isEditingPersonal && (
-                  <button
-                    onClick={toggleEditPersonal}
-                    className="p-2 text-teal-600 hover:text-teal-700 transition-colors duration-200 rounded-full hover:bg-teal-50"
-                  >
-                    <FaEdit className="text-xl" />
-                  </button>
-                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
@@ -426,14 +418,14 @@ const ProfilePage = () => {
                 <div className="mt-8 flex justify-end space-x-4">
                   <button
                     onClick={handleSavePersonal}
-                    className="flex items-center px-6 py-3 bg-teal-600 text-white font-semibold rounded-xl shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
+                    className="flex items-center px-6 py-3 bg-teal-600 text-white font-semibold rounded-xl hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
                   >
                     <FaUpload className="mr-2" />
                     Save Changes
                   </button>
                   <button
                     onClick={toggleEditPersonal}
-                    className="flex items-center px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
+                    className="flex items-center px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
                   >
                     Cancel
                   </button>
@@ -442,14 +434,14 @@ const ProfilePage = () => {
             </div>
 
             {/* My Announcements Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-white/20 transition-all duration-300 hover:shadow-xl">
+            <div className="bg-white rounded-2xl p-8 border border-gray-200">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center">
                   <FaBullhorn className="mr-3 text-teal-600" /> My Announcements
                 </h2>
                 <Link
                   to="/postad"
-                  className="flex items-center px-5 py-2.5 bg-teal-600 text-white font-semibold rounded-xl shadow-md hover:bg-teal-700 transition-all duration-300 transform hover:scale-105"
+                  className="flex items-center px-5 py-2.5 bg-teal-600 text-white font-semibold rounded-xl hover:bg-teal-700 transition-all duration-300 transform hover:scale-105"
                 >
                   <FaPlus className="mr-2" />
                   New Post
@@ -457,7 +449,7 @@ const ProfilePage = () => {
               </div>
               
               {annonces.length === 0 ? (
-                <div className="text-center py-16 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-200">
+                <div className="text-center py-16 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-300">
                   <FaBullhorn className="text-6xl text-gray-300 mx-auto mb-4 transform -rotate-12" />
                   <p className="text-gray-600 text-lg mb-6">
                     You haven't posted any announcements yet
