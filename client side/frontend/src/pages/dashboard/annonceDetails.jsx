@@ -22,6 +22,7 @@ import { parseImages, markImageAsFailed } from "../../utils/parseImages";
 import { toast } from "react-toastify";
 import moment from 'moment';
 import Navbar from "../../components/layouts/inputs/header";
+import AnnouncementOrderModal from "../../components/common/AnnouncementOrderModal";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -47,6 +48,7 @@ const AnnonceDetail = () => {
   const [mainImageError, setMainImageError] = useState(false);
   const [thumbnailErrors, setThumbnailErrors] = useState({});
   const [userInfo, setUserInfo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Add function to check existing order
   const checkExistingOrder = async () => {
@@ -157,6 +159,13 @@ const AnnonceDetail = () => {
       return;
     }
 
+    // Check if user is trying to order their own announcement
+    const userId = localStorage.getItem("userId");
+    if (annonce.createdBy && userId && annonce.createdBy.toString() === userId.toString()) {
+      setIsModalOpen(true);
+      return;
+    }
+
     setIsOrderLoading(true);
     try {      
       // Create a more complete order payload
@@ -183,7 +192,7 @@ const AnnonceDetail = () => {
     } catch (error) {
       // Handle specific error cases
       if (error.response?.data?.errorCode === "SELF_ORDER") {
-        toast.error("You cannot place an order on your own announcement");
+        setIsModalOpen(true);
       } else if (error.response?.data?.errorCode === "DUPLICATE_ORDER") {
         toast.error("You have already placed an order for this announcement");
       } else if (error.response?.data?.errorCode === "MISSING_SELLER") {
@@ -549,6 +558,12 @@ const AnnonceDetail = () => {
           </div>
         </div>
       </div>
+      
+      {/* Modal component positioned outside of other containers */}
+      <AnnouncementOrderModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </>
   );
 };
