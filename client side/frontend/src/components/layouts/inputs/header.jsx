@@ -240,11 +240,6 @@ const Navbar = () => {
                   aria-label="Favorites"
                 >
                   <FaHeart size={18} />
-                  {favoritesCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
-                      {favoritesCount}
-                    </span>
-                  )}
                 </button>
                 
                 <div className="relative" ref={notificationRef}>
