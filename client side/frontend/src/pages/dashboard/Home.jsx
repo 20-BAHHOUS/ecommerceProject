@@ -61,7 +61,11 @@ const Home = () => {
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
     { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'price-low', label: 'Price: Low to High' }
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'type-sale', label: 'Type: For Sale' },
+    { value: 'type-trade', label: 'Type: For Trade' },
+    { value: 'type-wanted', label: 'Type: Wanted' },
+    { value: 'type-rent', label: 'Type: For Rent' }
   ];
 
   // Validate annonces data before rendering

@@ -54,6 +54,7 @@ const getAllAnnonces = async (req, res) => {
   try {
     const { sort } = req.query;
     let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    let filterOptions = {}; // Default: no filter
     
     // Handle different sort options
     if (sort === 'oldest') {
@@ -62,9 +63,17 @@ const getAllAnnonces = async (req, res) => {
       sortOptions = { price: -1 }; // Price high to low
     } else if (sort === 'price-low') {
       sortOptions = { price: 1 }; // Price low to high
+    } else if (sort === 'type-sale') {
+      filterOptions = { type: 'sale' }; // Filter by sale type
+    } else if (sort === 'type-trade') {
+      filterOptions = { type: 'trade' }; // Filter by trade type
+    } else if (sort === 'type-wanted') {
+      filterOptions = { type: 'wanted' }; // Filter by wanted type
+    } else if (sort === 'type-rent') {
+      filterOptions = { type: 'rent' }; // Filter by rent type
     }
     
-    const annonces = await Annonce.find().sort(sortOptions);
+    const annonces = await Annonce.find(filterOptions).sort(sortOptions);
     res.json(annonces);
   } catch (error) {
     res.status(500).json({
@@ -197,6 +206,7 @@ const getUserAnnonces = async (req, res) => {
     
     // Determine sort options
     let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    let filterOptions = { createdBy: id }; // Base filter by user ID
     
     if (sort === 'oldest') {
       sortOptions = { createdAt: 1 }; // Oldest first
@@ -204,9 +214,17 @@ const getUserAnnonces = async (req, res) => {
       sortOptions = { price: -1 }; // Price high to low
     } else if (sort === 'price-low') {
       sortOptions = { price: 1 }; // Price low to high
+    } else if (sort === 'type-sale') {
+      filterOptions = { createdBy: id, type: 'sale' }; // Filter by sale type
+    } else if (sort === 'type-trade') {
+      filterOptions = { createdBy: id, type: 'trade' }; // Filter by trade type
+    } else if (sort === 'type-wanted') {
+      filterOptions = { createdBy: id, type: 'wanted' }; // Filter by wanted type
+    } else if (sort === 'type-rent') {
+      filterOptions = { createdBy: id, type: 'rent' }; // Filter by rent type
     }
     
-    const annonces = await Annonce.find({ createdBy: id })
+    const annonces = await Annonce.find(filterOptions)
       .sort(sortOptions)
       .lean();
     if (!annonces) {
@@ -237,6 +255,14 @@ const searchAnnonces = async (req, res) => {
 
     // Determine sort options
     let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    let filterOptions = {
+      $or: [
+        { title: searchRegex },
+        { description: searchRegex },
+        { type: searchRegex },
+        { condition: searchRegex },
+      ]
+    };
     
     if (sort === 'oldest') {
       sortOptions = { createdAt: 1 }; // Oldest first
@@ -244,21 +270,66 @@ const searchAnnonces = async (req, res) => {
       sortOptions = { price: -1 }; // Price high to low
     } else if (sort === 'price-low') {
       sortOptions = { price: 1 }; // Price low to high
+    } else if (sort === 'type-sale') {
+      filterOptions = {
+        $and: [
+          { type: 'sale' },
+          {
+            $or: [
+              { title: searchRegex },
+              { description: searchRegex },
+              { condition: searchRegex },
+            ]
+          }
+        ]
+      };
+    } else if (sort === 'type-trade') {
+      filterOptions = {
+        $and: [
+          { type: 'trade' },
+          {
+            $or: [
+              { title: searchRegex },
+              { description: searchRegex },
+              { condition: searchRegex },
+            ]
+          }
+        ]
+      };
+    } else if (sort === 'type-wanted') {
+      filterOptions = {
+        $and: [
+          { type: 'wanted' },
+          {
+            $or: [
+              { title: searchRegex },
+              { description: searchRegex },
+              { condition: searchRegex },
+            ]
+          }
+        ]
+      };
+    } else if (sort === 'type-rent') {
+      filterOptions = {
+        $and: [
+          { type: 'rent' },
+          {
+            $or: [
+              { title: searchRegex },
+              { description: searchRegex },
+              { condition: searchRegex },
+            ]
+          }
+        ]
+      };
     }
 
-    // Search in multiple fields
-    const searchResults = await Annonce.find({
-      $or: [
-        { title: searchRegex },
-        { description: searchRegex },
-        { type: searchRegex },
-        { condition: searchRegex },
-      ]
-    })
-    .sort(sortOptions)
-    .populate("createdBy", "_id fullName")
-    .populate("category", "name")
-    .populate("subcategory", "name");
+    // Search with filters
+    const searchResults = await Annonce.find(filterOptions)
+      .sort(sortOptions)
+      .populate("createdBy", "_id fullName")
+      .populate("category", "name")
+      .populate("subcategory", "name");
 
     res.status(200).json(searchResults);
   } catch (error) {

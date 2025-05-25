@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
 import API_PATHS from "../../utils/apiPaths";
@@ -13,8 +13,9 @@ const UserAnnonces = () => {
   const [AnnoncesUser, setAnnoncesUser] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('newest');
 
-  const fetchAnnoncesUser = async () => {
+  const fetchAnnoncesUser = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -27,7 +28,10 @@ const UserAnnonces = () => {
       }
 
       const response = await axiosInstance.get(
-        API_PATHS.ANNONCE.GET_ANNONCES_BY_USER(userId)
+        API_PATHS.ANNONCE.GET_ANNONCES_BY_USER(userId),
+        {
+          params: { sort: sortBy }
+        }
       );
 
       if (response.data && response.data.data && Array.isArray(response.data.data)) {
@@ -63,11 +67,11 @@ const UserAnnonces = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, sortBy]);
 
   useEffect(() => {
     fetchAnnoncesUser();
-  }, [navigate]);
+  }, [fetchAnnoncesUser]);
 
   const handleDeleteAnnonce = async (annonceIdToDelete) => {
     if (window.confirm("Are you sure you want to delete this announcement?")) {
@@ -82,6 +86,17 @@ const UserAnnonces = () => {
     }
   };
 
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'type-sale', label: 'Type: For Sale' },
+    { value: 'type-trade', label: 'Type: For Trade' },
+    { value: 'type-wanted', label: 'Type: Wanted' },
+    { value: 'type-rent', label: 'Type: For Rent' }
+  ];
+
   return (
     <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen">
       <Header />
@@ -93,12 +108,25 @@ const UserAnnonces = () => {
             </h1>
             <p className="text-gray-500">{AnnoncesUser.length} {AnnoncesUser.length === 1 ? 'announcement' : 'announcements'} published</p>
           </div>
-          <Link
-            to="/postad"
-            className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 flex items-center gap-2 hover:translate-y-[-2px]"
-          >
-            <FaPlusCircle /> Create New
-          </Link>
+          <div className="flex items-center gap-4">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
+            >
+              {sortOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <Link
+              to="/postad"
+              className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 flex items-center gap-2 hover:translate-y-[-2px]"
+            >
+              <FaPlusCircle /> Create New
+            </Link>
+          </div>
         </div>
 
         {loading && (
