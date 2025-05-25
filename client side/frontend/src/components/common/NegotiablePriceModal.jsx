@@ -22,9 +22,10 @@ const NegotiablePriceModal = ({ isOpen, onClose, onSubmit, originalPrice }) => {
     onClose();
   };
 
-  const handleCancel = () => {
-    // User doesn't want to negotiate, set value to "non"
-    onSubmit("non");
+  const handleNoNegotiation = () => {
+    // User doesn't want to negotiate, place order without negotiation
+    // Pass null to indicate no negotiation is needed
+    onSubmit(null);
     
     // Clear the form and close the modal
     setNegotiablePrice('');
@@ -91,7 +92,7 @@ const NegotiablePriceModal = ({ isOpen, onClose, onSubmit, originalPrice }) => {
       
       <div className="flex justify-between gap-4">
         <button
-          onClick={handleCancel}
+          onClick={handleNoNegotiation}
           className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 transition-all duration-200"
         >
           No Negotiation

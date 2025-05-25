@@ -182,10 +182,12 @@ const AnnonceDetail = () => {
         sellerId: annonce.createdBy
       };
       
-      // Add negotiable price if provided
-      if (negotiablePrice) {
+      // Only add negotiable price if a value was provided (not null)
+      // When null is passed, it means user chose "No Negotiation"
+      if (negotiablePrice !== null) {
         orderPayload.negotiablePrice = negotiablePrice;
       }
+      // When null, we don't add any negotiablePrice field at all
       
       const response = await axiosInstance.post(
         API_PATHS.ORDER.PLACE_ORDER,
