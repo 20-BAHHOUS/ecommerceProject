@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaImage, FaHeart, FaClock } from "react-icons/fa";
 import { parseImages, markImageAsFailed } from "../../../utils/parseImages";
 import moment from 'moment';
+import axiosInstance from "../../../utils/axiosInstance";
+import API_PATHS from "../../../utils/apiPaths";
+import { toast } from "react-toastify";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -23,6 +26,25 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  useEffect(() => {
+    // Check if this announcement is in user's favorites when component mounts
+    const checkFavoriteStatus = async () => {
+      if (!annonce || !annonce._id) return;
+      
+      try {
+        const response = await axiosInstance.get(API_PATHS.AUTH.CHECK_FAVORITE(annonce._id));
+        setIsFavorite(response.data.isFavorite);
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+
+    const token = localStorage.getItem("token");
+    if (token && annonce && annonce._id) {
+      checkFavoriteStatus();
+    }
+  }, [annonce]);
+
   if (!annonce) {
     return null;
   }
@@ -38,10 +60,38 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
     ? moment(annonce.createdAt).fromNow()
     : null;
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = async (e) => {
     e.preventDefault();
-    setIsFavorite(!isFavorite);
-    // Add your favorite logic here
+    e.stopPropagation();
+    
+    if (!localStorage.getItem("token")) {
+      toast.error("Please login to add items to favorites");
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.TOGGLE_FAVORITE, {
+        annonceId: annonce._id
+      });
+      
+      setIsFavorite(response.data.isFavorite);
+      toast.success(response.data.message);
+      
+      // Notify other components about the favorites update
+      localStorage.setItem("favoritesUpdated", Date.now().toString());
+      localStorage.removeItem("favoritesUpdated"); // Immediately remove to allow future updates
+      
+      // If we're in the favorites page and we're removing from favorites, dispatch a custom event
+      if (!response.data.isFavorite) {
+        const event = new CustomEvent('removeFavorite', { 
+          detail: { annonceId: annonce._id } 
+        });
+        window.dispatchEvent(event);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Could not update favorites. Please try again later.");
+    }
   };
 
   const handleImageError = () => {
