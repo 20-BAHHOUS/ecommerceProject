@@ -88,7 +88,7 @@ const getByUser = async (req, res) => {
     const userId = req.user._id;
     const orders = await Order.find({ buyer: userId })
       .populate("annonce", "title images")
-      .populate("seller", "fullName email");
+      .populate("seller", "fullName email phone");
     res.status(200).json({ success: true, data: orders });
   } catch (error) {
     console.error("Error getting user orders:", error);

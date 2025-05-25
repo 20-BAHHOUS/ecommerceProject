@@ -13,8 +13,6 @@ import {
   FaTag, 
   FaMapMarkerAlt,
   FaSearch,
-  FaFilter,
-  FaSortAmountDown,
   FaEye,
   FaPhoneAlt,
   FaEnvelope
@@ -187,7 +185,6 @@ const MyOrdersPage = () => {
       <Navbar />
       
     
-      
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -380,42 +377,72 @@ const MyOrdersPage = () => {
       {/* Contact Modal */}
       {contactModalOpen && selectedSeller && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Contact Seller</h3>
-            <div className="space-y-4">
-              <div>
-                <p className="font-medium text-gray-700">Seller Name</p>
-                <p className="text-gray-600">{selectedSeller.fullName}</p>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">Contact Seller</h3>
+              <button 
+                onClick={() => setContactModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <div className="flex items-center">
+                <div className="bg-teal-100 p-3 rounded-full">
+                  <FaUser className="text-teal-600 text-xl" />
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-medium text-gray-900">{selectedSeller.fullName}</h4>
+                  <p className="text-sm text-gray-500">Seller</p>
+                </div>
               </div>
+            </div>
+            
+            <div className="space-y-4">
               {selectedSeller.email && (
-                <div>
-                  <p className="font-medium text-gray-700">Email</p>
-                  <a 
-                    href={`mailto:${selectedSeller.email}`}
-                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
-                  >
-                    <FaEnvelope className="text-teal-600" />
+                <div className="p-3 border border-gray-200 rounded-lg bg-white">
+                  <div className="flex items-center mb-2">
+                    <FaEnvelope className="text-blue-600 mr-2" />
+                    <p className="font-medium text-gray-700">Email</p>
+                  </div>
+                  <p className="text-gray-800 break-all pl-6">
                     {selectedSeller.email}
-                  </a>
+                  </p>
                 </div>
               )}
+              
               {selectedSeller.phone && (
-                <div>
-                  <p className="font-medium text-gray-700">Phone</p>
-                  <a 
-                    href={`tel:${selectedSeller.phone}`}
-                    className="text-teal-600 hover:text-teal-700 flex items-center gap-2"
-                  >
-                    <FaPhoneAlt className="text-teal-600" />
+                <div className="p-3 border border-gray-200 rounded-lg bg-white">
+                  <div className="flex items-center mb-2">
+                    <FaPhoneAlt className="text-green-600 mr-2" />
+                    <p className="font-medium text-gray-700">Phone</p>
+                  </div>
+                  <p className="text-gray-800 pl-6">
                     {selectedSeller.phone}
-                  </a>
+                  </p>
+                </div>
+              )}
+              
+              {!selectedSeller.email && !selectedSeller.phone && (
+                <div className="text-center py-6">
+                  <div className="bg-yellow-50 p-3 rounded-lg inline-block mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-600">No contact information available for this seller.</p>
                 </div>
               )}
             </div>
+            
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setContactModalOpen(false)}
-                className="px-4 py-2 bg-gray-50 text-gray-700 rounded-md hover:bg-gray-100 border border-gray-200"
+                className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
               >
                 Close
               </button>
