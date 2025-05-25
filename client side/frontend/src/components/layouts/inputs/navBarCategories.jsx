@@ -89,8 +89,8 @@ const MultiLevelNavbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
-            <Link to="/" className="text-white hover:text-teal-300 px-3 py-2 rounded-md text-sm font-medium">
-              Home
+            <Link to="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+              All
             </Link>
             {categories.map((category) => (
               <div key={category._id || category.id} className="relative group">
