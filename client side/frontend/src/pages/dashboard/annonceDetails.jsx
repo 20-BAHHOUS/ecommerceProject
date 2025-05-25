@@ -175,13 +175,11 @@ const AnnonceDetail = () => {
   const handleSubmitOrder = async (negotiablePrice = null) => {
     setIsOrderLoading(true);
     try {      
-      // Create a more complete order payload
+      // Create order payload
       const orderPayload = {
         annonceId,
         buyerId: localStorage.getItem("userId"),
-        sellerId: annonce.createdBy,
-        price: annonce.price,
-        status: "pending"
+        sellerId: annonce.createdBy
       };
       
       // Add negotiable price if provided

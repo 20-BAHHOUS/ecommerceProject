@@ -270,9 +270,9 @@ const MyOrdersPage = () => {
             <div className="divide-y divide-gray-200">
               {paginatedOrders.map((order) => (
                 <div key={order._id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                     <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200 mt-3">
                         {order.annonce && order.annonce.images && order.annonce.images.length > 0 ? (
                           <Link to={`/annonces/${order.annonce?._id}`}>
                             <img
@@ -293,47 +293,50 @@ const MyOrdersPage = () => {
                       </div>
 
                       <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-start justify-between mb-3">
                           <h3 className="text-lg font-semibold text-gray-900">
                             {order.annonce ? order.annonce.title : "N/A"}
                           </h3>
-                          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                          <span className={`px-4 py-2 rounded-full text-sm font-semibold mt-1 ${
                             ORDER_STATUS_COLORS[order.status]?.bg || 'bg-gray-100'
                           } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-800'}`}>
                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                           </span>
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <FaCalendar className="mr-2 text-teal-600" />
-                            <span>Ordered: {formatDate(order.createdAt)}</span>
-                          </div>
-                          {order.annonce && order.annonce.location && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
+                          <div className="flex flex-col space-y-2.5">
                             <div className="flex items-center text-sm text-gray-600">
-                              <FaMapMarkerAlt className="mr-2 text-teal-600" />
-                              <span>{order.annonce.location}</span>
+                              <FaCalendar className="mr-2 text-teal-600 flex-shrink-0" />
+                              <span>Ordered: {formatDate(order.createdAt)}</span>
                             </div>
-                          )}
-                          
-                          {/* Price information */}
-                          <div className="flex items-center text-sm text-gray-600">
-                            <FaTag className="mr-2 text-teal-600" />
-                            <span>Price: {formatPrice(order.annonce?.price)}</span>
+                            
+                            <div className="flex items-center text-sm text-gray-600">
+                              <FaTag className="mr-2 text-teal-600 flex-shrink-0" />
+                              <span>Price: {formatPrice(order.annonce?.price)}</span>
+                            </div>
+                            
+                            {order.negotiablePrice && (
+                              <div className="flex items-center text-sm font-medium text-teal-700">
+                                <FaTag className="mr-2 text-teal-600 flex-shrink-0" />
+                                <span>Your offer: {formatPrice(order.negotiablePrice)}</span>
+                              </div>
+                            )}
                           </div>
                           
-                          {/* Show negotiable price if it exists */}
-                          {order.negotiablePrice && (
-                            <div className="flex items-center text-sm font-medium text-teal-700">
-                              <FaTag className="mr-2 text-teal-600" />
-                              <span>Your offer: {formatPrice(order.negotiablePrice)}</span>
-                            </div>
-                          )}
+                          <div className="flex flex-col justify-start">
+                            {order.annonce && order.annonce.location && (
+                              <div className="flex items-center text-sm text-gray-600">
+                                <FaMapMarkerAlt className="mr-2 text-teal-600 flex-shrink-0" />
+                                <span>{order.annonce.location}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-4 lg:mt-0 flex flex-col items-end space-y-3">
+                    <div className="mt-4 lg:mt-3 flex flex-col items-end space-y-3">
                       <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => handleContactSeller(order.seller)}
