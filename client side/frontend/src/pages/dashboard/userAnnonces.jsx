@@ -98,7 +98,7 @@ const UserAnnonces = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-100">
       <Header />
       <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
@@ -122,7 +122,7 @@ const UserAnnonces = () => {
             </select>
             <Link
               to="/postad"
-              className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 flex items-center gap-2 hover:translate-y-[-2px]"
+              className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 flex items-center gap-2 hover:translate-y-[-2px]"
             >
               <FaPlusCircle /> Create New
             </Link>
@@ -130,49 +130,36 @@ const UserAnnonces = () => {
         </div>
 
         {loading && (
-          <div className="flex flex-col justify-center items-center h-60 bg-white rounded-lg shadow-sm border border-gray-100 p-8">
-            <FaSpinner className="animate-spin text-3xl text-gray-400 mb-4" />
-            <p className="text-gray-500">Loading your announcements...</p>
+          <div className="flex flex-col items-center justify-center h-60 bg-gray-100">
+            <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
+            <p className="text-lg text-gray-700">Loading your announcements...</p>
           </div>
         )}
 
         {error && (
-          <div className="flex flex-col justify-center items-center bg-white rounded-lg shadow-sm border border-gray-100 p-8 text-center max-w-lg mx-auto">
-            <div className="bg-red-50 p-3 rounded-full mb-4">
-              <FaExclamationTriangle className="text-2xl text-red-500" />
+          <div className="flex flex-col items-center justify-center bg-gray-100 p-4">
+            <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
+              <FaExclamationTriangle className="text-5xl mb-4 text-gray-500 mx-auto" />
+              <p className="text-xl font-semibold mb-2 text-gray-800">
+                Oops! Something went wrong.
+              </p>
+              <p className="mb-6 text-gray-600">{error}</p>
+              <button
+                onClick={fetchAnnoncesUser}
+                className="text-teal-600 hover:text-teal-700 font-medium hover:underline"
+              >
+                Try Again
+              </button>
             </div>
-            <h3 className="font-medium text-lg text-gray-900 mb-2">Unable to load announcements</h3>
-            <p className="text-gray-500 mb-5">{error}</p>
-            <button
-              onClick={fetchAnnoncesUser}
-              className="bg-gray-900 hover:bg-black text-white font-medium py-2 px-4 rounded-md shadow-sm transition-all duration-200"
-            >
-              Retry
-            </button>
           </div>
         )}
 
         {!loading && !error && (
           <>
             {AnnoncesUser.length === 0 ? (
-              <div className="flex flex-col justify-center items-center bg-white rounded-lg shadow-sm border border-gray-100 p-12 text-center max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-5">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-gray-500">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                  </svg>
-                </div>
-                <h3 className="font-medium text-xl text-gray-900 mb-2">
-                  No announcements yet
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Start selling by creating your first announcement
-                </p>
-                <Link
-                  to="/postad"
-                  className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 inline-flex items-center gap-2 hover:translate-y-[-2px]"
-                >
-                  <FaPlusCircle /> Create Announcement
-                </Link>
+              <div className="text-center py-12 px-4">
+                <p className="text-lg font-medium text-gray-700 mb-2">You don't have any announcements yet.</p>
+               
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import API_PATHS from '../../utils/apiPaths';
 import Navbar from '../../components/layouts/inputs/header';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { parseImages } from '../../utils/parseImages';
 
 const SoldItems = () => {
@@ -13,13 +15,6 @@ const SoldItems = () => {
   const [sortBy, setSortBy] = useState('date');
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Define status colors similar to OrdersPage
-  const ORDER_STATUS_COLORS = {
-    pending: { bg: 'bg-gray-200', text: 'text-gray-700', border: 'border-gray-300' },
-    accepted: { bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-200' },
-    rejected: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-200' }
-  };
 
   useEffect(() => {
     fetchSoldItems();
@@ -47,30 +42,16 @@ const SoldItems = () => {
     if (window.confirm("Are you sure you want to delete this order?")) {
       try {
         await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(orderId));
+        toast.success("Order deleted successfully");
         // Remove the deleted order from the state
         setSoldItems(prevItems => prevItems.filter(item => item._id !== orderId));
       } catch (err) {
         console.error("Error deleting order:", err);
-      }
-    }
-  };
-
-  const handleDeleteAllOrders = async () => {
-    if (soldItems.length === 0) return;
-    
-    if (window.confirm("Are you sure you want to delete ALL sold items? This action cannot be undone.")) {
-      try {
-        // Delete each order one by one
-        const deletePromises = soldItems.map(item => 
-          axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(item._id))
+        toast.error(
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Failed to delete the order."
         );
-        
-        await Promise.all(deletePromises);
-        
-        // Clear sold items from state
-        setSoldItems([]);
-      } catch (err) {
-        console.error("Error deleting all sold items:", err);
       }
     }
   };
@@ -78,25 +59,30 @@ const SoldItems = () => {
   const handleUpdateOrderStatus = async (orderId, status) => {
     try {
       await axiosInstance.put(API_PATHS.ORDER.UPDATE_ORDER_STATUS(orderId), { status });
-      
-      // If order is rejected, automatically delete it
-      if (status === 'rejected') {
-        try {
-          await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(orderId));
-          // Remove the deleted order from the state
-          setSoldItems(prevItems => prevItems.filter(item => item._id !== orderId));
-        } catch (err) {
-          console.error("Error deleting rejected order:", err);
-        }
-      } else {
-        // For other statuses, just update the state
-        setSoldItems(prevItems => prevItems.map(item => 
-          item._id === orderId ? { ...item, status } : item
-        ));
-      }
+      toast.success(`Order ${status} successfully`);
+      // Update the order status in the state
+      setSoldItems(prevItems => prevItems.map(item => 
+        item._id === orderId ? { ...item, status } : item
+      ));
     } catch (err) {
       console.error(`Error updating order status:`, err);
+      toast.error(
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        `Failed to update the order status.`
+      );
     }
+  };
+  
+  const formatPrice = (price) => {
+    if (price === undefined || price === null) return "0 DZD";
+    
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "DZD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   };
   
   const items = Array.isArray(soldItems) ? soldItems : [];
@@ -118,6 +104,8 @@ const SoldItems = () => {
       switch (sortBy) {
         case 'date':
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        case 'price':
+          return (b.annonce?.price || 0) - (a.annonce?.price || 0);
         case 'title':
           return (a.annonce?.title || '').localeCompare(b.annonce?.title || '');
         default:
@@ -161,6 +149,18 @@ const SoldItems = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-gray-100">
       <Navbar />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Sold Items</h1>
@@ -186,6 +186,7 @@ const SoldItems = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               >
                 <option value="date">Sort by Date</option>
+                <option value="price">Sort by Price</option>
                 <option value="title">Sort by Title</option>
               </select>
               <select
@@ -197,15 +198,6 @@ const SoldItems = () => {
                 <option value="accepted">Accepted</option>
                 <option value="pending">Pending</option>
               </select>
-              {filteredAndSortedItems.length > 1 && (
-                <button
-                  onClick={handleDeleteAllOrders}
-                  className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center shadow-sm"
-                >
-                  <FaTrash className="mr-2" />
-                  DELETE ALL
-                </button>
-              )}
             </div>
           </div>
 
@@ -221,6 +213,7 @@ const SoldItems = () => {
                   <tr className="bg-gray-50">
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -269,6 +262,9 @@ const SoldItems = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{formatPrice(item.annonce?.price)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
                           {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
                         </div>
@@ -277,11 +273,13 @@ const SoldItems = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 inline-flex text-sm font-medium rounded-md ${
-                          ORDER_STATUS_COLORS[item.status]?.bg || 'bg-gray-100'
-                        } ${ORDER_STATUS_COLORS[item.status]?.text || 'text-gray-800'} ${
-                          ORDER_STATUS_COLORS[item.status]?.border || 'border-gray-200'
-                        } border`}>
+                        <span className={`px-3 py-1 inline-flex text-sm font-medium rounded-md
+                          ${item.status === 'accepted' ? 'bg-green-100 text-green-800' : ''}
+                          ${item.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                          ${item.status === 'rejected' ? 'bg-red-100 text-red-800' : ''}
+                          ${item.status === 'cancelled' ? 'bg-gray-100 text-gray-800' : ''}
+                          ${!item.status ? 'bg-gray-100 text-gray-800' : ''}
+                        `}>
                           {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'Unknown'}
                         </span>
                       </td>
@@ -292,12 +290,14 @@ const SoldItems = () => {
                               <button
                                 onClick={() => handleUpdateOrderStatus(item._id, 'accepted')}
                                 className="text-green-600 hover:text-green-800 transition-colors p-1 bg-green-50 rounded-full"
+                                title="Accept order"
                               >
                                 <FaCheck />
                               </button>
                               <button
                                 onClick={() => handleUpdateOrderStatus(item._id, 'rejected')}
                                 className="text-red-600 hover:text-red-800 transition-colors p-1 bg-red-50 rounded-full"
+                                title="Reject order"
                               >
                                 <FaTimes />
                               </button>
@@ -307,6 +307,7 @@ const SoldItems = () => {
                             <button
                               onClick={() => handleDeleteOrder(item._id)}
                               className="text-red-600 hover:text-red-800 transition-colors"
+                              title="Delete order"
                             >
                               <FaTrash />
                             </button>
