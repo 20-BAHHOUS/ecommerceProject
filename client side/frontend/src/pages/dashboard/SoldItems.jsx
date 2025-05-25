@@ -115,7 +115,7 @@ const SoldItems = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-gray-100">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex justify-center items-center h-[calc(100vh-64px)]">
           <div className="text-center">
@@ -129,7 +129,7 @@ const SoldItems = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-gray-100">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
@@ -147,7 +147,7 @@ const SoldItems = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-gray-100">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <ToastContainer
         position="top-right"
@@ -162,7 +162,7 @@ const SoldItems = () => {
         theme="colored"
       />
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Sold Items</h1>
 
           {/* Filters and Search */}
