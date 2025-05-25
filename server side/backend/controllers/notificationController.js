@@ -136,4 +136,22 @@ export const getUnreadCount = async (req, res) => {
     console.error("Error getting unread count:", error);
     res.status(500).json({ message: "Error getting unread count" });
   }
+};
+
+// Delete all notifications for the current user
+export const deleteAllNotifications = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const result = await Notification.deleteMany({ recipient: userId });
+
+    res.json({ 
+      success: true, 
+      message: "All notifications deleted successfully",
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error("Error deleting all notifications:", error);
+    res.status(500).json({ message: "Error deleting notifications" });
+  }
 }; 

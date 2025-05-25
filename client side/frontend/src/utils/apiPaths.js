@@ -46,6 +46,7 @@ export const API_PATHS = {
     MARK_AS_READ: (notificationId) => `/notifications/${notificationId}/read`,
     MARK_ALL_AS_READ: "/notifications/mark-all-read",
     DELETE_NOTIFICATION: (notificationId) => `/notifications/${notificationId}`,
+    DELETE_ALL_NOTIFICATIONS: "/notifications",
     GET_UNREAD_COUNT: "/notifications/unread-count",
   },
 };

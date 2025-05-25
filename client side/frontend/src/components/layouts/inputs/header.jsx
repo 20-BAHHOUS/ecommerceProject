@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Search, User, Bell, MessageSquare } from "lucide-react"; 
+import { Search, User, Bell, MessageSquare, Trash2, X } from "lucide-react"; 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
@@ -187,6 +187,43 @@ const Navbar = () => {
     navigate("/favourites");
   };
 
+  const handleDeleteNotification = async (notificationId, e) => {
+    e.stopPropagation(); // Prevent triggering parent click events
+    try {
+      await axiosInstance.delete(API_PATHS.NOTIFICATIONS.DELETE_NOTIFICATION(notificationId));
+      setNotifications(prevNotifications => 
+        prevNotifications.filter(notification => notification._id !== notificationId)
+      );
+      // Update unread count if the deleted notification was unread
+      const wasUnread = notifications.find(n => n._id === notificationId && !n.isRead);
+      if (wasUnread) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+      toast.success("Notification deleted");
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      toast.error("Failed to delete notification");
+    }
+  };
+
+  const handleDeleteAllNotifications = async () => {
+    if (notifications.length === 0) return;
+    
+    if (window.confirm("Are you sure you want to delete all notifications?")) {
+      try {
+        // Use the single endpoint to delete all notifications
+        await axiosInstance.delete(API_PATHS.NOTIFICATIONS.DELETE_ALL_NOTIFICATIONS);
+        
+        setNotifications([]);
+        setUnreadCount(0);
+        toast.success("All notifications deleted");
+      } catch (error) {
+        console.error("Error deleting all notifications:", error);
+        toast.error("Failed to delete all notifications");
+      }
+    }
+  };
+
   return (
     <nav className="bg-white sticky top-0 z-50 shadow-sm backdrop-blur-sm bg-white/90">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -256,8 +293,17 @@ const Navbar = () => {
                   </button>
                   {showNotifications && (
                     <div className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-lg border border-gray-100 z-20 max-h-[32rem] overflow-y-auto">
-                      <div className="p-4 border-b border-gray-100 bg-gray-50">
+                      <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+                        {notifications.length > 0 && (
+                          <button 
+                            onClick={handleDeleteAllNotifications}
+                            className="text-gray-500 hover:text-red-500 transition-colors"
+                            title="Delete all notifications"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                       {notifications.length === 0 ? (
                         <div className="p-4 text-center text-gray-500">
@@ -271,9 +317,16 @@ const Navbar = () => {
                               key={notification._id}
                               className={`p-4 hover:bg-gray-50 transition-colors duration-200 ${
                                 !notification.isRead ? 'bg-teal-50/60' : ''
-                              }`}
+                              } relative`}
                             >
-                              <p className="text-sm text-gray-800 mb-2">
+                              <button
+                                onClick={(e) => handleDeleteNotification(notification._id, e)}
+                                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors"
+                                title="Delete notification"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                              <p className="text-sm text-gray-800 mb-2 pr-6">
                                 {notification.message}
                               </p>
                               {notification.type === 'ORDER_REQUEST' && !notification.isRead && (
@@ -381,7 +434,7 @@ const Navbar = () => {
                           className="w-full flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-3" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm10 3a1 1 0 00-1.707-.707L8.586 8l-2.293-2.293a1 1 0 00-1.414 1.414L7.586 9l-2.707 2.707a1 1 0 101.414 1.414L8.586 10l2.707 2.707a1 1 0 001.414-1.414L10 8.414l2.293-2.293A1 1 0 0013 5z" clipRule="evenodd" />
+                            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm10 3a1 1 0 00-1.707-.707L8.586 8l-2.293-2.293a1 1 0 00-1.414 1.414L7.586 9l-2.707 2.707a1 1 0 101.414 1.414L8.586 10l2.293-2.293A1 1 0 0013 5z" clipRule="evenodd" />
                           </svg>
                           Sign Out
                         </button>
