@@ -4,7 +4,7 @@ import { createNotification } from "../controllers/notificationController.js";
 
 const placeOrder = async (req, res) => {
   try {
-    const { annonceId } = req.body;
+    const { annonceId, negotiablePrice } = req.body;
 
     if (!annonceId) {
       return res.status(400).json({ message: "Announcement ID is required." });
@@ -55,20 +55,28 @@ const placeOrder = async (req, res) => {
       annonce: annonceId,
       buyer: buyerId,
       seller: sellerId,
+      negotiablePrice: negotiablePrice || null,
     });
 
     const savedOrder = await newOrder.save();
+
+    // Create notification message based on whether there's a negotiable price
+    let notificationMessage = `New order request received for your announcement: ${annonce.title}`;
+    if (negotiablePrice) {
+      notificationMessage += `. Buyer has suggested a negotiable price of ${negotiablePrice} DZD`;
+    }
 
     // Create notification for seller
     await createNotification({
       recipient: sellerId,
       type: "ORDER_REQUEST",
-      message: `New order request received for your announcement: ${annonce.title}`,
+      message: notificationMessage,
       relatedOrder: savedOrder._id,
       metadata: {
         annonceId: annonceId,
         annonceTitle: annonce.title,
         buyerId: buyerId,
+        negotiablePrice: negotiablePrice || null,
       },
     });
 

@@ -263,6 +263,11 @@ const SoldItems = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{formatPrice(item.annonce?.price)}</div>
+                        {item.negotiablePrice && (
+                          <div className="text-sm text-teal-700 font-medium mt-1">
+                            Buyer offer: {formatPrice(item.negotiablePrice)}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">

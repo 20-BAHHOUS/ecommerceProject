@@ -22,6 +22,10 @@ const orderSchema = new mongoose.Schema(
       enum: ['pending', 'accepted', 'rejected', 'cancelled'],
       default: 'pending',
     },
+    negotiablePrice: {
+      type: Number,
+      default: null,
+    },
     orderDate: {
       type: Date,
       default: Date.now,

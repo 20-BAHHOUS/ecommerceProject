@@ -315,6 +315,20 @@ const MyOrdersPage = () => {
                               <span>{order.annonce.location}</span>
                             </div>
                           )}
+                          
+                          {/* Price information */}
+                          <div className="flex items-center text-sm text-gray-600">
+                            <FaTag className="mr-2 text-teal-600" />
+                            <span>Price: {formatPrice(order.annonce?.price)}</span>
+                          </div>
+                          
+                          {/* Show negotiable price if it exists */}
+                          {order.negotiablePrice && (
+                            <div className="flex items-center text-sm font-medium text-teal-700">
+                              <FaTag className="mr-2 text-teal-600" />
+                              <span>Your offer: {formatPrice(order.negotiablePrice)}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

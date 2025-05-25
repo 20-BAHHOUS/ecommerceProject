@@ -23,6 +23,7 @@ import { toast } from "react-toastify";
 import moment from 'moment';
 import Navbar from "../../components/layouts/inputs/header";
 import AnnouncementOrderModal from "../../components/common/AnnouncementOrderModal";
+import NegotiablePriceModal from "../../components/common/NegotiablePriceModal";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -49,6 +50,7 @@ const AnnonceDetail = () => {
   const [thumbnailErrors, setThumbnailErrors] = useState({});
   const [userInfo, setUserInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNegotiablePriceModalOpen, setIsNegotiablePriceModalOpen] = useState(false);
 
   // Add function to check existing order
   const checkExistingOrder = async () => {
@@ -148,7 +150,7 @@ const AnnonceDetail = () => {
     fetchData();
   }, [annonceId]);
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = () => {
     // Check if user is logged in first
     const token = localStorage.getItem("token");
     if (!token) {
@@ -166,6 +168,11 @@ const AnnonceDetail = () => {
       return;
     }
 
+    // Open the negotiable price modal
+    setIsNegotiablePriceModalOpen(true);
+  };
+
+  const handleSubmitOrder = async (negotiablePrice = null) => {
     setIsOrderLoading(true);
     try {      
       // Create a more complete order payload
@@ -176,6 +183,11 @@ const AnnonceDetail = () => {
         price: annonce.price,
         status: "pending"
       };
+      
+      // Add negotiable price if provided
+      if (negotiablePrice) {
+        orderPayload.negotiablePrice = negotiablePrice;
+      }
       
       const response = await axiosInstance.post(
         API_PATHS.ORDER.PLACE_ORDER,
@@ -563,6 +575,14 @@ const AnnonceDetail = () => {
       <AnnouncementOrderModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+      />
+
+      {/* Negotiable Price Modal */}
+      <NegotiablePriceModal
+        isOpen={isNegotiablePriceModalOpen}
+        onClose={() => setIsNegotiablePriceModalOpen(false)}
+        onSubmit={handleSubmitOrder}
+        originalPrice={annonce?.price || 0}
       />
     </>
   );
