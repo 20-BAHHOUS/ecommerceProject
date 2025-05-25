@@ -103,8 +103,8 @@ const getSellerOrders = async (req, res) => {
   try {
     const sellerId = req.user._id;
     const orders = await Order.find({ seller: sellerId })
-      .populate("annonce", "title images")
-      .populate("buyer", "fullName email");
+      .populate("annonce", "title images price description")
+      .populate("buyer", "fullName email phone");
     res.status(200).json({ success: true, data: orders });
   } catch (error) {
     console.error("Error getting seller orders:", error);
@@ -167,14 +167,22 @@ const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found." });
     }
 
-    // Check if the user is the buyer of the order
-    if (order.buyer.toString() !== userId.toString()) {
+    // Check if the user is either the buyer or the seller
+    const isBuyer = order.buyer.toString() === userId.toString();
+    const isSeller = order.seller.toString() === userId.toString();
+
+    if (!isBuyer && !isSeller) {
       return res.status(403).json({ message: "You are not authorized to delete this order." });
     }
 
-    // Check if the order is in 'pending' status
-    if (order.status !== 'pending') {
-      return res.status(400).json({ message: "Only pending orders can be cancelled." });
+    // Buyer can only delete pending orders
+    if (isBuyer && order.status !== 'pending') {
+      return res.status(400).json({ message: "Only pending orders can be cancelled by buyers." });
+    }
+
+    // Seller can delete accepted orders
+    if (isSeller && order.status !== 'accepted') {
+      return res.status(400).json({ message: "Only accepted orders can be deleted by sellers." });
     }
 
     // Delete the order
@@ -182,7 +190,7 @@ const deleteOrder = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Order cancelled successfully."
+      message: "Order deleted successfully."
     });
   } catch (error) {
     console.error("Error deleting order:", error);
