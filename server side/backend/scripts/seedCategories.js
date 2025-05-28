@@ -88,12 +88,10 @@ const categories = [
 const seedCategories = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB');
 
     // Clear existing data
     await Category.deleteMany({});
     await Subcategory.deleteMany({});
-    console.log('Cleared existing categories and subcategories');
 
     // Create categories and their subcategories
     for (const categoryData of categories) {
@@ -111,13 +109,10 @@ const seedCategories = async () => {
       }));
 
       await Subcategory.insertMany(subcategories);
-      console.log(`Created category ${categoryData.name} with ${subcategories.length} subcategories`);
     }
 
-    console.log('Database seeding completed successfully');
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error);
     process.exit(1);
   }
 };

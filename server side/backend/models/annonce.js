@@ -32,18 +32,17 @@ const annonceSchema = new mongoose.Schema(
       },
       validate: {
         validator: function(v) {
-          // Allow empty strings (they will be set to undefined)
+         
           return v === '' || ["new", "like new", "good condition", "acceptable", "not working"].includes(v);
         },
         message: props => `${props.value} is not a valid condition`
       }
     },
-
+   
   },
   { timestamps: true }
 );
 
-// Index for efficient category and subcategory queries
 annonceSchema.index({ category: 1, subcategory: 1 });
 annonceSchema.index({ createdAt: -1 });
 

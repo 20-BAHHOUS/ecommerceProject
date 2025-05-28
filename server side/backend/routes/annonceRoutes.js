@@ -14,7 +14,6 @@ import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
-// Combine the two POST routes with both middleware
 router.post("/", protect, upload.array('images'), addAnnonce);
 router.get("/getByUser/:id", getUserAnnonces);
 router.get("/search", searchAnnonces);

@@ -41,7 +41,6 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [favoritesCount, setFavoritesCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +54,6 @@ const Navbar = () => {
     if (token) {
       fetchNotifications();
       fetchUserInfo();
-      fetchFavoritesCount();
     }
 
     // Close dropdowns when clicking outside
@@ -73,9 +71,7 @@ const Navbar = () => {
       if (e.key === "profileUpdated" && token) {
         fetchUserInfo();
       }
-      if (e.key === "favoritesUpdated" && token) {
-        fetchFavoritesCount();
-      }
+     
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -93,7 +89,7 @@ const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchUserInfo();
-      fetchFavoritesCount();
+    
     }
   }, []);
 
@@ -108,16 +104,6 @@ const Navbar = () => {
     }
   };
 
-  const fetchFavoritesCount = async () => {
-    try {
-      const response = await axiosInstance.get(API_PATHS.AUTH.GET_FAVORITES_COUNT);
-      if (response.data) {
-        setFavoritesCount(response.data.count);
-      }
-    } catch (error) {
-      console.error("Error fetching favorites count:", error);
-    }
-  };
 
   const fetchNotifications = async () => {
     try {
@@ -222,16 +208,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white sticky top-0 z-50 shadow-sm backdrop-blur-sm bg-white/90">
+    <nav className="bg-white sticky top-0 z-50 shadow-sm backdrop-blur-sm ">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link 
-            to="/home" 
-            className="flex items-center space-x-2"
-          >
             <span className="text-2xl font-bold text-gray-800 hover:text-gray-600 transition-colors duration-200">Loopify</span>
-          </Link>
+          
 
           {/* Search Bar (for larger screens) */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">

@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { parseImages } from '../../../utils/parseImages';
 
 const AnnonceImages = ({ setValue, watch }) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const images = watch('images') || [];
   const [previewErrors, setPreviewErrors] = useState({});
 
@@ -37,7 +38,7 @@ const AnnonceImages = ({ setValue, watch }) => {
     }));
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']

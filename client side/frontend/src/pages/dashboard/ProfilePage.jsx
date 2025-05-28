@@ -129,7 +129,7 @@ const ProfilePage = () => {
       }));
       
       // Force refresh the header by triggering a localStorage change
-      const token = localStorage.getItem("token");
+      
       localStorage.setItem("profileUpdated", Date.now().toString());
       
       toast.success('Profile picture updated successfully!');

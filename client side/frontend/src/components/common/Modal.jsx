@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion } from 'framer-motion';
 
 const Modal = ({ isOpen, onClose, title, children, buttonText = "OK" }) => {
   const modalRef = useRef(null);

@@ -228,24 +228,7 @@ const checkFavorite = async (req, res) => {
   }
 };
 
-// Get count of user's favorite announcements
-const getFavoritesCount = async (req, res) => {
-  try {
-    const userId = req.user.id;
 
-    const user = await User.findById(userId).select('favorites');
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const count = user.favorites.length;
-    
-    return res.status(200).json({ count });
-  } catch (error) {
-    console.error("Error getting favorites count:", error);
-    res.status(500).json({ message: "Error getting favorites count", error: error.message });
-  }
-};
 
 export { 
   registeringUser, 
@@ -256,5 +239,5 @@ export {
   getUserFavorites,
   toggleFavorite,
   checkFavorite,
-  getFavoritesCount
+ 
 };

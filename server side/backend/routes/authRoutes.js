@@ -9,7 +9,7 @@ import {
   getUserFavorites,
   toggleFavorite,
   checkFavorite,
-  getFavoritesCount
+ 
 } from "../controllers/authController.js";
 import upload from "../middleware/uploadMiddleware.js";
 
@@ -25,7 +25,6 @@ router.put("/password", protect, updateUserPassword);
 router.get("/favorites", protect, getUserFavorites);
 router.post("/favorites", protect, toggleFavorite);
 router.get("/favorites/:annonceId", protect, checkFavorite);
-router.get("/favorites-count", protect, getFavoritesCount);
 
 router.post("/upload-image", protect, upload.single("image"), (req, res) => {
   if (!req.file) {

@@ -475,11 +475,11 @@ const PostAd = () => {
                     {isSubmitting ? (
                       <>
                         <FaSpinner className="animate-spin mr-2" />
-                        Posting...
+                        Uploading...
                       </>
                     ) : (
                       <>
-                        Post Listing
+                        Upload
                       </>
                     )}
                   </button>

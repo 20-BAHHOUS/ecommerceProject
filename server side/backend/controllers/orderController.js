@@ -27,10 +27,10 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Use the createdBy field directly without population
+    // Get the seller ID
     const sellerId = annonce.createdBy;
 
-    // Prevent ordering your own announcement
+    // Check if the seller is the same as the buyer
     if (sellerId.toString() === buyerId.toString()) {
       return res.status(400).json({
         message: "You cannot place an order on your own announcement.",
@@ -60,7 +60,7 @@ const placeOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
-    // Create notification message based on whether there's a negotiable price
+    // Create notification for buyer
     let notificationMessage = `New order request received for your announcement: ${annonce.title}`;
     if (negotiablePrice) {
       notificationMessage += `. Buyer has suggested a negotiable price of ${negotiablePrice} DZD`;
@@ -175,7 +175,7 @@ const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found." });
     }
 
-    // Check if the user is either the buyer or the seller
+    // Check if the user is authorized to delete the order
     const isBuyer = order.buyer.toString() === userId.toString();
     const isSeller = order.seller.toString() === userId.toString();
 
@@ -183,7 +183,7 @@ const deleteOrder = async (req, res) => {
       return res.status(403).json({ message: "You are not authorized to delete this order." });
     }
 
-    // Buyer can only delete pending orders
+    // Buyer can only cancel pending orders
     if (isBuyer && order.status !== 'pending') {
       return res.status(400).json({ message: "Only pending orders can be cancelled by buyers." });
     }

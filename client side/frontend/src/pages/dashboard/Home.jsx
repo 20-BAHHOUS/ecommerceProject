@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useState, useEffect, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, AlertCircle, Package, PlusCircle } from "lucide-react";
+import { Link} from "react-router-dom";
+import { AlertCircle, Package, PlusCircle } from "lucide-react";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
 import API_PATHS from "../../utils/apiPaths";
@@ -11,7 +11,6 @@ import Footer from "../../components/layouts/inputs/footer";
 import axiosInstance from "../../utils/axiosInstance";
 
 const Home = () => {
-  const navigate = useNavigate();
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

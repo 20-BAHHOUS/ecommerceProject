@@ -7,28 +7,10 @@ const categorySchema = new mongoose.Schema(
       required: true,
       unique: true
     },
-    slug: { 
-      type: String, 
-      required: true,
-      unique: true
-    },
-    description: { 
-      type: String 
-    },
-    icon: { 
-      type: String 
-    },
-    image: { 
-      type: String 
-    },
     isActive: {
       type: Boolean,
       default: true
     },
-    order: {
-      type: Number,
-      default: 0
-    }
   },
   { 
     timestamps: true,
