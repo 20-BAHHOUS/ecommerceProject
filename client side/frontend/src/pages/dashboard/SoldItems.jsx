@@ -7,6 +7,7 @@ import Navbar from '../../components/layouts/inputs/header';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parseImages } from '../../utils/parseImages';
+import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 
 const SoldItems = () => {
   const [soldItems, setSoldItems] = useState([]);
@@ -117,6 +118,7 @@ const SoldItems = () => {
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
+        <MultiLevelNavbar />
         <div className="flex justify-center items-center h-[calc(100vh-64px)]">
           <div className="text-center">
             <FaSpinner className="animate-spin text-4xl text-teal-600 mx-auto mb-4" />
@@ -131,6 +133,7 @@ const SoldItems = () => {
     return (
       <div className="min-h-screen bg-gray-100">
         <Navbar />
+        <MultiLevelNavbar />
         <div className="container mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
             <p className="text-red-600">{error}</p>
@@ -149,6 +152,7 @@ const SoldItems = () => {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <MultiLevelNavbar />
       <ToastContainer
         position="top-right"
         autoClose={3000}

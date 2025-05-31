@@ -7,6 +7,7 @@ import Header from "../../components/layouts/inputs/header";
 import axiosInstance from "../../utils/axiosInstance";
 import { FaPlusCircle, FaExclamationTriangle, FaSpinner, FaEdit, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 
 const UserAnnonces = () => {
   const navigate = useNavigate();
@@ -100,6 +101,7 @@ const UserAnnonces = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
+      <MultiLevelNavbar />
       <div className="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
           <div>

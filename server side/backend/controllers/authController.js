@@ -233,7 +233,7 @@ const checkFavorite = async (req, res) => {
 export { 
   registeringUser, 
   loginUser, 
-  getUserInfo, 
+  getUserInfo,
   updateUserPassword, 
   updateUserProfile, 
   getUserFavorites,

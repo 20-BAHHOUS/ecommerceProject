@@ -12,7 +12,6 @@ import {
   FaChevronRight,
   FaHeart,
   FaClock,
-  FaUser,
   FaShoppingCart,
   FaImage
 } from "react-icons/fa";
@@ -24,6 +23,8 @@ import moment from 'moment';
 import Navbar from "../../components/layouts/inputs/header";
 import AnnouncementOrderModal from "../../components/common/AnnouncementOrderModal";
 import NegotiablePriceModal from "../../components/common/NegotiablePriceModal";
+import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import Footer from "../../components/layouts/inputs/footer";
 
 const formatPrice = (price) => {
   const numericPrice = Number(price);
@@ -325,10 +326,12 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
           <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
           <p className="text-lg text-gray-700 font-medium">Loading announcement details...</p>
         </div>
+        <Footer/>
       </>
     );
   }
@@ -337,6 +340,7 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 text-center">
           <FaExclamationTriangle className="text-5xl mb-4 text-red-500" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h2>
@@ -345,6 +349,7 @@ const AnnonceDetail = () => {
             Return to Home
           </Link>
         </div>
+        <Footer/>
       </>
     );
   }
@@ -353,6 +358,7 @@ const AnnonceDetail = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="min-h-screen bg-white flex flex-col items-center justify-center">
           <FaExclamationTriangle className="text-5xl mb-4 text-yellow-500" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Announcement not found</h2>
@@ -360,6 +366,7 @@ const AnnonceDetail = () => {
             Return to Home
           </Link>
         </div>
+        <Footer/>
       </>
     );
   }
@@ -367,6 +374,7 @@ const AnnonceDetail = () => {
   return (
     <>
       <Navbar />
+      <MultiLevelNavbar/>
       <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Navigation */}
@@ -584,6 +592,7 @@ const AnnonceDetail = () => {
         onSubmit={handleSubmitOrder}
         originalPrice={annonce?.price || 0}
       />
+       <Footer/>
     </>
   );
 };

@@ -6,6 +6,9 @@ import API_PATHS from "../../utils/apiPaths";
 import { toast } from "react-toastify";
 import AnnonceCard from "../layouts/inputs/annonceCard";
 import Navbar from "../layouts/inputs/header";
+import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import Footer from "../layouts/inputs/footer";
+
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
@@ -66,11 +69,13 @@ const FavoritesPage = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="container mx-auto px-4 py-12">
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
           </div>
         </div>
+        <Footer/>
       </>
     );
   }
@@ -79,6 +84,7 @@ const FavoritesPage = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="container mx-auto px-4 py-12 bg-gray-100">
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
@@ -92,6 +98,7 @@ const FavoritesPage = () => {
             </button>
           </div>
         </div>
+        <Footer/>
       </>
     );
   }
@@ -100,6 +107,7 @@ const FavoritesPage = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="container mx-auto px-4 py-12">
           <h1 className="text-2xl font-bold mb-8 text-gray-800">My Favorites</h1>
           <div className="flex flex-col items-center justify-center h-64 text-center bg-gray-50 rounded-lg border border-gray-100 p-8">
@@ -114,6 +122,7 @@ const FavoritesPage = () => {
             </Link>
           </div>
         </div>
+        <Footer/>
       </>
     );
   }
@@ -121,6 +130,7 @@ const FavoritesPage = () => {
   return (
     <>
       <Navbar />
+      <MultiLevelNavbar/>
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold mb-8 text-gray-800">My Favorites</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -129,6 +139,7 @@ const FavoritesPage = () => {
           ))}
         </div>
       </div>
+      <Footer/>
     </>
   );
 };

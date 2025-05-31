@@ -8,12 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateAnnonceValidator } from "../../lib/validators/annonce.validator";
 import { toast } from "react-toastify";
+import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import {
-  FaTag,
-  FaImage,
-  FaList,
-  FaBoxOpen,
-  FaMoneyBillWave,
   FaArrowLeft,
   FaSpinner,
   FaCheck,
@@ -292,6 +288,7 @@ const EditAnnonce = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
+      <MultiLevelNavbar />
       <div className="flex-grow container mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           {/* Header */}

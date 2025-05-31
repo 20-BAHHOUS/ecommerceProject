@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
 import { Link } from "react-router-dom";
+import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import { 
   FaSpinner, 
   FaExclamationTriangle, 
@@ -13,7 +14,6 @@ import {
   FaTag, 
   FaMapMarkerAlt,
   FaSearch,
-  FaEye,
   FaPhoneAlt,
   FaEnvelope
 } from "react-icons/fa";
@@ -182,6 +182,7 @@ const MyOrdersPage = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
           <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
           <p className="text-lg text-gray-700">Loading your orders...</p>
@@ -194,6 +195,7 @@ const MyOrdersPage = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
           <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
             <FaExclamationTriangle className="text-5xl mb-4 text-gray-500 mx-auto" />
@@ -214,6 +216,7 @@ const MyOrdersPage = () => {
     return (
       <>
         <Navbar />
+        <MultiLevelNavbar/>
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
           <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
             <FaShoppingBag className="text-5xl mb-4 text-teal-500 mx-auto" />
@@ -234,7 +237,7 @@ const MyOrdersPage = () => {
   return (
     <>
       <Navbar />
-      
+      <MultiLevelNavbar/>
     
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
