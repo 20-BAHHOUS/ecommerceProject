@@ -7,17 +7,24 @@ const annonceSchema = new mongoose.Schema(
     description: { type: String, required: true },
     price: {
       type: Number,
+      required: function() {
+        return this.type !== 'wanted'; // Only required for non-wanted types
+      }
     },
     images: { type: [String] },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-      required: true
+      required: function() {
+        return this.type !== 'wanted'; // Only required for non-wanted types
+      }
     },
     subcategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subcategory',
-      required: true
+      required: function() {
+        return this.type !== 'wanted'; // Only required for non-wanted types
+      }
     },
     type: {
       type: String,
@@ -30,9 +37,14 @@ const annonceSchema = new mongoose.Schema(
         values: ["new", "like new", "good condition", "acceptable", "not working"],
         message: "'{VALUE}' is not a valid condition"
       },
+      required: function() {
+        return this.type !== 'wanted'; // Only required for non-wanted types
+      },
       validate: {
         validator: function(v) {
-         
+          if (this.type === 'wanted') {
+            return true; // Skip validation for wanted type
+          }
           return v === '' || ["new", "like new", "good condition", "acceptable", "not working"].includes(v);
         },
         message: props => `${props.value} is not a valid condition`
