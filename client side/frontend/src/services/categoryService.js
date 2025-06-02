@@ -1,4 +1,3 @@
-
 import axiosInstance from '../utils/axiosInstance';
 import { API_PATHS } from '../utils/apiPaths';
 
@@ -64,7 +63,7 @@ const getCategoryById = async (categoryId) => {
   }
 };
 
-const getAnnoncesByMainCategory = async (category, subcategory = null) => {
+const getAnnoncesByMainCategory = async (category, subcategory = null, sort = 'newest') => {
   try {
     if (!category) {
       throw new Error('Category parameter is required');
@@ -73,7 +72,9 @@ const getAnnoncesByMainCategory = async (category, subcategory = null) => {
     const url = API_PATHS.CATEGORIES.GET_ANNOUNCEMENTS(category, subcategory);
     
     console.log('Making API request to:', url);
-    const response = await axiosInstance.get(url);
+    const response = await axiosInstance.get(url, {
+      params: { sort }
+    });
     console.log('Category announcements response:', response.data);
     
     // More detailed response validation
@@ -95,6 +96,7 @@ const getAnnoncesByMainCategory = async (category, subcategory = null) => {
       error: error.message,
       category,
       subcategory,
+      sort,
       response: error.response?.data,
       status: error.response?.status
     });

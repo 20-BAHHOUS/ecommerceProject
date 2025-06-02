@@ -17,6 +17,18 @@ const SearchResults = () => {
   const [error, setError] = useState(null);
   const [viewType, setViewType] = useState("grid");
   const [noResults, setNoResults] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
+
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'type-sale', label: 'Type: For Sale' },
+    { value: 'type-trade', label: 'Type: For Trade' },
+    { value: 'type-wanted', label: 'Type: Wanted' },
+    { value: 'type-rent', label: 'Type: For Rent' }
+  ];
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -31,9 +43,9 @@ const SearchResults = () => {
       setNoResults(false);
 
       try {
-        // Make an API call to search for announcements
+        // Make an API call to search for announcements with sort parameter
         const response = await axiosInstance.get(`${API_PATHS.ANNONCE.ADD_GET_ANNONCE}/search`, {
-          params: { query }
+          params: { query, sort: sortBy }
         });
 
         if (Array.isArray(response.data) && response.data.length > 0) {
@@ -52,7 +64,7 @@ const SearchResults = () => {
     };
 
     fetchSearchResults();
-  }, [query]);
+  }, [query, sortBy]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -60,40 +72,54 @@ const SearchResults = () => {
       <MultiLevelNavbar />
 
       <main className="container mx-auto px-4 py-8 flex-grow">
-        {/* Search Header */}
-        <div className="mb-8">
-          <div className="flex items-center mb-2">
-            <Search className="h-5 w-5 text-teal-600 mr-2" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              Search Results for "{query}"
-            </h1>
+        {/* Header Section with Controls (matching Home.jsx layout) */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <div className="flex items-center mb-2">
+              <Search className="h-5 w-5 text-teal-600 mr-2" />
+              <h1 className="text-2xl font-bold text-gray-900">
+                Search Results for "{query}"
+              </h1>
+            </div>
+            <p className="text-gray-600">
+              {!loading && !error && results.length > 0 
+                ? `${results.length} ${results.length === 1 ? 'result' : 'results'} found`
+                : 'Searching for matching announcements...'}
+            </p>
           </div>
-          <p className="text-gray-600">
-            {!loading && !error && results.length > 0 
-              ? `${results.length === 1 ? '' : ''}`
-              : 'Searching for matching announcements...'}
-          </p>
-        </div>
 
-        {/* View Controls */}
-        <div className="flex justify-end mb-6">
-          <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
-            <button
-              onClick={() => setViewType('grid')}
-              className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+          {/* Controls */}
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-            </button>
-            <button
-              onClick={() => setViewType('list')}
-              className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+              {sortOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
+              <button
+                onClick={() => setViewType('grid')}
+                className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewType('list')}
+                className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 

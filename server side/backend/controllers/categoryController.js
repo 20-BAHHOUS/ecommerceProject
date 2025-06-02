@@ -32,7 +32,8 @@ export const getAllCategories = async (req, res) => {
 export const getAnnoncesByMainCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    console.log('Fetching announcements for category:', category);
+    const { sort } = req.query;
+    console.log('Fetching announcements for category:', category, 'with sort:', sort);
     
     // Find the category by slug
     const categoryDoc = await Category.findOne({ 
@@ -64,12 +65,31 @@ export const getAnnoncesByMainCategory = async (req, res) => {
       filterOptions.createdBy = { $ne: req.user._id };
     }
     
+    // Determine sort options
+    let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    
+    if (sort === 'oldest') {
+      sortOptions = { createdAt: 1 }; // Oldest first
+    } else if (sort === 'price-high') {
+      sortOptions = { price: -1 }; // Price high to low
+    } else if (sort === 'price-low') {
+      sortOptions = { price: 1 }; // Price low to high
+    } else if (sort === 'type-sale') {
+      filterOptions.type = 'sale'; // Filter by sale type
+    } else if (sort === 'type-trade') {
+      filterOptions.type = 'trade'; // Filter by trade type
+    } else if (sort === 'type-wanted') {
+      filterOptions.type = 'wanted'; // Filter by wanted type
+    } else if (sort === 'type-rent') {
+      filterOptions.type = 'rent'; // Filter by rent type
+    }
+    
     // Find all announcements with the filter options
     const annonces = await Annonce.find(filterOptions)
     .populate('createdBy', 'fullName email profileImageUrl')
     .populate('category')
     .populate('subcategory')
-    .sort({ createdAt: -1 });
+    .sort(sortOptions);
 
     console.log(`Found ${annonces.length} announcements for category:`, categoryDoc.name);
 
@@ -92,7 +112,8 @@ export const getAnnoncesByMainCategory = async (req, res) => {
 export const getAnnoncesBySubcategory = async (req, res) => {
   try {
     const { category, subcategory } = req.params;
-    console.log('Fetching announcements for category/subcategory:', { category, subcategory });
+    const { sort } = req.query;
+    console.log('Fetching announcements for category/subcategory:', { category, subcategory, sort });
     
     // Find the category and subcategory by slug
     const categoryDoc = await Category.findOne({ 
@@ -142,12 +163,31 @@ export const getAnnoncesBySubcategory = async (req, res) => {
       filterOptions.createdBy = { $ne: req.user._id };
     }
     
+    // Determine sort options
+    let sortOptions = { createdAt: -1 }; // Default sort: newest first
+    
+    if (sort === 'oldest') {
+      sortOptions = { createdAt: 1 }; // Oldest first
+    } else if (sort === 'price-high') {
+      sortOptions = { price: -1 }; // Price high to low
+    } else if (sort === 'price-low') {
+      sortOptions = { price: 1 }; // Price low to high
+    } else if (sort === 'type-sale') {
+      filterOptions.type = 'sale'; // Filter by sale type
+    } else if (sort === 'type-trade') {
+      filterOptions.type = 'trade'; // Filter by trade type
+    } else if (sort === 'type-wanted') {
+      filterOptions.type = 'wanted'; // Filter by wanted type
+    } else if (sort === 'type-rent') {
+      filterOptions.type = 'rent'; // Filter by rent type
+    }
+    
     // Find all announcements with the filter options
     const annonces = await Annonce.find(filterOptions)
     .populate('createdBy', 'fullName email profileImageUrl')
     .populate('category')
     .populate('subcategory')
-    .sort({ createdAt: -1 });
+    .sort(sortOptions);
 
     console.log(`Found ${annonces.length} announcements for subcategory:`, subcategoryDoc.name);
 
