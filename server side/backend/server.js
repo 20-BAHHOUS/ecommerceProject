@@ -10,6 +10,7 @@ import annonceRoutes from "./routes/annonceRoutes.js";
 import orderRoutes from './routes/orderRoutes.js';
 import notificationRoutes from "./routes/notificationRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = pathObject.dirname(__filename);
@@ -36,6 +37,7 @@ app.use("/annonce", annonceRoutes);
 app.use("/orders", orderRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/categories", categoryRoutes);
+app.use("/reports", reportRoutes);
 
 // Serve uploaded images
 app.use("/uploads/annonces", express.static(annonceImagesDirectory));

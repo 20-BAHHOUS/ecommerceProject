@@ -13,7 +13,8 @@ import {
   FaHeart,
   FaClock,
   FaShoppingCart,
-  FaImage
+  FaImage,
+  FaFlag
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
@@ -52,6 +53,9 @@ const AnnonceDetail = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNegotiablePriceModalOpen, setIsNegotiablePriceModalOpen] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
 
   // Add function to check existing order
   const checkExistingOrder = async () => {
@@ -322,6 +326,46 @@ const AnnonceDetail = () => {
     }
   };
 
+  const handleReportToggle = () => {
+    // Check if user is logged in first
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to report announcements");
+      // Redirect to login page with return URL
+      const returnUrl = encodeURIComponent(window.location.pathname);
+      window.location.href = `/login?redirect=${returnUrl}`;
+      return;
+    }
+    setShowReportModal(true);
+  };
+
+  const submitReport = async () => {
+    if (!reportReason) {
+      toast.error("Please select a reason for reporting");
+      return;
+    }
+
+    try {
+      await axiosInstance.post('/reports', {
+        announcementId: annonceId,
+        reason: reportReason,
+        details: reportDetails
+      });
+      
+      toast.success("Report submitted successfully");
+      setShowReportModal(false);
+      setReportReason("");
+      setReportDetails("");
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      if (error.response && error.response.status === 400 && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to submit report. Please try again later.");
+      }
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -461,16 +505,26 @@ const AnnonceDetail = () => {
                     <h1 className="text-3xl font-bold text-gray-900 leading-tight">
                       {annonce.title}
                     </h1>
-                    <button
-                      onClick={handleFavoriteToggle}
-                      className={`p-2 rounded-full ${
-                        isFavorite
-                          ? 'bg-red-500 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      } transition-all duration-300`}
-                    >
-                      <FaHeart className={isFavorite ? 'fill-current' : ''} />
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={handleFavoriteToggle}
+                        className={`p-2 rounded-full ${
+                          isFavorite
+                            ? 'bg-red-500 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        } transition-all duration-300`}
+                        aria-label="Add to favorites"
+                      >
+                        <FaHeart className={isFavorite ? 'fill-current' : ''} />
+                      </button>
+                      <button
+                        onClick={handleReportToggle}
+                        className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-300"
+                        aria-label="Report announcement"
+                      >
+                        <FaFlag />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="mb-6">
@@ -592,7 +646,56 @@ const AnnonceDetail = () => {
         onSubmit={handleSubmitOrder}
         originalPrice={annonce?.price || 0}
       />
-       <Footer/>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Report Announcement</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Reason for reporting</label>
+              <select
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                required
+              >
+                <option value="">Select a reason</option>
+                <option value="inappropriate">Inappropriate content</option>
+                <option value="spam">Spam or misleading</option>
+                <option value="fraud">Fraudulent listing</option>
+                <option value="offensive">Offensive content</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Additional details (optional)</label>
+              <textarea
+                value={reportDetails}
+                onChange={(e) => setReportDetails(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                rows="3"
+                placeholder="Please provide any additional details about the issue"
+              ></textarea>
+            </div>
+            <div className="flex space-x-3 justify-end">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitReport}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <Footer/>
     </>
   );
 };

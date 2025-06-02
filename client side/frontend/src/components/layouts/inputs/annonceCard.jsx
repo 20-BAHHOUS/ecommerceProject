@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { FaMapMarkerAlt, FaImage, FaHeart, FaClock } from "react-icons/fa";
+import { FaMapMarkerAlt, FaImage, FaHeart, FaClock, FaFlag } from "react-icons/fa";
 import { parseImages, markImageAsFailed } from "../../../utils/parseImages";
 import moment from 'moment';
 import axiosInstance from "../../../utils/axiosInstance";
@@ -25,6 +25,9 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
 
   useEffect(() => {
     // Check if this announcement is in user's favorites when component mounts
@@ -102,6 +105,47 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
     setImageError(true);
   };
 
+  const handleReportClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login to report announcements");
+      return;
+    }
+    
+    setShowReportModal(true);
+  };
+  
+  const submitReport = async () => {
+    if (!reportReason) {
+      toast.error("Please select a reason for reporting");
+      return;
+    }
+
+    try {
+      await axiosInstance.post('/reports', {
+        announcementId: annonce._id,
+        reason: reportReason,
+        details: reportDetails
+      });
+      
+      toast.success("Report submitted successfully");
+      setShowReportModal(false);
+      setReportReason("");
+      setReportDetails("");
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      if (error.response && error.response.status === 400 && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to submit report. Please try again later.");
+      }
+    }
+  };
+
   // Grid view card (default)
   if (viewType === 'grid') {
     return (
@@ -129,17 +173,28 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
             />
           )}
           
-          {/* Favorite Button */}
-          <button
-            onClick={handleFavoriteClick}
-            className={`absolute top-3 right-3 p-2 rounded-full ${
-              isFavorite 
-                ? 'bg-red-500 text-white' 
-                : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
-            } transition-all duration-300 shadow-sm hover:shadow`}
-          >
-            <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
-          </button>
+          {/* Action Buttons */}
+          <div className="absolute top-3 right-3 flex space-x-2">
+            {/* Favorite Button */}
+            <button
+              onClick={handleFavoriteClick}
+              className={`p-2 rounded-full ${
+                isFavorite 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
+              } transition-all duration-300 shadow-sm hover:shadow`}
+            >
+              <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
+            </button>
+            
+            {/* Report Button */}
+            <button
+              onClick={handleReportClick}
+              className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white transition-all duration-300 shadow-sm hover:shadow"
+            >
+              <FaFlag size={16} />
+            </button>
+          </div>
         </Link>
 
         {/* Content Section */}
@@ -181,6 +236,55 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
             )}
           </div>
         </div>
+
+        {/* Report Modal */}
+        {showReportModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl" onClick={e => e.stopPropagation()}>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Report Announcement</h3>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Reason for reporting</label>
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  required
+                >
+                  <option value="">Select a reason</option>
+                  <option value="inappropriate">Inappropriate content</option>
+                  <option value="spam">Spam or misleading</option>
+                  <option value="fraud">Fraudulent listing</option>
+                  <option value="offensive">Offensive content</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Additional details (optional)</label>
+                <textarea
+                  value={reportDetails}
+                  onChange={(e) => setReportDetails(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  rows="3"
+                  placeholder="Please provide any additional details about the issue"
+                ></textarea>
+              </div>
+              <div className="flex space-x-3 justify-end">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitReport}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Submit Report
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -212,17 +316,28 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
           />
         )}
         
-        {/* Favorite Button */}
-        <button
-          onClick={handleFavoriteClick}
-          className={`absolute top-3 right-3 p-2 rounded-full ${
-            isFavorite 
-              ? 'bg-red-500 text-white' 
-              : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
-          } transition-all duration-300 shadow-sm hover:shadow`}
-        >
-          <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
-        </button>
+        {/* Action Buttons */}
+        <div className="absolute top-3 right-3 flex space-x-2">
+          {/* Favorite Button */}
+          <button
+            onClick={handleFavoriteClick}
+            className={`p-2 rounded-full ${
+              isFavorite 
+                ? 'bg-red-500 text-white' 
+                : 'bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white'
+            } transition-all duration-300 shadow-sm hover:shadow`}
+          >
+            <FaHeart className={isFavorite ? 'fill-current' : 'stroke-current'} size={16} />
+          </button>
+          
+          {/* Report Button */}
+          <button
+            onClick={handleReportClick}
+            className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-gray-600 hover:bg-white transition-all duration-300 shadow-sm hover:shadow"
+          >
+            <FaFlag size={16} />
+          </button>
+        </div>
       </Link>
 
       {/* Content Section - List View */}
@@ -274,6 +389,55 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
           </div>
         </div>
       </div>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Report Announcement</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Reason for reporting</label>
+              <select
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                required
+              >
+                <option value="">Select a reason</option>
+                <option value="inappropriate">Inappropriate content</option>
+                <option value="spam">Spam or misleading</option>
+                <option value="fraud">Fraudulent listing</option>
+                <option value="offensive">Offensive content</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Additional details (optional)</label>
+              <textarea
+                value={reportDetails}
+                onChange={(e) => setReportDetails(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                rows="3"
+                placeholder="Please provide any additional details about the issue"
+              ></textarea>
+            </div>
+            <div className="flex space-x-3 justify-end">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitReport}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
