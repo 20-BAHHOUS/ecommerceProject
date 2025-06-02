@@ -3,32 +3,19 @@ import Order from "../models/order.js";
 
 const addAnnonce = async (req, res, next) => {
   try {
+
     const { body } = req;
-    
-    // Set the creator ID
+
+   
     body.createdBy = req.user._id;
 
-    // Handle different announcement types
-    if (body.type === 'wanted') {
-      // For wanted type, these fields are optional
-      // If they're empty strings or undefined, set them to null
-      if (!body.price) body.price = null;
-      if (!body.category) body.category = null;
-      if (!body.subcategory) body.subcategory = null;
-      if (!body.condition) body.condition = null;
-    }
-    
-    // Process images if they exist
-    if (req.files && req.files.length > 0) {
-      body.images = req.files.map((file) => {
-        return file.path.replace(/\\/g, '/').replace(/^\.\//, '');
-      });
-    } else {
-      // For wanted type, images are optional
-      body.images = [];
-    }
+   
+    body.images = req.files.map((file) => {
 
-    // Create a new annonce in database
+      return file.path.replace(/\\/g, '/').replace(/^\.\//, '');
+    });
+
+    //create a new annonce in database
     const newAnnonce = new Annonce(body);
 
     await newAnnonce.save();
@@ -167,16 +154,6 @@ const updateAnnonceById = async (req, res) => {
     // Prepare the update data
     const updateData = { ...req.body };
     
-    // Handle 'wanted' type announcement
-    if (updateData.type === 'wanted') {
-      // For wanted type, these fields are optional
-      // If they're empty strings or undefined, set them to null
-      if (!updateData.price) updateData.price = null;
-      if (!updateData.category) updateData.category = null;
-      if (!updateData.subcategory) updateData.subcategory = null;
-      if (!updateData.condition) updateData.condition = null;
-    }
-    
     // Handle image updates
     if (req.files && req.files.length > 0) {
       // If there are new uploaded files
@@ -207,9 +184,6 @@ const updateAnnonceById = async (req, res) => {
         // If parsing fails, keep the original images
         updateData.images = annonce.images;
       }
-    } else if (updateData.type === 'wanted' && (!annonce.images || annonce.images.length === 0)) {
-      // For wanted type with no images
-      updateData.images = [];
     }
     
     // Remove unnecessary fields from updateData that were only needed for processing
@@ -220,7 +194,7 @@ const updateAnnonceById = async (req, res) => {
     const updatedAnnonce = await Annonce.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true, runValidators: false } // Skip validators to allow wanted type's null fields
+      { new: true }
     );
 
     res.status(200).json({

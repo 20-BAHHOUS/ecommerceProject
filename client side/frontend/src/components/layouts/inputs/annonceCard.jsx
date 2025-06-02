@@ -45,6 +45,11 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
     }
   }, [annonce]);
 
+  // Skip rendering "wanted" announcements in regular listing view
+  if (!annonce || annonce.type === "wanted") {
+    return null;
+  }
+
   if (!annonce) {
     return null;
   }

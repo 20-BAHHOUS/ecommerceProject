@@ -66,7 +66,7 @@ export const reportAnnouncement = async (req, res) => {
   }
 };
 
-// Get all reports (admin only)
+// Get all reports
 export const getAllReports = async (req, res) => {
   try {
     // Paginate reports

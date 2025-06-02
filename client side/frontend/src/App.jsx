@@ -20,6 +20,7 @@ import SoldItems from "./pages/dashboard/SoldItems";
 import CategoryListings from "./pages/CategoryListings";
 import SearchResults from "./pages/dashboard/SearchResults";
 import FavoritesPage from "./components/Favorites/FavoritesPage";
+import WantedAnnouncements from "./pages/dashboard/WantedAnnouncements";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/sold-items" exact element={<SoldItems />} />
           <Route path="/search" exact element={<SearchResults />} />
           <Route path="/favourites" exact element={<FavoritesPage />} />
+          <Route path="/wanted" exact element={<WantedAnnouncements />} />
           
           {/* Category Routes */}
           <Route path="/category/:category" element={<CategoryListings />} />

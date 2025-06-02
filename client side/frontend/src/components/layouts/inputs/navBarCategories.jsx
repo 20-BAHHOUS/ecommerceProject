@@ -92,6 +92,9 @@ const MultiLevelNavbar = () => {
             <Link to="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
               All
             </Link>
+            <Link to="/wanted" className="text-amber-400 hover:text-amber-300 px-3 py-2 rounded-md text-sm font-medium">
+              Wanted Items
+            </Link>
             {categories.map((category) => (
               <div key={category._id || category.id} className="relative group">
                 <button
