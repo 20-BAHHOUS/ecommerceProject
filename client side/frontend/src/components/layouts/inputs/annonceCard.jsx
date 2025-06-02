@@ -196,7 +196,7 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
   // List view card
   return (
     <div 
-      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-row h-full relative overflow-hidden"
+      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-row h-[180px] relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -216,7 +216,6 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
             alt={annonce.title || "Announcement image"}
             onError={handleImageError}
             loading="lazy"
-            style={{ height: '100%', minHeight: '140px' }}
           />
         )}
         
