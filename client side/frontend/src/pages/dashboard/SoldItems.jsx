@@ -23,6 +23,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parseImages } from '../../utils/parseImages';
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import Footer from "../../components/layouts/inputs/footer";
 import moment from 'moment';
 
 const formatPrice = (price) => {
@@ -229,21 +230,10 @@ const SoldItems = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       <Navbar />
       <MultiLevelNavbar />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      <ToastContainer />
       
       <div className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -523,7 +513,8 @@ const SoldItems = () => {
           </div>
         </div>
       )}
-    </div>
+      <Footer />
+    </>
   );
 };
 

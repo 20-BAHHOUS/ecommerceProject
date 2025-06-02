@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../../components/layouts/inputs/header";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import Footer from "../../components/layouts/inputs/footer";
 import {
   FaUser,
   FaSpinner,
@@ -477,6 +478,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

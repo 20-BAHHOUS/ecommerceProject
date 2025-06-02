@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AnnonceCard from "../../components/layouts/inputs/annonceCard";
@@ -8,6 +7,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { FaPlusCircle, FaExclamationTriangle, FaSpinner, FaEdit, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import Footer from "../../components/layouts/inputs/footer";
 
 const UserAnnonces = () => {
   const navigate = useNavigate();
@@ -94,7 +94,6 @@ const UserAnnonces = () => {
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'type-sale', label: 'Type: For Sale' },
     { value: 'type-trade', label: 'Type: For Trade' },
-    { value: 'type-wanted', label: 'Type: Wanted' },
     { value: 'type-rent', label: 'Type: For Rent' }
   ];
 
@@ -194,6 +193,7 @@ const UserAnnonces = () => {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

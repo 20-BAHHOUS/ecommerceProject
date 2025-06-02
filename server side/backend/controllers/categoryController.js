@@ -78,8 +78,6 @@ export const getAnnoncesByMainCategory = async (req, res) => {
       filterOptions.type = 'sale'; // Filter by sale type
     } else if (sort === 'type-trade') {
       filterOptions.type = 'trade'; // Filter by trade type
-    } else if (sort === 'type-wanted') {
-      filterOptions.type = 'wanted'; // Filter by wanted type
     } else if (sort === 'type-rent') {
       filterOptions.type = 'rent'; // Filter by rent type
     }
@@ -176,8 +174,6 @@ export const getAnnoncesBySubcategory = async (req, res) => {
       filterOptions.type = 'sale'; // Filter by sale type
     } else if (sort === 'type-trade') {
       filterOptions.type = 'trade'; // Filter by trade type
-    } else if (sort === 'type-wanted') {
-      filterOptions.type = 'wanted'; // Filter by wanted type
     } else if (sort === 'type-rent') {
       filterOptions.type = 'rent'; // Filter by rent type
     }

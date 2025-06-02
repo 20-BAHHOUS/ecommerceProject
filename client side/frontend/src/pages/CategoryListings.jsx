@@ -4,6 +4,7 @@ import { getAnnoncesByMainCategory } from '../services/categoryService';
 import AnnonceCard from '../components/layouts/inputs/annonceCard';
 import Header from '../components/layouts/inputs/header';
 import MultiLevelNavbar from '../components/layouts/inputs/navBarCategories';
+import Footer from '../components/layouts/inputs/footer';
 
 const CategoryListings = () => {
   const { category, subcategory } = useParams();
@@ -21,7 +22,6 @@ const CategoryListings = () => {
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'type-sale', label: 'Type: For Sale' },
     { value: 'type-trade', label: 'Type: For Trade' },
-    { value: 'type-wanted', label: 'Type: Wanted' },
     { value: 'type-rent', label: 'Type: For Rent' }
   ];
 
@@ -150,6 +150,7 @@ const CategoryListings = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

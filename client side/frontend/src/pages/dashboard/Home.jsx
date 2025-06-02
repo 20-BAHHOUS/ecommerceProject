@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Link} from "react-router-dom";
 import { AlertCircle, Package, PlusCircle } from "lucide-react";
@@ -63,7 +62,6 @@ const Home = () => {
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'type-sale', label: 'Type: For Sale' },
     { value: 'type-trade', label: 'Type: For Trade' },
-    { value: 'type-wanted', label: 'Type: Wanted' },
     { value: 'type-rent', label: 'Type: For Rent' }
   ];
 
@@ -85,9 +83,7 @@ const Home = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Browse Listings
             </h1>
-            <p className="text-gray-600 mt-1">
-              Discover amazing deals from our community
-            </p>
+          
           </div>
 
           {/* Controls */}

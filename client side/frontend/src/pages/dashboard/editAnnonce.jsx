@@ -506,7 +506,6 @@ const EditAnnonce = () => {
                           <option value="sale">For Sale</option>
                           <option value="trade">For Trade</option>
                           <option value="rent">For Rent</option>
-                          <option value="wanted">Wanted</option>
                         </select>
                         <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                           <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

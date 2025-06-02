@@ -68,8 +68,6 @@ const getAllAnnonces = async (req, res) => {
       filterOptions = { type: 'sale' }; // Filter by sale type
     } else if (sort === 'type-trade') {
       filterOptions = { type: 'trade' }; // Filter by trade type
-    } else if (sort === 'type-wanted') {
-      filterOptions = { type: 'wanted' }; // Filter by wanted type
     } else if (sort === 'type-rent') {
       filterOptions = { type: 'rent' }; // Filter by rent type
     }
@@ -232,8 +230,6 @@ const getUserAnnonces = async (req, res) => {
       filterOptions = { createdBy: id, type: 'sale' }; // Filter by sale type
     } else if (sort === 'type-trade') {
       filterOptions = { createdBy: id, type: 'trade' }; // Filter by trade type
-    } else if (sort === 'type-wanted') {
-      filterOptions = { createdBy: id, type: 'wanted' }; // Filter by wanted type
     } else if (sort === 'type-rent') {
       filterOptions = { createdBy: id, type: 'rent' }; // Filter by rent type
     }
@@ -301,19 +297,6 @@ const searchAnnonces = async (req, res) => {
       filterOptions = {
         $and: [
           { type: 'trade' },
-          {
-            $or: [
-              { title: searchRegex },
-              { description: searchRegex },
-              { condition: searchRegex },
-            ]
-          }
-        ]
-      };
-    } else if (sort === 'type-wanted') {
-      filterOptions = {
-        $and: [
-          { type: 'wanted' },
           {
             $or: [
               { title: searchRegex },

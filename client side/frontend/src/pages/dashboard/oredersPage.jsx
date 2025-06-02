@@ -4,6 +4,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import API_PATHS from "../../utils/apiPaths";
 import { Link } from "react-router-dom";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import Footer from "../../components/layouts/inputs/footer";
 import { 
   FaSpinner, 
   FaExclamationTriangle, 
@@ -517,6 +518,7 @@ const MyOrdersPage = () => {
           </div>
         </div>
       )}
+      <Footer />
     </>
   );
 };
