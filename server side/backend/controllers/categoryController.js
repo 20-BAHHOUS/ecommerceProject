@@ -1,6 +1,7 @@
 import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Annonce from "../models/annonce.js";
+import Order from "../models/order.js";
 
 // Get all categories with their subcategories
 export const getAllCategories = async (req, res) => {
@@ -49,10 +50,22 @@ export const getAnnoncesByMainCategory = async (req, res) => {
 
     console.log('Found category:', categoryDoc);
 
-    // Find all announcements in this category
-    const annonces = await Annonce.find({
-      category: categoryDoc._id
-    })
+    // Find all announcements that don't have accepted orders
+    const annoncesWithAcceptedOrders = await Order.find({ status: 'accepted' }).distinct('annonce');
+    
+    // Prepare filter options
+    const filterOptions = {
+      category: categoryDoc._id,
+      _id: { $nin: annoncesWithAcceptedOrders }
+    };
+    
+    // If user is logged in, exclude their own announcements
+    if (req.user && req.user._id) {
+      filterOptions.createdBy = { $ne: req.user._id };
+    }
+    
+    // Find all announcements with the filter options
+    const annonces = await Annonce.find(filterOptions)
     .populate('createdBy', 'fullName email profileImageUrl')
     .populate('category')
     .populate('subcategory')
@@ -114,11 +127,23 @@ export const getAnnoncesBySubcategory = async (req, res) => {
       subcategory: subcategoryDoc.name
     });
 
-    // Find all announcements in this subcategory
-    const annonces = await Annonce.find({
+    // Find all announcements that don't have accepted orders
+    const annoncesWithAcceptedOrders = await Order.find({ status: 'accepted' }).distinct('annonce');
+    
+    // Prepare filter options
+    const filterOptions = {
       category: categoryDoc._id,
-      subcategory: subcategoryDoc._id
-    })
+      subcategory: subcategoryDoc._id,
+      _id: { $nin: annoncesWithAcceptedOrders }
+    };
+    
+    // If user is logged in, exclude their own announcements
+    if (req.user && req.user._id) {
+      filterOptions.createdBy = { $ne: req.user._id };
+    }
+    
+    // Find all announcements with the filter options
+    const annonces = await Annonce.find(filterOptions)
     .populate('createdBy', 'fullName email profileImageUrl')
     .populate('category')
     .populate('subcategory')

@@ -154,8 +154,33 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
+  const toggleNotifications = async () => {
+    const newState = !showNotifications;
+    setShowNotifications(newState);
+    
+    // If opening the notifications panel
+    if (newState) {
+      // First fetch the latest notifications
+      await fetchNotifications();
+      
+      // Then automatically mark all notifications as read
+      try {
+        // Only proceed if there are unread notifications
+        if (unreadCount > 0) {
+          await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_ALL_AS_READ);
+          
+          // Update all notifications as read in the local state
+          setNotifications(prevNotifications => 
+            prevNotifications.map(notification => ({ ...notification, isRead: true }))
+          );
+          
+          // Reset unread count
+          setUnreadCount(0);
+        }
+      } catch (error) {
+        console.error("Error marking notifications as read:", error);
+      }
+    }
   };
 
   const handleSearch = (e) => {
@@ -204,6 +229,54 @@ const Navbar = () => {
         console.error("Error deleting all notifications:", error);
         toast.error("Failed to delete all notifications");
       }
+    }
+  };
+
+  // Add a new function to mark a notification as read
+  const handleMarkAsRead = async (notificationId) => {
+    // Don't do anything if notification is already read
+    const notification = notifications.find(n => n._id === notificationId);
+    if (notification && notification.isRead) return;
+    
+    try {
+      await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_AS_READ(notificationId));
+      
+      // Update notifications state to mark this notification as read
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => 
+          notification._id === notificationId 
+            ? { ...notification, isRead: true } 
+            : notification
+        )
+      );
+      
+      // Decrease unread count
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      // Don't show error toast as this is a background operation
+    }
+  };
+
+  // Add another function to mark all notifications as read
+  const handleMarkAllAsRead = async () => {
+    // Don't do anything if there are no unread notifications
+    if (unreadCount === 0) return;
+    
+    try {
+      await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_ALL_AS_READ);
+      
+      // Update all notifications as read
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => ({ ...notification, isRead: true }))
+      );
+      
+      // Reset unread count
+      setUnreadCount(0);
+      toast.success("All notifications marked as read");
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      toast.error("Failed to mark notifications as read");
     }
   };
 
@@ -274,15 +347,17 @@ const Navbar = () => {
                     <div className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-lg border border-gray-100 z-20 max-h-[32rem] overflow-y-auto">
                       <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
-                        {notifications.length > 0 && (
-                          <button 
-                            onClick={handleDeleteAllNotifications}
-                            className="text-gray-500 hover:text-red-500 transition-colors"
-                            title="Delete all notifications"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        )}
+                        <div className="flex items-center space-x-2">
+                          {notifications.length > 0 && (
+                            <button 
+                              onClick={handleDeleteAllNotifications}
+                              className="text-gray-500 hover:text-red-500 transition-colors"
+                              title="Delete all notifications"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       {notifications.length === 0 ? (
                         <div className="p-4 text-center text-gray-500">
@@ -296,7 +371,8 @@ const Navbar = () => {
                               key={notification._id}
                               className={`p-4 hover:bg-gray-50 transition-colors duration-200 ${
                                 !notification.isRead ? 'bg-teal-50/60' : ''
-                              } relative`}
+                              } relative cursor-pointer`}
+                              onClick={() => handleMarkAsRead(notification._id)}
                             >
                               <button
                                 onClick={(e) => handleDeleteNotification(notification._id, e)}
@@ -311,13 +387,19 @@ const Navbar = () => {
                               {notification.type === 'ORDER_REQUEST' && !notification.isRead && (
                                 <div className="flex space-x-2 mt-2">
                                   <button
-                                    onClick={() => handleOrderAction(notification._id, notification.relatedOrder._id || notification.relatedOrder, 'accepted')}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent parent onClick from firing
+                                      handleOrderAction(notification._id, notification.relatedOrder._id || notification.relatedOrder, 'accepted');
+                                    }}
                                     className="flex-1 px-3 py-1.5 bg-teal-600 text-white text-sm rounded-md hover:bg-teal-700 transition-colors duration-200"
                                   >
                                     Accept
                                   </button>
                                   <button
-                                    onClick={() => handleOrderAction(notification._id, notification.relatedOrder._id || notification.relatedOrder, 'rejected')}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent parent onClick from firing
+                                      handleOrderAction(notification._id, notification.relatedOrder._id || notification.relatedOrder, 'rejected');
+                                    }}
                                     className="flex-1 px-3 py-1.5 bg-white text-red-600 text-sm rounded-md hover:bg-red-50 border border-red-200 transition-colors duration-200"
                                   >
                                     Reject
@@ -327,6 +409,9 @@ const Navbar = () => {
                               <p className="text-xs text-gray-400 mt-2">
                                 {new Date(notification.createdAt).toLocaleDateString()}
                               </p>
+                              {!notification.isRead && (
+                                <span className="absolute top-4 left-1 w-2 h-2 bg-teal-500 rounded-full"></span>
+                              )}
                             </div>
                           ))}
                         </div>

@@ -4,6 +4,7 @@ import {
   getAnnoncesByMainCategory,
   getAnnoncesBySubcategory
 } from '../controllers/categoryController.js';
+import optionalAuth from '../middleware/optionalAuthMiddleware.js';
 
 const router = express.Router();
 
@@ -11,9 +12,9 @@ const router = express.Router();
 router.get('/', getAllCategories);
 
 // Get all announcements for a main category
-router.get('/:category/announcements', getAnnoncesByMainCategory);
+router.get('/:category/announcements', optionalAuth, getAnnoncesByMainCategory);
 
 // Get all announcements for a subcategory
-router.get('/:category/:subcategory/announcements', getAnnoncesBySubcategory);
+router.get('/:category/:subcategory/announcements', optionalAuth, getAnnoncesBySubcategory);
 
 export default router; 

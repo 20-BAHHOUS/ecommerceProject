@@ -1,4 +1,5 @@
 import Annonce from "../models/annonce.js";
+import Order from "../models/order.js";
 
 const addAnnonce = async (req, res, next) => {
   try {
@@ -73,9 +74,22 @@ const getAllAnnonces = async (req, res) => {
       filterOptions = { type: 'rent' }; // Filter by rent type
     }
     
+    // Find all announcements that don't have accepted orders
+    const annoncesWithAcceptedOrders = await Order.find({ status: 'accepted' }).distinct('annonce');
+    
+    // Add filter to exclude announcements with accepted orders
+    filterOptions._id = { $nin: annoncesWithAcceptedOrders };
+    
+    // If user is logged in, exclude their own announcements
+    if (req.user && req.user._id) {
+      // Add current user's ID to filter (exclude their announcements)
+      filterOptions.createdBy = { $ne: req.user._id };
+    }
+    
     const annonces = await Annonce.find(filterOptions).sort(sortOptions);
     res.json(annonces);
   } catch (error) {
+    console.error("Error getting annonces:", error);
     res.status(500).json({
       message: "Error getting annonces",
     });
@@ -320,6 +334,37 @@ const searchAnnonces = async (req, res) => {
               { condition: searchRegex },
             ]
           }
+        ]
+      };
+    }
+
+    // Find all announcements that don't have accepted orders
+    const annoncesWithAcceptedOrders = await Order.find({ status: 'accepted' }).distinct('annonce');
+    
+    // Build combined filters
+    let combinedFilters = [];
+    
+    // 1. Add filter to exclude announcements with accepted orders
+    combinedFilters.push({ _id: { $nin: annoncesWithAcceptedOrders } });
+    
+    // 2. If user is logged in, exclude their own announcements
+    if (req.user && req.user._id) {
+      combinedFilters.push({ createdBy: { $ne: req.user._id } });
+    }
+    
+    // 3. Add the search filters
+    if (filterOptions.$and) {
+      // If we already have an $and array, add it to our combinedFilters
+      combinedFilters = [...combinedFilters, ...filterOptions.$and];
+      
+      // Create a new filter with our combined conditions
+      filterOptions = { $and: combinedFilters };
+    } else if (filterOptions.$or) {
+      // If we have an $or condition, wrap it and our filters in an $and
+      filterOptions = {
+        $and: [
+          ...combinedFilters,
+          { $or: filterOptions.$or }
         ]
       };
     }
