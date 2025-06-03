@@ -160,26 +160,8 @@ const Navbar = () => {
     
     // If opening the notifications panel
     if (newState) {
-      // First fetch the latest notifications
+      // Fetch the latest notifications
       await fetchNotifications();
-      
-      // Then automatically mark all notifications as read
-      try {
-        // Only proceed if there are unread notifications
-        if (unreadCount > 0) {
-          await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_ALL_AS_READ);
-          
-          // Update all notifications as read in the local state
-          setNotifications(prevNotifications => 
-            prevNotifications.map(notification => ({ ...notification, isRead: true }))
-          );
-          
-          // Reset unread count
-          setUnreadCount(0);
-        }
-      } catch (error) {
-        console.error("Error marking notifications as read:", error);
-      }
     }
   };
 
@@ -229,54 +211,6 @@ const Navbar = () => {
         console.error("Error deleting all notifications:", error);
         toast.error("Failed to delete all notifications");
       }
-    }
-  };
-
-  // Add a new function to mark a notification as read
-  const handleMarkAsRead = async (notificationId) => {
-    // Don't do anything if notification is already read
-    const notification = notifications.find(n => n._id === notificationId);
-    if (notification && notification.isRead) return;
-    
-    try {
-      await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_AS_READ(notificationId));
-      
-      // Update notifications state to mark this notification as read
-      setNotifications(prevNotifications => 
-        prevNotifications.map(notification => 
-          notification._id === notificationId 
-            ? { ...notification, isRead: true } 
-            : notification
-        )
-      );
-      
-      // Decrease unread count
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      // Don't show error toast as this is a background operation
-    }
-  };
-
-  // Add another function to mark all notifications as read
-  const handleMarkAllAsRead = async () => {
-    // Don't do anything if there are no unread notifications
-    if (unreadCount === 0) return;
-    
-    try {
-      await axiosInstance.put(API_PATHS.NOTIFICATIONS.MARK_ALL_AS_READ);
-      
-      // Update all notifications as read
-      setNotifications(prevNotifications => 
-        prevNotifications.map(notification => ({ ...notification, isRead: true }))
-      );
-      
-      // Reset unread count
-      setUnreadCount(0);
-      toast.success("All notifications marked as read");
-    } catch (error) {
-      console.error("Error marking all notifications as read:", error);
-      toast.error("Failed to mark notifications as read");
     }
   };
 
@@ -372,7 +306,6 @@ const Navbar = () => {
                               className={`p-4 hover:bg-gray-50 transition-colors duration-200 ${
                                 !notification.isRead ? 'bg-teal-50/60' : ''
                               } relative cursor-pointer`}
-                              onClick={() => handleMarkAsRead(notification._id)}
                             >
                               <button
                                 onClick={(e) => handleDeleteNotification(notification._id, e)}

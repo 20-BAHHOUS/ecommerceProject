@@ -5,28 +5,24 @@ import API_PATHS from "../../utils/apiPaths";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../../components/layouts/inputs/header";
-import AnnonceCard from "../../components/layouts/inputs/annonceCard";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import Footer from "../../components/layouts/inputs/footer";
 import {
   FaUser,
   FaSpinner,
   FaEdit,
-  FaBullhorn,
   FaKey,
   FaCog,
   FaCamera,
-
   FaUpload,
   FaEnvelope,
   FaPhone,
-  FaPlus,
+  FaTrash,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
-  const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
@@ -41,7 +37,7 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
-    const fetchProfileAndAnnonces = async () => {
+    const fetchProfileInfo = async () => {
       setLoading(true);
       setError(null);
       try {
@@ -56,23 +52,18 @@ const ProfilePage = () => {
           profileImageUrl: userResponse.data.profileImageUrl || "",
           location: userResponse.data.location || "",
         });
-
-        const annoncesResponse = await axiosInstance.get(
-          API_PATHS.ANNONCE.GET_ANNONCES_BY_USER(userResponse.data._id)
-        );
-        setAnnonces(annoncesResponse.data.data || []);
       } catch (err) {
-        console.error("Error fetching profile and announcements:", err);
+        console.error("Error fetching profile info:", err);
         setError(
           err.response?.data?.error ||
-            "Failed to load profile and announcements."
+            "Failed to load profile information."
         );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfileAndAnnonces();
+    fetchProfileInfo();
   }, []);
 
   const handleInputChange = (e) => {
@@ -143,6 +134,41 @@ const ProfilePage = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  const handleDeleteProfileImage = async () => {
+    if (!window.confirm("Are you sure you want to delete your profile image?")) {
+      return;
+    }
+
+    setImageLoading(true);
+    try {
+      // Update profile without profile image
+      const updateResponse = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, {
+        ...updatedInfo,
+        profileImageUrl: "",
+      });
+
+      if (!updateResponse.data || !updateResponse.data.user) {
+        throw new Error('Failed to remove profile image');
+      }
+
+      setUser(updateResponse.data.user);
+      setUpdatedInfo(prev => ({
+        ...prev,
+        profileImageUrl: "",
+      }));
+      
+      // Force refresh the header
+      localStorage.setItem("profileUpdated", Date.now().toString());
+      
+      toast.success('Profile picture removed successfully!');
+    } catch (error) {
+      console.error('Error deleting profile image:', error);
+      toast.error(error.response?.data?.error || 'Failed to remove profile picture');
     } finally {
       setImageLoading(false);
     }
@@ -256,12 +282,24 @@ const ProfilePage = () => {
                           </div>
                         )}
                         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="p-3 bg-white rounded-full text-teal-600 hover:text-teal-700 transform hover:scale-110 transition-all duration-300"
-                          >
-                            <FaCamera className="text-xl" />
-                          </button>
+                          <div className="flex space-x-3">
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="p-3 bg-white rounded-full text-teal-600 hover:text-teal-700 transform hover:scale-110 transition-all duration-300"
+                              title="Upload new image"
+                            >
+                              <FaCamera className="text-xl" />
+                            </button>
+                            {updatedInfo.profileImageUrl && (
+                              <button
+                                onClick={handleDeleteProfileImage}
+                                className="p-3 bg-white rounded-full text-red-500 hover:text-red-700 transform hover:scale-110 transition-all duration-300"
+                                title="Remove profile image"
+                              >
+                                <FaTrash className="text-xl" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -329,7 +367,7 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Right Column: Personal Info Details & Announcements */}
+          {/* Right Column: Personal Info Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Personal Information Details Card */}
             <div className="bg-white rounded-2xl p-8 border border-gray-200">
@@ -432,46 +470,6 @@ const ProfilePage = () => {
                   >
                     Cancel
                   </button>
-                </div>
-              )}
-            </div>
-
-            {/* My Announcements Card */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                  <FaBullhorn className="mr-3 text-teal-600" /> My Announcements
-                </h2>
-                <Link
-                  to="/postad"
-                  className="flex items-center px-5 py-2.5 bg-teal-600 text-white font-semibold rounded-xl hover:bg-teal-700 transition-all duration-300 transform hover:scale-105"
-                >
-                  <FaPlus className="mr-2" />
-                  New Post
-                </Link>
-              </div>
-              
-              {annonces.length === 0 ? (
-                <div className="text-center py-16 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-300">
-                  <FaBullhorn className="text-6xl text-gray-300 mx-auto mb-4 transform -rotate-12" />
-                  <p className="text-gray-600 text-lg mb-6">
-                    You haven't posted any announcements yet
-                  </p>
-                  <Link
-                    to="/postad"
-                    className="inline-flex items-center text-teal-600 hover:text-teal-700 font-medium text-lg hover:underline transition-colors duration-200"
-                  >
-                    Create your first announcement
-                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </Link>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {annonces.map((annonce) => (
-                    <AnnonceCard key={annonce._id} annonce={annonce} />
-                  ))}
                 </div>
               )}
             </div>
