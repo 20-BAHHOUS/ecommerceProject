@@ -12,8 +12,7 @@ const CategoryListings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('newest');
-  const [viewType, setViewType] = useState('list');
-  
+
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
@@ -75,7 +74,7 @@ const CategoryListings = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
               {formatTitle()}
             </h1>
             <p className="text-gray-600">
@@ -83,7 +82,7 @@ const CategoryListings = () => {
             </p>
           </div>
           
-          {/* Controls */}
+          {/* Sort Controls */}
           <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto">
             <select
               value={sortOption}
@@ -96,25 +95,6 @@ const CategoryListings = () => {
                 </option>
               ))}
             </select>
-
-            <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
-              <button
-                onClick={() => setViewType('grid')}
-                className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setViewType('list')}
-                className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
 
@@ -138,13 +118,9 @@ const CategoryListings = () => {
         )}
 
         {!loading && !error && listings.length > 0 && (
-          <div className={
-            viewType === 'grid'
-              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-              : "flex flex-col gap-4"
-          }>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {listings.map((listing) => (
-              <AnnonceCard key={listing._id} annonce={listing} viewType={viewType} />
+              <AnnonceCard key={listing._id} annonce={listing} />
             ))}
           </div>
         )}
