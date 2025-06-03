@@ -6,9 +6,9 @@ import { parseImages } from "../../../utils/parseImages";
 import moment from 'moment';
 import axiosInstance from "../../../utils/axiosInstance";
 import API_PATHS from "../../../utils/apiPaths";
-import { toast } from "react-toastify";
 
-const WantedItemCard = ({ annonce, viewType = 'grid' }) => {
+
+const WantedItemCard = ({ annonce= 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);

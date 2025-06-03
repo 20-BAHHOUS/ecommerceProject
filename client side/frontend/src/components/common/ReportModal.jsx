@@ -9,13 +9,9 @@ const ReportModal = ({ isOpen, onClose, announcementId }) => {
   const [reportReason, setReportReason] = useState("");
   const [reportDescription, setReportDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(true);
+  const [ setShowConfirmation] = useState(true);
 
   if (!isOpen) return null;
-
-  const handleProceedToReport = () => {
-    setShowConfirmation(false);
-  };
 
   const handleCancel = () => {
     // Reset the state and close the modal
@@ -58,40 +54,6 @@ const ReportModal = ({ isOpen, onClose, announcementId }) => {
     }
   };
 
-  // Confirmation screen
-  if (showConfirmation) {
-    return (
-      <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-fadeIn">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 text-yellow-500">
-              <FaExclamationTriangle size={48} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Report Confirmation</h2>
-            <p className="mb-6 text-gray-600">
-              Are you sure you want to report this announcement? 
-              Reports help us identify content that violates our community guidelines.
-            </p>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={handleCancel}
-                className="flex-1 px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 font-medium transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleProceedToReport}
-                className="flex-1 px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium transition-all flex items-center justify-center"
-              >
-                <FaFlag className="mr-2" />
-                Yes, Continue
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Full report form
   return (

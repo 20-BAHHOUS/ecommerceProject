@@ -17,7 +17,7 @@ const UserAnnonces = () => {
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('newest');
   const [activeTab, setActiveTab] = useState('regular'); // 'regular', 'wanted'
-  const viewType = 'list';
+
 
   const fetchAnnoncesUser = useCallback(async () => {
     setLoading(true);

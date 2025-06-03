@@ -30,13 +30,13 @@ const EditAnnonce = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState([]);
+  const [ setUploadedImages] = useState([]);
   const searchRef = useRef(null);
 
   const {
     handleSubmit,
     register,
-    formState: { errors, isValid, isDirty },
+    formState: { errors},
     setValue,
     watch,
     reset,
