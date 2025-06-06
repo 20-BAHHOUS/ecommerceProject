@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Link} from "react-router-dom";
 import { AlertCircle, Package, PlusCircle } from "lucide-react";
@@ -14,6 +15,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('newest');
+  const [viewType, setViewType] = useState('grid');
 
   // Memoize the fetch function to avoid unnecessary re-renders
   const fetchAnnonces = useCallback(async () => {
@@ -82,7 +84,9 @@ const Home = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Browse Listings
             </h1>
-          
+            <p className="text-gray-600 mt-1">
+              Discover amazing deals from our community
+            </p>
           </div>
 
           {/* Controls */}
@@ -98,6 +102,25 @@ const Home = () => {
                 </option>
               ))}
             </select>
+
+            <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
+              <button
+                onClick={() => setViewType('grid')}
+                className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewType('list')}
+                className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -144,11 +167,16 @@ const Home = () => {
 
         {/* Listings Grid */}
         {!loading && !error && validAnnonces.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className={
+            viewType === 'grid'
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "flex flex-col gap-4"
+          }>
             {validAnnonces.map((annonce) => (
               <AnnonceCard 
                 key={annonce._id} 
-                annonce={annonce}
+                annonce={annonce} 
+                viewType={viewType}
               />
             ))}
            

@@ -196,7 +196,7 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
   // List view card
   return (
     <div 
-      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-row h-[180px] relative overflow-hidden"
+      className="bg-white rounded-2xl border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row h-auto md:h-[280px] relative overflow-hidden w-full group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

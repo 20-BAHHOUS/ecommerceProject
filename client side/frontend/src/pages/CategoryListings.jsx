@@ -12,6 +12,8 @@ const CategoryListings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState('newest');
+  // Add viewType state, defaulting to 'grid'
+  const [viewType, setViewType] = useState('grid');
 
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
@@ -28,10 +30,10 @@ const CategoryListings = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         console.log('Fetching listings for:', { category, subcategory, sort: sortOption });
         const response = await getAnnoncesByMainCategory(category, subcategory, sortOption);
-        
+
         if (response && response.success) {
           console.log('Received listings:', response.data);
           setListings(response.data);
@@ -70,7 +72,7 @@ const CategoryListings = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <MultiLevelNavbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
@@ -81,8 +83,8 @@ const CategoryListings = () => {
               Browse all listings in {subcategory ? 'this subcategory' : 'this category'}
             </p>
           </div>
-          
-          {/* Sort Controls */}
+
+          {/* Sort and View Type Controls */}
           <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto">
             <select
               value={sortOption}
@@ -95,6 +97,28 @@ const CategoryListings = () => {
                 </option>
               ))}
             </select>
+
+            {/* View Type Buttons (Grid/List) */}
+            <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
+              <button
+                onClick={() => setViewType('grid')}
+                className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                aria-label="Grid view"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewType('list')}
+                className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                aria-label="List view"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -117,10 +141,19 @@ const CategoryListings = () => {
           </div>
         )}
 
+        {/* Listings Grid/List Display */}
         {!loading && !error && listings.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className={
+            viewType === 'grid'
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+              : "flex flex-col gap-4" // Use flex-col for list view, similar to your Home component's list view
+          }>
             {listings.map((listing) => (
-              <AnnonceCard key={listing._id} annonce={listing} />
+              <AnnonceCard
+                key={listing._id}
+                annonce={listing}
+                viewType={viewType} // Pass viewType to AnnonceCard
+              />
             ))}
           </div>
         )}
@@ -129,4 +162,4 @@ const CategoryListings = () => {
   );
 };
 
-export default CategoryListings; 
+export default CategoryListings;

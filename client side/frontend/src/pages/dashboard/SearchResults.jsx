@@ -11,14 +11,16 @@ import Footer from "../../components/layouts/inputs/footer";
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
-  
+
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [noResults, setNoResults] = useState(false);
   const [sortOption, setSortOption] = useState("newest");
   const [allAnnonces, setAllAnnonces] = useState([]);
-  
+  // Add viewType state, defaulting to 'grid'
+  const [viewType, setViewType] = useState('grid');
+
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
     { value: 'oldest', label: 'Oldest First' },
@@ -48,6 +50,9 @@ const SearchResults = () => {
   // Filter and sort announcements based on search query
   const filterAndSortAnnonces = useCallback(() => {
     if (!query.trim() || !allAnnonces.length) {
+      setLoading(false); // Set loading to false if query is empty or no data
+      setNoResults(true); // Indicate no results if query is empty
+      setResults([]); // Clear results
       return;
     }
 
@@ -56,10 +61,12 @@ const SearchResults = () => {
     setNoResults(false);
 
     try {
-      // Filter announcements that match the search query (title starts with query)
+      // Filter announcements that match the search query (title contains query)
       const lowercaseQuery = query.toLowerCase();
-      let filteredResults = allAnnonces.filter(annonce => 
-        annonce.title?.toLowerCase().startsWith(lowercaseQuery)
+      let filteredResults = allAnnonces.filter(annonce =>
+        annonce.title?.toLowerCase().includes(lowercaseQuery) || // Changed to includes for broader search
+        annonce.description?.toLowerCase().includes(lowercaseQuery) ||
+        annonce.location?.toLowerCase().includes(lowercaseQuery)
       );
 
       // Sort the filtered results
@@ -72,10 +79,10 @@ const SearchResults = () => {
             filteredResults.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
             break;
           case 'price-high':
-            filteredResults.sort((a, b) => b.price - a.price);
+            filteredResults.sort((a, b) => (b.price || 0) - (a.price || 0)); // Handle undefined price
             break;
           case 'price-low':
-            filteredResults.sort((a, b) => a.price - b.price);
+            filteredResults.sort((a, b) => (a.price || 0) - (b.price || 0)); // Handle undefined price
             break;
           case 'type-sale':
             filteredResults = filteredResults.filter(item => item.type === 'sale');
@@ -120,8 +127,8 @@ const SearchResults = () => {
       <MultiLevelNavbar />
 
       <main className="container mx-auto px-4 py-8 flex-grow">
-        {/* Search Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        {/* Search Header and Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <div className="flex items-center mb-2">
               <Search className="h-5 w-5 text-teal-600 mr-2" />
@@ -130,14 +137,14 @@ const SearchResults = () => {
               </h1>
             </div>
             <p className="text-gray-600">
-              {!loading && !error && results.length > 0 
+              {!loading && !error && results.length > 0
                 ? `${results.length} ${results.length === 1 ? 'result' : 'results'} found`
                 : 'Searching for matching announcements...'}
             </p>
           </div>
-          
-          {/* Sort Controls */}
-          {!loading && !error && results.length > 0 && (
+
+          {/* Sort & View Type Controls */}
+          {!loading && !error && (results.length > 0 || noResults) && ( // Show controls if results found or no results but not error
             <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto">
               <select
                 value={sortOption}
@@ -150,6 +157,28 @@ const SearchResults = () => {
                   </option>
                 ))}
               </select>
+
+              {/* View Type Buttons (Grid/List) */}
+              <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
+                <button
+                  onClick={() => setViewType('grid')}
+                  className={`p-1.5 rounded ${viewType === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  aria-label="Grid view"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewType('list')}
+                  className={`p-1.5 rounded ${viewType === 'list' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  aria-label="List view"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -193,13 +222,18 @@ const SearchResults = () => {
           </div>
         )}
 
-        {/* Results Grid */}
+        {/* Results Grid/List Display */}
         {!loading && !error && results.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className={
+            viewType === 'grid'
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+              : "flex flex-col gap-4"
+          }>
             {results.map((annonce) => (
-              <AnnonceCard 
-                key={annonce._id} 
+              <AnnonceCard
+                key={annonce._id}
                 annonce={annonce}
+                viewType={viewType} // Pass viewType to AnnonceCard
               />
             ))}
           </div>
@@ -211,4 +245,4 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults; 
+export default SearchResults;
