@@ -49,6 +49,9 @@ export const API_PATHS = {
     DELETE_ALL_NOTIFICATIONS: "/notifications",
     GET_UNREAD_COUNT: "/notifications/unread-count",
   },
+  REPORT: { 
+    CREATE_REPORT: (annonceId) => `/reports/${annonceId}`,
+  },
 };
 
 export default API_PATHS;

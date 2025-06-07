@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   FaSearch, 
   FaSpinner, 
-  FaTrash, 
   FaPhone, 
   FaImage, 
   FaCheck, 
@@ -218,10 +217,10 @@ const SoldItems = () => {
             <p className="text-xl font-semibold mb-4 text-gray-800">No Sold Items Yet</p>
             <p className="text-gray-600 mb-6">You haven't sold any items yet.</p>
             <Link 
-              to="/user/dashboard" 
+              to="/home" 
               className="inline-block bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors duration-200"
             >
-              Go to Dashboard
+              Shop Now
             </Link>
           </div>
         </div>

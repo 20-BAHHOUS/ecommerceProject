@@ -8,6 +8,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { FaPlusCircle, FaExclamationTriangle, FaSpinner, FaEdit, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
+import WantedItemCard from "../../components/layouts/inputs/WantedItemCard";
 
 const UserAnnonces = () => {
   const navigate = useNavigate();
@@ -169,7 +170,11 @@ const UserAnnonces = () => {
                   annonce._id ? (
                     <div key={annonce._id} className="group relative bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md border border-gray-100">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                      <AnnonceCard annonce={annonce} />
+                      {annonce.type === 'wanted' ? (
+                        <WantedItemCard annonce={annonce} viewType="grid" showContactButton={false} />
+                      ) : (
+                        <AnnonceCard annonce={annonce} />
+                      )}
                       <div className="absolute bottom-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
                         <Link
                           to={`/edit-annonce/${annonce._id}`}

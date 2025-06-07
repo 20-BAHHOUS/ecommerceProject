@@ -123,7 +123,7 @@ const AnnonceDetail = () => {
         }
         
         setAnnonce(response.data);
-        console.log("Annonce location:", response.data.location);
+        console.log("Annonce location:", response.data.location); // This log will show what location data is received
         
         // Check for existing order if user is logged in
         if (localStorage.getItem("token")) {
@@ -179,7 +179,7 @@ const AnnonceDetail = () => {
 
   const handleSubmitOrder = async (negotiablePrice = null) => {
     setIsOrderLoading(true);
-    try {      
+    try {       
       // Create order payload
       const orderPayload = {
         annonceId,
@@ -256,8 +256,8 @@ const AnnonceDetail = () => {
 
     // Check if location matches user's location - with better comparison
     const isLocationMatchValue = userInfo?.location && 
-                                annonce?.location && 
-                                userInfo.location.toLowerCase().trim() === annonce.location.toLowerCase().trim();
+                                 annonce?.location && 
+                                 userInfo.location.toLowerCase().trim() === annonce.location.toLowerCase().trim();
 
     // Validate images array
     const validImages = annonce?.images &&
@@ -559,8 +559,8 @@ const AnnonceDetail = () => {
                       <DetailItem
                         icon={<FaMapMarkerAlt />}
                         label="Location"
-                        value={annonce.location || "Not specified"}
-                        highlight={isLocationMatch}
+                        value={userInfo.location || "Not specified"}
+                       
                       />
                       <DetailItem
                         icon={<FaClock />}
