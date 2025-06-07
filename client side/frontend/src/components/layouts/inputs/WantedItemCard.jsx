@@ -31,10 +31,6 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
   }
 
   useEffect(() => {
-    if (contactModalOpen && annonce.createdBy?._id) {
-      fetchUserInfo(annonce.createdBy._id);
-    }
-  }, [contactModalOpen, annonce.createdBy?._id]);
     if (contactModalOpen) {
       // If createdBy is already populated with user data, use it directly
       if (annonce.createdBy && typeof annonce.createdBy === 'object' && annonce.createdBy.fullName) {
@@ -60,11 +56,6 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
     setUserError(null);
 
     try {
-      const response = await axiosInstance.get(
-        API_PATHS.USER.GET_USER_BY_ID(userId)
-      );
-      if (response.data) {
-        setUserInfo(response.data);
       console.log("Fetching user info for ID:", userId);
       // Try to get the announcement with populated user data
       const response = await axiosInstance.get(API_PATHS.ANNONCE.ANNONCE_BY_ID(annonce._id));
@@ -78,7 +69,7 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
     } catch (error) {
       console.error("Error fetching user info:", error);
       setUserError("Failed to load user information");
-      
+        
       // If we already have some basic user info from the annonce object, use that
       if (annonce.createdBy && typeof annonce.createdBy === 'object') {
         setUserInfo({
@@ -132,58 +123,29 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
   };
 
   // New and improved ContactModal component directly within WantedItemCard
-  const ContactModal = ({ isOpen, onClose, userInfo, loading, error }) => {
+  const ContactModal = ({ isOpen,  userInfo, loadingUser, error }) => {
     if (!isOpen) return null;
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200 shadow-xl">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-gray-800">
-              Contact Details
-            </h3>
+            <h3 className="text-xl font-semibold text-gray-800">User Information</h3>
             <button
                onClick={() => setContactModalOpen(false)}
-              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors duration-200"
+               className="text-gray-400 hover:text-gray-600"
               aria-label="Close contact modal"
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-gray-800">User Information</h3>
-            <button 
-              onClick={() => setContactModalOpen(false)}
-              className="text-gray-400 hover:text-gray-600"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          {loading ? (
-            <div className="text-center py-10">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
-              <p className="mt-4 text-gray-600 font-medium text-lg">
-                Loading contact information...
-              </p>
-          
           {loadingUser ? (
             <div className="text-center py-6">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent"></div>
-              <p className="mt-4 text-gray-600">Loading user information...</p>
-            </div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600">Loading user information...</p>
+          </div>
           ) : error ? (
             <div className="text-center py-8">
               <div className="bg-red-50 p-6 rounded-xl flex flex-col items-center">
@@ -194,28 +156,9 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                 <p className="text-gray-600 mt-2">
                   Please try again later or check your internet connection.
                 </p>
-          ) : userError ? (
-            <div className="text-center py-6">
-              <div className="bg-red-50 p-4 rounded-lg">
-                <FaExclamationCircle className="text-red-500 text-3xl mx-auto mb-2" />
-                <p className="text-gray-800">{userError}</p>
               </div>
             </div>
           ) : userInfo ? (
-            <div className="space-y-4">
-              <div className="flex items-center pb-4 border-b border-gray-100">
-                <div className="bg-teal-100 p-3 rounded-full shadow-md">
-                  <FaUser className="text-teal-600 text-2xl" />
-                </div>
-                <div className="ml-5">
-                  <h4 className="font-bold text-gray-900 text-xl">
-                    {userInfo.fullName || "N/A"}
-                  </h4>
-                  {userInfo.username && (
-                    <p className="text-gray-500 text-sm">
-                      {userInfo.fullName}
-                    </p>
-                  )}
             <>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <div className="flex items-center">
@@ -227,21 +170,8 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                     <p className="text-sm text-gray-500">User</p>
                   </div>
                 </div>
+             
               </div>
-              {userInfo.email && (
-                <div className="flex items-center bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition-colors duration-200">
-                  <div className="bg-blue-100 p-3 rounded-full">
-                    <FaEnvelope className="text-blue-600" size={18} />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-700">
-                      Email Address
-                    </p>
-                    <a
-                      href={`mailto:${userInfo.email}`}
-                      className="text-blue-600 hover:underline break-all text-lg font-semibold"
-                    >
-              
               <div className="space-y-4">
                 {userInfo.email && (
                   <div className="p-3 border border-gray-200 rounded-lg bg-white">
@@ -251,71 +181,23 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                     </div>
                     <p className="text-gray-800 break-all pl-6">
                       {userInfo.email}
-                    </a>
+                    </p>
                   </div>
-                </div>
+               
               )}
               {userInfo.phone && (
-                <div className="flex items-center bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition-colors duration-200">
-                  <div className="bg-green-100 p-3 rounded-full">
-                    <FaPhone className="text-green-600" size={18} />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-700">
-                      Phone Number
-                    </p>
-                    <a
-                      href={`tel:${userInfo.phone}`}
-                      className="text-green-600 hover:underline font-semibold text-lg"
-                    >
-                    </p>
-                  </div>
-                )}
-                
-                {userInfo.phone && (
                   <div className="p-3 border border-gray-200 rounded-lg bg-white">
-                    <div className="flex items-center mb-2">
-                      <FaPhone className="text-green-600 mr-2" />
-                      <p className="font-medium text-gray-700">Phone</p>
-                    </div>
-                    <p className="text-gray-800 pl-6">
-                      {userInfo.phone}
-                    </a>
+                  <div className="flex items-center mb-2">
+                    <FaPhone className="text-green-600 mr-2" />
+                    <p className="font-medium text-gray-700">Phone</p>
                   </div>
-                </div>
-              )}
-              {userInfo.location && (
-                <div className="flex items-center bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition-colors duration-200">
-                  <div className="bg-purple-100 p-3 rounded-full">
-                    <FaMapMarkerAlt
-                      className="text-purple-600"
-                      size={18}
-                    />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-700">
-                      Location
-                    </p>
-                    <p className="text-gray-800 text-lg font-semibold">
-                      {userInfo.location}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {!userInfo.email && !userInfo.phone && !userInfo.location && (
-                <div className="text-center py-6 px-4 bg-yellow-50 rounded-xl mt-4">
-                  <FaExclamationCircle className="text-yellow-500 text-3xl mx-auto mb-3" />
-                  <p className="text-gray-700 font-medium text-md">
-                    This user has not provided any public contact information.
+                  <p className="text-gray-800 pl-6">
+                    {userInfo.phone}
                   </p>
                 </div>
               )}
-            </div>
-                    </p>
-                  </div>
-                )}
-                
-                {!userInfo.email && !userInfo.phone && (
+             
+             {!userInfo.email && !userInfo.phone && (
                   <div className="text-center py-6">
                     <div className="bg-yellow-50 p-3 rounded-lg inline-block mb-3">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -328,10 +210,6 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
               </div>
             </>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-600 text-lg">
-                User contact information is unavailable.
-              </p>
             <div className="text-center py-6">
               <p className="text-gray-600">User information is unavailable.</p>
             </div>
@@ -339,8 +217,6 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
           
           <div className="mt-6 flex justify-end">
             <button
-              onClick={onClose}
-              className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-300 font-bold shadow-lg transform hover:scale-105"
               onClick={() => setContactModalOpen(false)}
               className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
             >
