@@ -83,7 +83,7 @@ const Home = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Recommended for you
+              Recommended for you
             </h1>
             <p className="text-gray-600 mt-1">
               Discover amazing deals from our community

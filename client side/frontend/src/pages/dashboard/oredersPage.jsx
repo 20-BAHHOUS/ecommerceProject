@@ -5,22 +5,22 @@ import API_PATHS from "../../utils/apiPaths";
 import { Link } from "react-router-dom";
 import MultiLevelNavbar from "../../components/layouts/inputs/navBarCategories";
 import Footer from "../../components/layouts/inputs/footer";
-import { 
-  FaSpinner, 
-  FaExclamationTriangle, 
-  FaTrash, 
-  FaShoppingBag, 
-  FaUser, 
-  FaCalendar, 
-  FaTag, 
+import {
+  FaSpinner,
+  FaExclamationTriangle,
+  FaTrash,
+  FaShoppingBag,
+  FaUser,
+  FaCalendar,
+  FaTag,
   FaMapMarkerAlt,
   FaSearch,
   FaPhoneAlt,
-  FaEnvelope
+  FaEnvelope,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { parseImages } from "../../utils/parseImages";
-import moment from 'moment';
+import moment from "moment";
 import Navbar from "../../components/layouts/inputs/header";
 
 const formatPrice = (price) => {
@@ -35,12 +35,20 @@ const formatPrice = (price) => {
 };
 
 const formatDate = (date) => {
-  return moment(date).format('MMMM D, YYYY [at] h:mm A');
+  return moment(date).format("MMMM D, YYYY [at] h:mm A");
 };
 
 const ORDER_STATUS_COLORS = {
-  pending: { bg: 'bg-gray-200', text: 'text-gray-700', border: 'border-gray-300' },
-  accepted: { bg: 'bg-teal-100', text: 'text-teal-800', border: 'border-teal-200' }
+  pending: {
+    bg: "bg-gray-200",
+    text: "text-gray-700",
+    border: "border-gray-300",
+  },
+  accepted: {
+    bg: "bg-teal-100",
+    text: "text-teal-800",
+    border: "border-teal-200",
+  },
 };
 
 const ITEMS_PER_PAGE = 5;
@@ -82,14 +90,20 @@ const MyOrdersPage = () => {
   const handleCancelOrder = async (orderId) => {
     if (window.confirm("Are you sure you want to cancel this order?")) {
       try {
-        const response = await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(orderId));
-        
+        const response = await axiosInstance.delete(
+          API_PATHS.ORDER.DELETE_ORDER(orderId)
+        );
+
         if (response.data.success) {
           toast.success("Order cancelled successfully.");
           // Update the orders list by removing the cancelled order
-          setOrders((prevOrders) => prevOrders.filter(order => order._id !== orderId));
+          setOrders((prevOrders) =>
+            prevOrders.filter((order) => order._id !== orderId)
+          );
         } else {
-          throw new Error(response.data.message || "Failed to cancel the order.");
+          throw new Error(
+            response.data.message || "Failed to cancel the order."
+          );
         }
       } catch (err) {
         console.error("Error cancelling order:", err);
@@ -104,21 +118,27 @@ const MyOrdersPage = () => {
 
   const handleDeleteAllOrders = async () => {
     if (filteredOrders.length === 0) return;
-    
-    if (window.confirm("Are you sure you want to delete ALL your orders? This action cannot be undone.")) {
+
+    if (
+      window.confirm(
+        "Are you sure you want to delete ALL your orders? This action cannot be undone."
+      )
+    ) {
       try {
         let successCount = 0;
         let failCount = 0;
-        
+
         // Process orders one by one
         for (const order of filteredOrders) {
-          if (order.status !== 'pending') {
+          if (order.status !== "pending") {
             failCount++;
             continue; // Skip non-pending orders
           }
-          
+
           try {
-            const response = await axiosInstance.delete(API_PATHS.ORDER.DELETE_ORDER(order._id));
+            const response = await axiosInstance.delete(
+              API_PATHS.ORDER.DELETE_ORDER(order._id)
+            );
             if (response.data.success) {
               successCount++;
             } else {
@@ -129,16 +149,18 @@ const MyOrdersPage = () => {
             failCount++;
           }
         }
-        
+
         // Refresh the orders list to show current state
         await fetchUserOrders();
-        
+
         if (successCount > 0) {
           toast.success(`Successfully deleted ${successCount} order(s)`);
         }
-        
+
         if (failCount > 0) {
-          toast.warning(`Failed to delete ${failCount} order(s). Only pending orders can be cancelled.`);
+          toast.warning(
+            `Failed to delete ${failCount} order(s). Only pending orders can be cancelled.`
+          );
         }
       } catch (err) {
         console.error("Error in batch delete operation:", err);
@@ -153,10 +175,16 @@ const MyOrdersPage = () => {
   };
 
   const filteredOrders = orders
-    .filter(order => {
-      const matchesSearch = order.annonce?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          order.seller?.fullName?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+    .filter((order) => {
+      const matchesSearch =
+        order.annonce?.title
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        order.seller?.fullName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        statusFilter === "all" || order.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
@@ -183,7 +211,7 @@ const MyOrdersPage = () => {
     return (
       <>
         <Navbar />
-        <MultiLevelNavbar/>
+        <MultiLevelNavbar />
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
           <FaSpinner className="animate-spin text-4xl mb-4 text-teal-600" />
           <p className="text-lg text-gray-700">Loading your orders...</p>
@@ -196,7 +224,7 @@ const MyOrdersPage = () => {
     return (
       <>
         <Navbar />
-        <MultiLevelNavbar/>
+        <MultiLevelNavbar />
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
           <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
             <FaExclamationTriangle className="text-5xl mb-4 text-gray-500 mx-auto" />
@@ -204,7 +232,10 @@ const MyOrdersPage = () => {
               Oops! Something went wrong.
             </p>
             <p className="mb-6 text-gray-600">{error}</p>
-            <Link to="/home" className="text-teal-600 hover:text-teal-700 font-medium hover:underline">
+            <Link
+              to="/home"
+              className="text-teal-600 hover:text-teal-700 font-medium hover:underline"
+            >
               Return to Home
             </Link>
           </div>
@@ -217,14 +248,18 @@ const MyOrdersPage = () => {
     return (
       <>
         <Navbar />
-        <MultiLevelNavbar/>
+        <MultiLevelNavbar />
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
           <div className="bg-white p-8 rounded-lg border border-gray-200 max-w-md w-full text-center">
             <FaShoppingBag className="text-5xl mb-4 text-teal-500 mx-auto" />
-            <p className="text-xl font-semibold mb-4 text-gray-800">No Orders Yet</p>
-            <p className="text-gray-600 mb-6">Start shopping and place your first order!</p>
-            <Link 
-              to="/home" 
+            <p className="text-xl font-semibold mb-4 text-gray-800">
+              No Orders Yet
+            </p>
+            <p className="text-gray-600 mb-6">
+              Start shopping and place your first order!
+            </p>
+            <Link
+              to="/home"
               className="inline-block bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors duration-200"
             >
               Browse Products
@@ -238,8 +273,8 @@ const MyOrdersPage = () => {
   return (
     <>
       <Navbar />
-      <MultiLevelNavbar/>
-    
+      <MultiLevelNavbar />
+
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -283,7 +318,7 @@ const MyOrdersPage = () => {
                     <option value="price-desc">Price: High to Low</option>
                     <option value="price-asc">Price: Low to High</option>
                   </select>
-                  
+
                   {filteredOrders.length > 1 && (
                     <button
                       onClick={handleDeleteAllOrders}
@@ -299,11 +334,16 @@ const MyOrdersPage = () => {
 
             <div className="divide-y divide-gray-200">
               {paginatedOrders.map((order) => (
-                <div key={order._id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
+                <div
+                  key={order._id}
+                  className="p-6 hover:bg-gray-50 transition-colors duration-150"
+                >
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-gray-200 mt-3">
-                        {order.annonce && order.annonce.images && order.annonce.images.length > 0 ? (
+                        {order.annonce &&
+                        order.annonce.images &&
+                        order.annonce.images.length > 0 ? (
                           <Link to={`/annonces/${order.annonce?._id}`}>
                             <img
                               className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
@@ -316,7 +356,10 @@ const MyOrdersPage = () => {
                             />
                           </Link>
                         ) : (
-                          <Link to={`/annonces/${order.annonce?._id}`} className="w-full h-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors">
+                          <Link
+                            to={`/annonces/${order.annonce?._id}`}
+                            className="w-full h-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors"
+                          >
                             <FaShoppingBag className="text-gray-400 text-3xl" />
                           </Link>
                         )}
@@ -327,33 +370,47 @@ const MyOrdersPage = () => {
                           <h3 className="text-lg font-semibold text-gray-900">
                             {order.annonce ? order.annonce.title : "N/A"}
                           </h3>
-                          <span className={`px-4 py-2 rounded-full text-sm font-semibold mt-1 ${
-                            ORDER_STATUS_COLORS[order.status]?.bg || 'bg-gray-100'
-                          } ${ORDER_STATUS_COLORS[order.status]?.text || 'text-gray-800'}`}>
-                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          <span
+                            className={`px-4 py-2 rounded-full text-sm font-semibold mt-1 ${
+                              ORDER_STATUS_COLORS[order.status]?.bg ||
+                              "bg-gray-100"
+                            } ${
+                              ORDER_STATUS_COLORS[order.status]?.text ||
+                              "text-gray-800"
+                            }`}
+                          >
+                            {order.status.charAt(0).toUpperCase() +
+                              order.status.slice(1)}
                           </span>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
                           <div className="flex flex-col space-y-2.5">
                             <div className="flex items-center text-sm text-gray-600">
                               <FaCalendar className="mr-2 text-teal-600 flex-shrink-0" />
-                              <span>Ordered: {formatDate(order.createdAt)}</span>
+                              <span>
+                                Ordered: {formatDate(order.createdAt)}
+                              </span>
                             </div>
-                            
+
                             <div className="flex items-center text-sm text-gray-600">
                               <FaTag className="mr-2 text-teal-600 flex-shrink-0" />
-                              <span>Price: {formatPrice(order.annonce?.price)}</span>
+                              <span>
+                                Price: {formatPrice(order.annonce?.price)}
+                              </span>
                             </div>
-                            
+
                             {order.negotiablePrice && (
                               <div className="flex items-center text-sm font-medium text-teal-700">
                                 <FaTag className="mr-2 text-teal-600 flex-shrink-0" />
-                                <span>Your offer: {formatPrice(order.negotiablePrice)}</span>
+                                <span>
+                                  Your offer:{" "}
+                                  {formatPrice(order.negotiablePrice)}
+                                </span>
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="flex flex-col justify-start">
                             {order.annonce && order.annonce.location && (
                               <div className="flex items-center text-sm text-gray-600">
@@ -397,40 +454,46 @@ const MyOrdersPage = () => {
               <div className="px-6 py-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
                     disabled={currentPage === 1}
                     className={`px-4 py-2 text-sm font-medium rounded-md ${
                       currentPage === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                     }`}
                   >
                     Previous
                   </button>
 
                   <div className="flex items-center gap-2">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-4 py-2 text-sm font-medium rounded-md ${
-                          currentPage === page
-                            ? 'bg-teal-600 text-white border border-teal-600'
-                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-4 py-2 text-sm font-medium rounded-md ${
+                            currentPage === page
+                              ? "bg-teal-600 text-white border border-teal-600"
+                              : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
                   </div>
 
                   <button
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
                     disabled={currentPage === totalPages}
                     className={`px-4 py-2 text-sm font-medium rounded-md ${
                       currentPage === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                     }`}
                   >
                     Next
@@ -447,29 +510,44 @@ const MyOrdersPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200 shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-gray-800">Contact Seller</h3>
-              <button 
+              <h3 className="text-xl font-semibold text-gray-800">
+                Contact Seller
+              </h3>
+              <button
                 onClick={() => setContactModalOpen(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
-            
+
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
               <div className="flex items-center">
                 <div className="bg-teal-100 p-3 rounded-full">
                   <FaUser className="text-teal-600 text-xl" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="font-medium text-gray-900">{selectedSeller.fullName}</h4>
+                  <h4 className="font-medium text-gray-900">
+                    {selectedSeller.fullName}
+                  </h4>
                   <p className="text-sm text-gray-500">Seller</p>
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               {selectedSeller.email && (
                 <div className="p-3 border border-gray-200 rounded-lg bg-white">
@@ -482,31 +560,42 @@ const MyOrdersPage = () => {
                   </p>
                 </div>
               )}
-              
+
               {selectedSeller.phone && (
                 <div className="p-3 border border-gray-200 rounded-lg bg-white">
                   <div className="flex items-center mb-2">
                     <FaPhoneAlt className="text-green-600 mr-2" />
                     <p className="font-medium text-gray-700">Phone</p>
                   </div>
-                  <p className="text-gray-800 pl-6">
-                    {selectedSeller.phone}
-                  </p>
+                  <p className="text-gray-800 pl-6">{selectedSeller.phone}</p>
                 </div>
               )}
-              
+
               {!selectedSeller.email && !selectedSeller.phone && (
                 <div className="text-center py-6">
                   <div className="bg-yellow-50 p-3 rounded-lg inline-block mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-yellow-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
                     </svg>
                   </div>
-                  <p className="text-gray-600">No contact information available for this seller.</p>
+                  <p className="text-gray-600">
+                    No contact information available for this seller.
+                  </p>
                 </div>
               )}
             </div>
-            
+
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setContactModalOpen(false)}

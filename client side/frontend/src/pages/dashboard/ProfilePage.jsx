@@ -55,8 +55,7 @@ const ProfilePage = () => {
       } catch (err) {
         console.error("Error fetching profile info:", err);
         setError(
-          err.response?.data?.error ||
-            "Failed to load profile information."
+          err.response?.data?.error || "Failed to load profile information."
         );
       } finally {
         setLoading(false);
@@ -76,63 +75,72 @@ const ProfilePage = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
+      toast.error("Image size should be less than 5MB");
       return;
     }
 
     setImageLoading(true);
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
 
     try {
       // First upload the image
-      const uploadResponse = await axiosInstance.post(API_PATHS.IMAGE.UPLOAD_IMAGE, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const uploadResponse = await axiosInstance.post(
+        API_PATHS.IMAGE.UPLOAD_IMAGE,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (!uploadResponse.data || !uploadResponse.data.imageUrl) {
-        throw new Error('Invalid response from server');
+        throw new Error("Invalid response from server");
       }
 
       const imageUrl = uploadResponse.data.imageUrl;
 
       // Then update the profile with the new image URL
-      const updateResponse = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, {
-        ...updatedInfo,
-        profileImageUrl: imageUrl,
-      });
+      const updateResponse = await axiosInstance.put(
+        API_PATHS.AUTH.UPDATE_PROFILE,
+        {
+          ...updatedInfo,
+          profileImageUrl: imageUrl,
+        }
+      );
 
       if (!updateResponse.data || !updateResponse.data.user) {
-        throw new Error('Failed to update profile');
+        throw new Error("Failed to update profile");
       }
 
       setUser(updateResponse.data.user);
-      setUpdatedInfo(prev => ({
+      setUpdatedInfo((prev) => ({
         ...prev,
         profileImageUrl: imageUrl,
       }));
-      
+
       // Force refresh the header by triggering a localStorage change
-      
+
       localStorage.setItem("profileUpdated", Date.now().toString());
-      
-      toast.success('Profile picture updated successfully!');
+
+      toast.success("Profile picture updated successfully!");
     } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error(error.response?.data?.error || 'Failed to upload profile picture');
-      
+      console.error("Error uploading image:", error);
+      toast.error(
+        error.response?.data?.error || "Failed to upload profile picture"
+      );
+
       // Reset the file input
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     } finally {
       setImageLoading(false);
@@ -140,35 +148,42 @@ const ProfilePage = () => {
   };
 
   const handleDeleteProfileImage = async () => {
-    if (!window.confirm("Are you sure you want to delete your profile image?")) {
+    if (
+      !window.confirm("Are you sure you want to delete your profile image?")
+    ) {
       return;
     }
 
     setImageLoading(true);
     try {
       // Update profile without profile image
-      const updateResponse = await axiosInstance.put(API_PATHS.AUTH.UPDATE_PROFILE, {
-        ...updatedInfo,
-        profileImageUrl: "",
-      });
+      const updateResponse = await axiosInstance.put(
+        API_PATHS.AUTH.UPDATE_PROFILE,
+        {
+          ...updatedInfo,
+          profileImageUrl: "",
+        }
+      );
 
       if (!updateResponse.data || !updateResponse.data.user) {
-        throw new Error('Failed to remove profile image');
+        throw new Error("Failed to remove profile image");
       }
 
       setUser(updateResponse.data.user);
-      setUpdatedInfo(prev => ({
+      setUpdatedInfo((prev) => ({
         ...prev,
         profileImageUrl: "",
       }));
-      
+
       // Force refresh the header
       localStorage.setItem("profileUpdated", Date.now().toString());
-      
-      toast.success('Profile picture removed successfully!');
+
+      toast.success("Profile picture removed successfully!");
     } catch (error) {
-      console.error('Error deleting profile image:', error);
-      toast.error(error.response?.data?.error || 'Failed to remove profile picture');
+      console.error("Error deleting profile image:", error);
+      toast.error(
+        error.response?.data?.error || "Failed to remove profile picture"
+      );
     } finally {
       setImageLoading(false);
     }
@@ -210,7 +225,9 @@ const ProfilePage = () => {
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="text-center p-8 rounded-2xl">
           <FaSpinner className="animate-spin text-6xl text-teal-600 mx-auto mb-4" />
-          <p className="text-gray-700 text-lg font-medium">Loading your profile...</p>
+          <p className="text-gray-700 text-lg font-medium">
+            Loading your profile...
+          </p>
         </div>
       </div>
     );
