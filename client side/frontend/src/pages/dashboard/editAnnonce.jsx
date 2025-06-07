@@ -30,7 +30,7 @@ const EditAnnonce = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [setUploadedImages] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
   const searchRef = useRef(null);
 
   const {

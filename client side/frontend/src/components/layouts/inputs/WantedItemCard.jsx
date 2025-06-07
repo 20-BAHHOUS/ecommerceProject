@@ -35,6 +35,25 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
       fetchUserInfo(annonce.createdBy._id);
     }
   }, [contactModalOpen, annonce.createdBy?._id]);
+    if (contactModalOpen) {
+      // If createdBy is already populated with user data, use it directly
+      if (annonce.createdBy && typeof annonce.createdBy === 'object' && annonce.createdBy.fullName) {
+        console.log("Using populated user data:", annonce.createdBy);
+        setUserInfo(annonce.createdBy);
+      } 
+      // Otherwise fetch user data if we have the ID
+      else if (annonce.createdBy) {
+        const userId = typeof annonce.createdBy === 'object' ? annonce.createdBy._id : annonce.createdBy;
+        if (userId) {
+          fetchUserInfo(userId);
+        } else {
+          setUserError("User ID not available");
+        }
+      } else {
+        setUserError("No user information available");
+      }
+    }
+  }, [contactModalOpen, annonce.createdBy]);
 
   const fetchUserInfo = async (userId) => {
     setLoadingUser(true);
@@ -46,12 +65,27 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
       );
       if (response.data) {
         setUserInfo(response.data);
+      console.log("Fetching user info for ID:", userId);
+      // Try to get the announcement with populated user data
+      const response = await axiosInstance.get(API_PATHS.ANNONCE.ANNONCE_BY_ID(annonce._id));
+      
+      if (response.data && response.data.createdBy) {
+        console.log("Got user data from announcement:", response.data.createdBy);
+        setUserInfo(response.data.createdBy);
       } else {
         setUserError("User information not available");
       }
     } catch (error) {
       console.error("Error fetching user info:", error);
       setUserError("Failed to load user information");
+      
+      // If we already have some basic user info from the annonce object, use that
+      if (annonce.createdBy && typeof annonce.createdBy === 'object') {
+        setUserInfo({
+          _id: annonce.createdBy._id,
+          fullName: annonce.createdBy.fullName || "Unknown User",
+        });
+      }
     } finally {
       setLoadingUser(false);
     }
@@ -111,6 +145,13 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                onClick={() => setContactModalOpen(false)}
               className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors duration-200"
               aria-label="Close contact modal"
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200 shadow-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">User Information</h3>
+            <button 
+              onClick={() => setContactModalOpen(false)}
+              className="text-gray-400 hover:text-gray-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -125,6 +166,8 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                   strokeLinejoin="round"
                   d="M6 18L18 6M6 6l12 12"
                 />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -135,6 +178,11 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
               <p className="mt-4 text-gray-600 font-medium text-lg">
                 Loading contact information...
               </p>
+          
+          {loadingUser ? (
+            <div className="text-center py-6">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent"></div>
+              <p className="mt-4 text-gray-600">Loading user information...</p>
             </div>
           ) : error ? (
             <div className="text-center py-8">
@@ -146,6 +194,11 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                 <p className="text-gray-600 mt-2">
                   Please try again later or check your internet connection.
                 </p>
+          ) : userError ? (
+            <div className="text-center py-6">
+              <div className="bg-red-50 p-4 rounded-lg">
+                <FaExclamationCircle className="text-red-500 text-3xl mx-auto mb-2" />
+                <p className="text-gray-800">{userError}</p>
               </div>
             </div>
           ) : userInfo ? (
@@ -163,6 +216,16 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                       {userInfo.fullName}
                     </p>
                   )}
+            <>
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <div className="flex items-center">
+                  <div className="bg-teal-100 p-3 rounded-full">
+                    <FaUser className="text-teal-600 text-xl" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="font-medium text-gray-900">{userInfo.fullName}</h4>
+                    <p className="text-sm text-gray-500">User</p>
+                  </div>
                 </div>
               </div>
               {userInfo.email && (
@@ -178,6 +241,15 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                       href={`mailto:${userInfo.email}`}
                       className="text-blue-600 hover:underline break-all text-lg font-semibold"
                     >
+              
+              <div className="space-y-4">
+                {userInfo.email && (
+                  <div className="p-3 border border-gray-200 rounded-lg bg-white">
+                    <div className="flex items-center mb-2">
+                      <FaEnvelope className="text-blue-600 mr-2" />
+                      <p className="font-medium text-gray-700">Email</p>
+                    </div>
+                    <p className="text-gray-800 break-all pl-6">
                       {userInfo.email}
                     </a>
                   </div>
@@ -196,6 +268,17 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                       href={`tel:${userInfo.phone}`}
                       className="text-green-600 hover:underline font-semibold text-lg"
                     >
+                    </p>
+                  </div>
+                )}
+                
+                {userInfo.phone && (
+                  <div className="p-3 border border-gray-200 rounded-lg bg-white">
+                    <div className="flex items-center mb-2">
+                      <FaPhone className="text-green-600 mr-2" />
+                      <p className="font-medium text-gray-700">Phone</p>
+                    </div>
+                    <p className="text-gray-800 pl-6">
                       {userInfo.phone}
                     </a>
                   </div>
@@ -228,18 +311,38 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                 </div>
               )}
             </div>
+                    </p>
+                  </div>
+                )}
+                
+                {!userInfo.email && !userInfo.phone && (
+                  <div className="text-center py-6">
+                    <div className="bg-yellow-50 p-3 rounded-lg inline-block mb-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-600">No contact information available for this user.</p>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-600 text-lg">
                 User contact information is unavailable.
               </p>
+            <div className="text-center py-6">
+              <p className="text-gray-600">User information is unavailable.</p>
             </div>
           )}
-
-          <div className="mt-8 flex justify-end">
+          
+          <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
               className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-300 font-bold shadow-lg transform hover:scale-105"
+              onClick={() => setContactModalOpen(false)}
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
             >
               Close
             </button>

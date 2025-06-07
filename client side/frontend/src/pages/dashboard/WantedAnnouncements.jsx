@@ -21,28 +21,6 @@ const WantedAnnouncements = () => {
   // Adjust items per page
   const ITEMS_PER_PAGE = 6;
 
-  // Create a hardcoded set of sample data for testing if the API fails
-  const sampleWantedData = [
-    {
-      _id: "sample1",
-      title: "Looking for Gaming Laptop",
-      description: "I'm looking for a gaming laptop with RTX 3070 or better, 16GB RAM minimum.",
-      location: "Algiers",
-      type: "wanted",
-      createdAt: new Date().toISOString(),
-      images: []
-    },
-    {
-      _id: "sample2",
-      title: "Want to buy Used iPhone",
-      description: "Looking for iPhone 12 or newer in good condition.",
-      location: "Oran",
-      type: "wanted",
-      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-      images: []
-    }
-  ];
-
   // Memoize the fetch function to avoid unnecessary re-renders
   const fetchWantedAnnouncements = useCallback(async () => {
     setLoading(true);
@@ -58,16 +36,11 @@ const WantedAnnouncements = () => {
         const wantedItems = response.data.filter(item => item && item.type === "wanted");
         console.log("Wanted items found:", wantedItems.length, wantedItems);
         
-        if (wantedItems.length > 0) {
-          setWantedAnnouncements(wantedItems);
-        } else {
-          console.log("No wanted items in API response, using sample data");
-          setWantedAnnouncements(sampleWantedData);
-        }
+        setWantedAnnouncements(wantedItems);
       } else {
         console.error("Invalid response format:", response.data);
-        setWantedAnnouncements(sampleWantedData);
-        setError("Failed to load wanted announcements: Using sample data instead");
+        setWantedAnnouncements([]);
+        setError("Failed to load wanted announcements: Invalid response format");
       }
     } catch (err) {
       console.error("Error fetching wanted announcements:", err);
@@ -78,8 +51,7 @@ const WantedAnnouncements = () => {
       } else {
         setError(err.message || "Failed to load wanted announcements.");
       }
-      console.log("Using sample data due to error");
-      setWantedAnnouncements(sampleWantedData);
+      setWantedAnnouncements([]);
     } finally {
       setLoading(false);
     }
@@ -212,7 +184,6 @@ const WantedAnnouncements = () => {
           <div className="text-center py-12 px-4 bg-white rounded-lg shadow-sm">
             <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Wanted Items Found</h3>
-            <p className="text-gray-500 mb-6">Be the first to post a wanted listing in our marketplace!</p>
             <Link
               to="/postad"
               className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors duration-200"

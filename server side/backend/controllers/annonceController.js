@@ -99,7 +99,7 @@ const getAnnonceById = async (req, res) => {
   try {
     // Find the annonce and populate necessary fields
     const annonce = await Annonce.findById(req.params.id)
-      .populate("createdBy", "_id fullName")
+      .populate("createdBy", "_id fullName email phone location")
       .populate("category", "name")
       .populate("subcategory", "name");
     
