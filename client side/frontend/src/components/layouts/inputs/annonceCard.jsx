@@ -69,10 +69,15 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!localStorage.getItem("token")) {
-      toast.error("Please login to add items to favorites");
-      return;
-    }
+     // Check if user is logged in first
+       const token = localStorage.getItem("token");
+       if (!token) {
+         toast.error("Please log in to place an order");
+         // Redirect to login page with return URL
+         const returnUrl = encodeURIComponent(window.location.pathname);
+         window.location.href = `/login?redirect=${returnUrl}`;
+         return;
+       }
 
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.TOGGLE_FAVORITE, {
@@ -132,8 +137,7 @@ const AnnonceCard = ({ annonce, viewType = 'grid' }) => {
               onError={handleImageError}
               loading="lazy"
             />
-          )}
-          
+          )}      
           {/* Action Buttons */}
           <div className="absolute top-3 right-3 flex space-x-2">
             {/* Favorite Button */}

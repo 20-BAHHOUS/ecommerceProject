@@ -97,6 +97,15 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
   const handleContactClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+      // Check if user is logged in first
+        const token = localStorage.getItem("token");
+        if (!token) {
+         
+          // Redirect to login page with return URL
+          const returnUrl = encodeURIComponent(window.location.pathname);
+          window.location.href = `/login?redirect=${returnUrl}`;
+          return;
+        }
     setContactModalOpen(true);
   };
 
@@ -123,8 +132,10 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
   };
 
   // New and improved ContactModal component directly within WantedItemCard
-  const ContactModal = ({ isOpen,  userInfo, loadingUser, error }) => {
+  const ContactModal = ({ isOpen,userInfo, loadingUser, error }) => {
+    
     if (!isOpen) return null;
+    
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-lg p-6 max-w-md w-full border border-gray-200 shadow-xl">
@@ -237,8 +248,8 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image Section */}
-        <Link
-          to={detailLink}
+        <div
+         
           className="block relative aspect-[4/3] w-full overflow-hidden"
         >
           {!hasValidImages || imageError ? (
@@ -281,15 +292,15 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
               )}
             </>
           )}
-        </Link>
+        </div>
         {/* Content Section */}
         <div className="p-4 flex flex-col flex-grow">
           {/* Title */}
-          <Link to={detailLink} className="block mb-2 group">
+          <div className="block mb-2 group">
             <h3 className="text-lg font-semibold text-gray-800 group-hover:text-teal-600 line-clamp-2 transition-colors duration-200">
               {annonce.title || "Untitled Request"}
             </h3>
-          </Link>
+          </div>
           {/* Description */}
           {annonce.description && (
             <p className="text-sm text-gray-500 line-clamp-2 mb-3">
@@ -298,7 +309,7 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
           )}
           {/* Footer Info */}
           <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
-            {annonce.location && (
+            {userInfo.location && (
               <div className="flex items-center">
                 <FaMapMarkerAlt
                   className="mr-1.5 text-gray-400"
@@ -306,9 +317,9 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
                 />
                 <span
                   className="truncate max-w-[150px]"
-                  title={annonce.location}
+                  title={userInfo.location}
                 >
-                  {annonce.location}
+                  {userInfo.location}
                 </span>
               </div>
             )}
@@ -333,8 +344,8 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image Section */}
-        <Link
-          to={detailLink}
+        <div
+          
           className="relative w-full md:w-1/3 min-w-[120px] overflow-hidden flex-shrink-0 rounded-t-2xl md:rounded-l-2xl md:rounded-t-none"
         >
           <div className="h-full relative">
@@ -379,17 +390,17 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
               </>
             )}
           </div>
-        </Link>
+        </div>
         {/* Content */}
         <div className="p-6 flex flex-col flex-grow w-full md:w-2/3">
           <div className="flex flex-col h-full">
             {/* Title and Contact Button Row */}
             <div className="flex justify-between items-start mb-4">
-              <Link to={detailLink} className="flex-1">
+              <div  className="flex-1">
                 <h3 className="text-2xl font-bold text-gray-800 hover:text-teal-700 transition-colors duration-200 leading-tight pr-4">
                   {annonce.title || "Untitled Request"}
                 </h3>
-              </Link>
+              </div>
               {/* Conditionally render Contact Button */}
               {viewType !== "userAnnouncements" && (
                 <button
@@ -411,14 +422,14 @@ const WantedItemCard = ({ annonce = {}, viewType = "list" }) => {
             )}
             <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
               {/* Location */}
-              {annonce.location && (
+              {userInfo.location && (
                 <div className="flex items-center text-gray-600 text-sm mr-4">
                   <FaMapMarkerAlt
                     className="mr-2 text-teal-500"
                     size={16}
                   />
                   <span className="font-medium">{userInfo.location}</span>{" "}
-                  {/* Changed to annonce.location */}
+              
                 </div>
               )}
               {/* Time Ago */}

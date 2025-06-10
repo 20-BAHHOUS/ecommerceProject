@@ -168,14 +168,6 @@ const WantedAnnouncements = () => {
                 onChange={handleSearchChange}
               />
             </div>
-
-            <Link
-              to="/postad"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-colors"
-            >
-              <FaPlus className="mr-2" />
-              Post Wanted Ad
-            </Link>
           </div>
         </div>
 
@@ -184,13 +176,7 @@ const WantedAnnouncements = () => {
           <div className="text-center py-12 px-4 bg-white rounded-lg shadow-sm">
             <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Wanted Items Found</h3>
-            <Link
-              to="/postad"
-              className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors duration-200"
-            >
-              <PlusCircle className="w-5 h-5 mr-2" />
-              Post Wanted Ad
-            </Link>
+          
           </div>
         )}
 
